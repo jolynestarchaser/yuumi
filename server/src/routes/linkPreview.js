@@ -16,9 +16,21 @@ async function safeUrl(value) {
   return url;
 }
 const content = ($, selector, attribute = 'content') => $(selector).attr(attribute)?.trim() || '';
+const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
-router.post('/', async (req, res) => {
+function youtubeVideo(url) {
+  const host = url.hostname.replace(/^www\./, '').toLowerCase();
+  let id = '';
+  if (host === 'youtu.be') id = url.pathname.split('/').filter(Boolean)[0] || '';
+  if (host === 'youtube.com' || host === 'm.youtube.com') id = url.searchParams.get('v') || (url.pathname.match(/^\/(?:shorts|embed|live)\/([^/]+)/)?.[1] || '');
+  if (!/^[\w-]{11}$/.test(id)) return null;
+  return { title: 'YouTube video', description: 'Watch on YouTube', previewImage: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, favicon: 'https://www.youtube.com/favicon.ico', siteName: 'YouTube', provider: 'youtube', videoId: id, embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0` };
+}
+
+router.post('/', asyncRoute(async (req, res) => {
   const url = await safeUrl(req.body.url);
+  const youtube = youtubeVideo(url);
+  if (youtube) return res.json({ success: true, data: { ...youtube, url: url.href } });
   const response = await axios.get(url.href, { timeout: 5000, maxContentLength: 1_000_000, responseType: 'text', maxRedirects: 0, headers: { 'User-Agent': 'CuteDesktopPreview/1.0' } });
   const $ = cheerio.load(response.data);
   const title = content($, 'meta[property="og:title"]') || $('title').text().trim() || url.hostname;
@@ -26,6 +38,5 @@ router.post('/', async (req, res) => {
   const previewImage = content($, 'meta[property="og:image"]');
   const favicon = $('link[rel~="icon"]').attr('href') || `${url.origin}/favicon.ico`;
   res.json({ success: true, data: { title, description, previewImage, favicon, siteName: content($, 'meta[property="og:site_name"]') || url.hostname, url: url.href } });
-});
+}));
 export default router;
-
