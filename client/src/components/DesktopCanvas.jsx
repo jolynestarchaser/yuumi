@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, PointerSensor, TouchSensor, pointerWithin, rectIntersection, useSensor, useSensors } from '@dnd-kit/core';
 import DesktopItem from './DesktopItem.jsx';
 import InkLayer from './InkLayer.jsx';
 import TrashBin from './TrashBin.jsx';
@@ -18,7 +18,8 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
   const setTool = useDesktopStore((state) => state.setTool);
   const canvas = useRef(null);
   const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
-  const sensors = useSensors(pointerSensor);
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 160, tolerance: 8 } });
+  const sensors = useSensors(pointerSensor, touchSensor);
   const rootItems = useMemo(() => items.filter((item) => !item.parentId), [items]);
   const snap = (value) => settings.snapToGrid ? Math.round(value / 16) * 16 : value;
 
@@ -32,10 +33,18 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
     if (item) previewMove(item._id, { x: snap(Math.max(0, item.position.x + delta.x)), y: snap(Math.max(0, item.position.y + delta.y)) });
   }
 
+  function overlapsTrash(active) {
+    const trash = document.querySelector('.trash-bin');
+    const dragged = active.rect.current.translated;
+    if (!trash || !dragged) return false;
+    const target = trash.getBoundingClientRect();
+    return dragged.left < target.right && dragged.right > target.left && dragged.top < target.bottom && dragged.bottom > target.top;
+  }
+
   async function drop({ active, over, delta }) {
     const item = active.data.current.item;
     if (!item) return;
-    if (over?.id === 'trash') return trashItem(item._id);
+    if (over?.id === 'trash' || overlapsTrash(active)) return trashItem(item._id);
     const folderId = String(over?.id || '').startsWith('folder:') ? String(over.id).slice(7) : null;
     if (folderId && folderId !== item._id) return move(item._id, folderId, { x: 32, y: 32 });
     const rect = canvas.current.getBoundingClientRect();
@@ -78,7 +87,10 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
     '--wallpaper-filter': `blur(${wallpaper.blur || 0}px) brightness(${wallpaper.brightness ?? 100}%) saturate(${wallpaper.saturation ?? 100}%)`
   };
 
-  return <DndContext sensors={tool === 'select' ? sensors : []} collisionDetection={pointerWithin} onDragStart={dragStart} onDragMove={dragMove} onDragEnd={drop}>
+  return <DndContext sensors={tool === 'select' ? sensors : []} collisionDetection={(args) => {
+    const pointerHits = pointerWithin(args);
+    return pointerHits.length ? pointerHits : rectIntersection(args);
+  }} onDragStart={dragStart} onDragMove={dragMove} onDragEnd={drop}>
     <main ref={canvas} style={style} className={`desktop-canvas wallpaper-${wallpaper.value || 'neon'} wallpaper-${wallpaper.type || 'preset'}`} onDragOver={(event) => event.preventDefault()} onDrop={nativeDrop} onClick={() => { if (tool === 'select') { select(null); context(null); } }} onContextMenu={(event) => { if (tool !== 'select') return; event.preventDefault(); context({ x: event.clientX, y: event.clientY, item: null, parentId: null }); }}>
       <div className='wallpaper-orbit' />
       <InkLayer canvasRef={canvas} />
