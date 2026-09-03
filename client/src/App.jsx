@@ -12,7 +12,6 @@ import WindowManager from './components/WindowManager.jsx';
 import PenToolbar from './components/PenToolbar.jsx';
 import ToastRegion from './components/ToastRegion.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
-import TrashBin from './components/TrashBin.jsx';
 import TrashDialog from './components/TrashDialog.jsx';
 
 function DesktopPage() {
@@ -96,8 +95,7 @@ function DesktopPage() {
       <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span></div>
       <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
     </header>
-    <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} />
-    <TrashBin count={s.trashItems.length} onOpen={() => setTrashOpen(true)} />
+    <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} trashCount={s.trashItems.length} onTrashOpen={() => setTrashOpen(true)} />
     <WindowManager />
     <PenToolbar />
     <nav className='dock' aria-label='Desktop actions'>

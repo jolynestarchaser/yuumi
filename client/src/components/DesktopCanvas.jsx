@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
 import DesktopItem from './DesktopItem.jsx';
 import InkLayer from './InkLayer.jsx';
+import TrashBin from './TrashBin.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
 
-export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudio }) {
+export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudio, trashCount, onTrashOpen }) {
   const items = useDesktopStore((state) => state.items);
   const selectedId = useDesktopStore((state) => state.selectedId);
   const select = useDesktopStore((state) => state.setSelected);
@@ -84,5 +85,6 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
       <div className='desktop-label'>Yuu & Mi <span>one shared desktop</span></div>
       {rootItems.map((item) => <DesktopItem key={item._id} item={item} selected={selectedId === item._id} iconTheme={settings.iconTheme} onSelect={(value) => select(value._id)} onOpen={openWindow} onAudio={onAudio} onContext={(event, value) => context({ x: event.clientX, y: event.clientY, item: value, parentId: value.parentId })} />)}
     </main>
+    <TrashBin count={trashCount} onOpen={onTrashOpen} />
   </DndContext>;
 }
