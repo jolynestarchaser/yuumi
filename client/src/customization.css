@@ -69,3 +69,9 @@
 @media (max-width: 767px) { .pen-toolbar { top: auto; right: 10px; bottom: calc(88px + env(safe-area-inset-bottom)); display: flex; align-items: center; width: calc(100vw - 20px); min-height: 48px; padding: 6px; overflow-x: auto; border-radius: 16px; } .tool-group, .pen-colors, .pen-widths { display: flex; flex: none; } .pen-colors { padding: 0 7px; border-top: 0; border-bottom: 0; border-left: 1px solid #ffffff25; border-right: 1px solid #ffffff25; } .pen-colors button { width: 22px; min-width: 22px; } .choice-grid { grid-template-columns: repeat(6, 1fr); } .filter-grid { grid-template-columns: 1fr; } .toast-region { right: 10px; bottom: calc(146px + env(safe-area-inset-bottom)); } .trash-bin { right: 10px; bottom: calc(150px + env(safe-area-inset-bottom)); width: 56px; min-height: 60px; border-radius: 15px; } .trash-bin svg { width: 22px; height: 22px; } .trash-row button:not(.trash-remove) { font-size: 0; }.trash-row button:not(.trash-remove) svg { width: 16px; } .glass-dialog.customize-dialog { max-height: calc(100dvh - 24px); } }
 @media (hover: none), (pointer: coarse) { .custom-cursor { display: none; } }
 @media (hover: hover) { .desktop-item:hover { transform: translateY(-4px); } }
+
+/* Keep transient controls separate on small screens so they do not cover the drawing bar. */
+@media (max-width: 767px) {
+  .trash-bin { top: 60px; right: 10px; bottom: auto; }
+  .toast-region { top: 128px; right: 10px; bottom: auto; }
+}

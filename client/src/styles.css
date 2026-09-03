@@ -10,3 +10,11 @@
 .preview-modal, .folder-window { padding: 0; }.preview-modal header, .folder-window header { display: flex; justify-content: space-between; align-items: center; min-height: 50px; padding: 10px 15px; border-bottom: 1px solid #ffffff26; font-weight: 800; }.preview-modal header button, .folder-window header button { width: 27px; height: 27px; border: 0; border-radius: 50%; color: #43060c; background: #ff5f57; }.preview-image, .preview-video { display: block; width: 100%; max-height: 68vh; object-fit: contain; background: #020621; }.note-preview, .link-preview { padding: 25px; }.note-preview { white-space: pre-wrap; line-height: 1.7; }.link-preview img { width: 100%; max-height: 300px; border-radius: 12px; object-fit: cover; }.link-preview a { color: #b6ff00; font-weight: 800; }.folder-window { position: fixed; z-index: 10; top: 14%; left: 50%; transform: translateX(-50%); }.folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; min-height: 220px; padding: 20px; }.folder-child { display: grid; gap: 7px; padding: 10px; border: 1px solid #ffffff24; border-radius: 12px; color: white; background: #ffffff14; }.folder-child span { color: #b6ff00; font-size: 29px; }.empty-folder { padding: 42px; color: #cbd6f7; text-align: center; }
 @media (max-width: 600px) { .topbar { padding: 0 10px; gap: 8px; }.brand span:not(.brand-mark), .topbar-actions button:first-child { display: none; }.topbar-actions { gap: 1px; }.dock { bottom: 10px; gap: 1px; padding: 5px; }.dock button { min-width: 50px; padding: 4px; }.desktop-item { transform: scale(.88); transform-origin: top left; }.wallpaper-picker { grid-template-columns: repeat(2, 1fr); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+/* Use dynamic viewport units on phones and never override the drag transform. */
+.app-shell { height: 100dvh; }
+.desktop-canvas { height: calc(100dvh - 48px); }
+@media (max-width: 600px) {
+  .dock { bottom: calc(10px + env(safe-area-inset-bottom)); max-width: calc(100vw - 16px); overflow-x: auto; }
+  .desktop-item { width: 118px; min-height: 108px; transform: none; }
+}
