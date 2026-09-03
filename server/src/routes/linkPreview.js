@@ -5,6 +5,7 @@ import dns from 'node:dns/promises';
 import net from 'node:net';
 
 const router = Router();
+let spotifyAppToken = null;
 const privateV4 = /^(127\.|10\.|0\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/;
 function isPrivateHost(host) { return host === 'localhost' || privateV4.test(host) || host === '::1' || host.startsWith('fc') || host.startsWith('fd'); }
 async function safeUrl(value) {
@@ -27,6 +28,27 @@ function youtubeVideo(url) {
   return { title: 'YouTube video', description: 'Watch on YouTube', previewImage: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, favicon: 'https://www.youtube.com/favicon.ico', siteName: 'YouTube', provider: 'youtube', videoId: id, embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0` };
 }
 
+async function spotifyCatalogPreview(mediaType, providerId) {
+  if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) return {};
+  try {
+    if (!spotifyAppToken || Date.now() >= spotifyAppToken.expiresAt - 60_000) {
+      const token = await axios.post('https://accounts.spotify.com/api/token', 'grant_type=client_credentials', {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        auth: { username: process.env.SPOTIFY_CLIENT_ID, password: process.env.SPOTIFY_CLIENT_SECRET },
+        timeout: 5_000
+      });
+      spotifyAppToken = { value: token.data.access_token, expiresAt: Date.now() + token.data.expires_in * 1000 };
+    }
+    const collection = { track: 'tracks', album: 'albums', playlist: 'playlists', episode: 'episodes', show: 'shows', artist: 'artists' }[mediaType];
+    const response = await axios.get(`https://api.spotify.com/v1/${collection}/${providerId}`, { headers: { Authorization: `Bearer ${spotifyAppToken.value}` }, timeout: 5_000 });
+    const data = response.data;
+    const artists = data.artists?.length ? data.artists : data.show?.publisher ? [{ name: data.show.publisher }] : [];
+    return { title: data.name, description: artists.map((artist) => artist.name).filter(Boolean).join(', '), previewImage: (data.album?.images || data.images || data.show?.images || [])[0]?.url };
+  } catch {
+    return {};
+  }
+}
+
 async function spotifyEmbed(url) {
   const host = url.hostname.replace(/^www\./, '').toLowerCase();
   if (host !== 'open.spotify.com') return null;
@@ -40,13 +62,14 @@ async function spotifyEmbed(url) {
   } catch {
     // The playable embed remains available even if Spotify's optional oEmbed preview is unavailable.
   }
+  const catalog = await spotifyCatalogPreview(mediaType, providerId);
   return {
-    title: preview.title || `Spotify ${label}`,
-    description: `Play this ${mediaType} in Spotify.`,
+    title: catalog.title || preview.title || `Spotify ${label}`,
+    description: catalog.description || `Play this ${mediaType} in Spotify.`,
     favicon: 'https://open.spotify.com/favicon.ico',
     siteName: 'Spotify',
     provider: 'spotify',
-    previewImage: preview.previewImage || '', providerId,
+    previewImage: catalog.previewImage || preview.previewImage || '', providerId,
     mediaType,
     embedUrl: `https://open.spotify.com/embed/${mediaType}/${providerId}?utm_source=generator`
   };
