@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 const WIDTH = 1440;
@@ -26,42 +26,15 @@ export default function InkLayer({ canvasRef }) {
   const lastPreview = useRef(0);
   const [draft, setDraft] = useState(null);
   const [draftText, setDraftText] = useState(null);
-  const [surface, setSurface] = useState({ width: WIDTH, height: HEIGHT });
   const textInput = useRef(null);
-
-  useEffect(() => {
-    const node = canvasRef.current;
-    if (!node) return undefined;
-    const updateSurface = () => {
-      const rect = node.getBoundingClientRect();
-      setSurface({ width: rect.width || WIDTH, height: rect.height || HEIGHT });
-    };
-    updateSurface();
-    const observer = new ResizeObserver(updateSurface);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [canvasRef]);
-
-  function drawingPlane(width = surface.width, height = surface.height) {
-    const scale = Math.min(width / WIDTH, height / HEIGHT);
-    const planeWidth = WIDTH * scale;
-    const planeHeight = HEIGHT * scale;
-    return { scale, offsetX: (width - planeWidth) / 2, offsetY: (height - planeHeight) / 2 };
-  }
-
-  function screenPoint(point) {
-    const plane = drawingPlane();
-    return { left: plane.offsetX + point.x * plane.scale, top: plane.offsetY + point.y * plane.scale, scale: plane.scale };
-  }
 
   function logicalPoint(event) {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return null;
-    const plane = drawingPlane(rect.width, rect.height);
-    const x = (event.clientX - rect.left - plane.offsetX) / plane.scale;
-    const y = (event.clientY - rect.top - plane.offsetY) / plane.scale;
-    if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) return null;
-    return { x, y };
+    return {
+      x: Math.max(0, Math.min(WIDTH, ((event.clientX - rect.left) / rect.width) * WIDTH)),
+      y: Math.max(0, Math.min(HEIGHT, ((event.clientY - rect.top) / rect.height) * HEIGHT))
+    };
   }
 
   function eraseAt(point) {
@@ -123,22 +96,16 @@ export default function InkLayer({ canvasRef }) {
   }
 
   return <div className={`ink-layer ${tool !== 'select' ? 'active' : ''}`} aria-label='Desktop drawing surface' onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio='xMidYMid meet' aria-hidden='true'>
+    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio='none' aria-hidden='true'>
       {strokes.map((stroke) => <path key={stroke._id} d={path(stroke.points)} stroke={stroke.color} strokeWidth={stroke.width} strokeOpacity={stroke.opacity || 1} fill='none' strokeLinecap='round' strokeLinejoin='round' />)}
       {Object.entries(remoteInk).map(([id, stroke]) => <path key={id} d={path(stroke.points)} stroke={stroke.color} strokeWidth={stroke.width} strokeOpacity={stroke.opacity || 1} fill='none' strokeLinecap='round' strokeLinejoin='round' />)}
       {draft && <path d={path(draft.points)} stroke={draft.color} strokeWidth={draft.width} fill='none' strokeLinecap='round' strokeLinejoin='round' />}
     </svg>
     <div className='desktop-text-layer' aria-live='polite'>
-      {texts.map((text) => {
-        const point = screenPoint(text);
-        return <p key={text._id} className='desktop-text' style={{ left: `${point.left}px`, top: `${point.top}px`, color: text.color, fontSize: `${Math.max(12, text.size * point.scale)}px` }}>{text.text}</p>;
-      })}
-      {draftText && (() => {
-        const point = screenPoint(draftText);
-        return <form className='desktop-text-editor' style={{ left: `${point.left}px`, top: `${point.top}px`, color: pen.color, fontSize: `${Math.max(12, Math.max(16, pen.width * 3) * point.scale)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
+      {texts.map((text) => <p key={text._id} className='desktop-text' style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%`, color: text.color, fontSize: `${text.size}px` }}>{text.text}</p>)}
+      {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: pen.color, fontSize: `${Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
           <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here...' rows={1} />
-        </form>;
-      })()}
+      </form>}
     </div>
   </div>;
 }

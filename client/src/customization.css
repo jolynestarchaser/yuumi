@@ -76,4 +76,5 @@
 @media (max-width: 767px) {
   .trash-bin { top: 60px; right: 10px; bottom: auto; }
   .toast-region { top: 128px; right: 10px; bottom: auto; }
+  .pen-colors button { width: 22px; min-width: 22px; min-height: 22px; height: 22px; padding: 0; aspect-ratio: 1; }
 }
