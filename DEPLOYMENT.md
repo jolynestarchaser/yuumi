@@ -22,7 +22,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 
 ## 2. Deploy the frontend to Vercel
 
-1. Import the same repository into Vercel. The root `vercel.json` builds `client/` and publishes `client/dist`.
+1. Import the same repository into Vercel and set **Root Directory** to `client`. The `client/vercel.json` installs dependencies, builds Vite, and publishes `dist`.
 2. Add these Production environment variables:
 
    ```text
