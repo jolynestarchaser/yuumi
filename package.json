@@ -1,0 +1,14 @@
+{
+  "name": "yuuandmi-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently --kill-others-on-fail --names client,server --prefix-colors cyan,magenta \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "dev": "npm run start",
+    "build": "npm run build --prefix client",
+    "test": "npm test --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
