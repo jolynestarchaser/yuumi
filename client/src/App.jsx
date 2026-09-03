@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { FolderPlus, Link2, Music2, NotebookPen, Upload } from 'lucide-react';
+import { AudioLines, File, FileImage, Folder, FolderPlus, Link2, Music2, NotebookPen, StickyNote, Upload, Video } from 'lucide-react';
 import { useAuthStore } from './store/authStore.js';
 import { useDesktopStore } from './store/desktopStore.js';
 import { api } from './lib/api.js';
@@ -13,6 +13,26 @@ import PenToolbar from './components/PenToolbar.jsx';
 import ToastRegion from './components/ToastRegion.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
 import TrashDialog from './components/TrashDialog.jsx';
+
+const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File };
+
+function MinimizedWindowButton({ item, window, onRestore }) {
+  const appearance = item?.appearance || {};
+  const thumbnail = appearance.iconType === 'image'
+    ? appearance.iconValue
+    : item?.type === 'image'
+      ? item.asset?.thumbnailUrl || item.asset?.secureUrl
+      : item?.type === 'video'
+        ? item.asset?.thumbnailUrl
+        : item?.type === 'link'
+          ? item.metadata?.previewImage
+          : null;
+  const Icon = minimizedIcons[item?.type] || File;
+  return <button className='dock-window-item' title={`Restore ${item?.name || 'window'}`} onClick={() => onRestore(window)}>
+    <span className='dock-window-visual'>{thumbnail ? <img src={thumbnail} alt='' /> : appearance.iconType === 'emoji' ? appearance.iconValue : <Icon />}</span>
+    <span>{item?.name || 'Restore'}</span>
+  </button>;
+}
 
 function DesktopPage() {
   const s = useDesktopStore();
@@ -103,7 +123,7 @@ function DesktopPage() {
       <button onClick={newNote}><NotebookPen /><span>Note</span></button>
       <button onClick={() => setLinkOpen(true)}><Link2 /><span>Add URL</span></button>
       <button onClick={() => fileInput.current.click()}><Upload /><span>Upload</span></button>
-      {s.windows.filter((window) => window.minimized).map((window) => { const item = s.items.find((row) => row._id === window.itemId); return <button key={window.itemId} title={`Restore ${item?.name || 'window'}`} onClick={() => s.updateWindow(window, { minimized: false })}><Music2 /><span>{item?.name || 'Restore'}</span></button>; })}
+      {s.windows.filter((window) => window.minimized).map((window) => <MinimizedWindowButton key={window.itemId} window={window} item={s.items.find((row) => row._id === window.itemId)} onRestore={(value) => s.updateWindow(value, { minimized: false })} />)}
       <input ref={fileInput} hidden type='file' multiple onChange={(event) => uploadFiles([...event.target.files])} />
     </nav>
     {uploads.length > 0 && <aside className='upload-queue'>{uploads.map((upload) => <p key={upload.task}>{upload.name}<span>{upload.status}</span></p>)}</aside>}
