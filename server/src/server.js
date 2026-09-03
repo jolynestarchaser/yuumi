@@ -11,6 +11,7 @@ import desktopSettingsRoutes from './routes/desktopSettings.js';
 import desktopWindowRoutes from './routes/desktopWindows.js';
 import desktopStrokeRoutes from './routes/desktopStrokes.js';
 import desktopTextRoutes from './routes/desktopTexts.js';
+import spotifyRoutes from './routes/spotify.js';
 import { setupRealtime } from './realtime.js';
 import { errorHandler, notFound } from './middleware/error.js';
 
@@ -28,6 +29,7 @@ app.use('/api/settings/desktop', desktopSettingsRoutes);
 app.use('/api/desktop/windows', desktopWindowRoutes);
 app.use('/api/desktop/strokes', desktopStrokeRoutes);
 app.use('/api/desktop/texts', desktopTextRoutes);
+app.use('/api/spotify', spotifyRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

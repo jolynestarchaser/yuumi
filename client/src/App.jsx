@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AudioLines, File, FileImage, Folder, FolderPlus, Link2, Music2, NotebookPen, StickyNote, Upload, Video } from 'lucide-react';
 import { useAuthStore } from './store/authStore.js';
 import { useDesktopStore } from './store/desktopStore.js';
-import { api } from './lib/api.js';
+import { api, apiOrigin } from './lib/api.js';
 import LoginPage from './components/LoginPage.jsx';
 import DesktopCanvas from './components/DesktopCanvas.jsx';
 import AddLinkDialog from './components/AddLinkDialog.jsx';
@@ -42,6 +42,7 @@ function DesktopPage() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [trashOpen, setTrashOpen] = useState(false);
   const [uploads, setUploads] = useState([]);
+  const [spotify, setSpotify] = useState({ configured: false, connected: false });
 
   function requestMessage(error, fallback) {
     return error.response?.data?.error?.message || fallback;
@@ -60,6 +61,7 @@ function DesktopPage() {
     s.fetchStrokes().catch(() => {});
     s.fetchTexts().catch(() => {});
     s.connectRealtime();
+    api.get('/spotify/status').then(({ data }) => setSpotify(data.data)).catch(() => {});
   }, []);
 
   async function addLink(url, position = { x: 180, y: 120 }) {
@@ -113,7 +115,7 @@ function DesktopPage() {
     <header className='topbar'>
       <div className='window-controls' aria-hidden='true'><i /><i /><i /></div>
       <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span></div>
-      <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
+      <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><button disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
     </header>
     <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} trashCount={s.trashItems.length} onTrashOpen={() => setTrashOpen(true)} />
     <WindowManager />
