@@ -4,8 +4,13 @@ import { v2 as cloudinary } from 'cloudinary';
 import Item from '../models/Item.js';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
+const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+
+function assertCloudinaryConfigured() {
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) throw new Error('Image uploads are not configured on the server.');
+}
 
 function uploadBuffer(file, resourceType) {
   return new Promise((resolve, reject) => {
@@ -21,8 +26,9 @@ function itemTypeFor(file) {
 }
 function resourceTypeFor(type) { return type === 'image' ? 'image' : type === 'file' ? 'raw' : 'video'; }
 function handleMedia(type, allowed) {
-  return async (req, res) => {
+  return asyncRoute(async (req, res) => {
     if (!req.file || !allowed.includes(req.file.mimetype)) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: `Choose a supported ${type} file.` } });
+    assertCloudinaryConfigured();
     const result = await uploadBuffer(req.file, resourceTypeFor(type));
     try {
       const item = await Item.create({
@@ -31,14 +37,17 @@ function handleMedia(type, allowed) {
         asset: { publicId: result.public_id, url: result.url, secureUrl: result.secure_url, thumbnailUrl: result.eager?.[0]?.secure_url, originalName: req.file.originalname, extension: req.file.originalname.split('.').pop(), resourceType: resourceTypeFor(type), mimeType: req.file.mimetype, bytes: result.bytes, width: result.width, height: result.height, duration: result.duration }
       });
       res.status(201).json({ success: true, data: item });
-    } catch (error) { await cloudinary.uploader.destroy(result.public_id, { resource_type: resourceTypeFor(type) }); throw error; }
-  };
+    } catch (error) {
+      try { await cloudinary.uploader.destroy(result.public_id, { resource_type: resourceTypeFor(type) }); } catch { /* Preserve the original database error. */ }
+      throw error;
+    }
+  });
 }
 router.post('/image', upload.single('file'), handleMedia('image', ['image/jpeg', 'image/png', 'image/webp', 'image/gif']));
 router.post('/video', upload.single('file'), handleMedia('video', ['video/mp4', 'video/webm']));
-router.post('/file', upload.single('file'), async (req, res) => {
+router.post('/file', upload.single('file'), asyncRoute(async (req, res, next) => {
   if (!req.file) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Choose a file to upload.' } });
   const type = itemTypeFor(req.file);
-  return handleMedia(type, [req.file.mimetype])(req, res);
-});
+  return handleMedia(type, [req.file.mimetype])(req, res, next);
+}));
 export default router;
