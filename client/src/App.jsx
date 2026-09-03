@@ -24,6 +24,10 @@ function DesktopPage() {
   const [trashOpen, setTrashOpen] = useState(false);
   const [uploads, setUploads] = useState([]);
 
+  function requestMessage(error, fallback) {
+    return error.response?.data?.error?.message || fallback;
+  }
+
   useEffect(() => {
     s.fetchItems();
     s.fetchTrash().catch(() => {});
@@ -34,8 +38,14 @@ function DesktopPage() {
   }, []);
 
   async function addLink(url, position = { x: 180, y: 120 }) {
-    const { data } = await api.post('/link-preview', { url: url.trim() });
-    return s.createItem({ name: data.data.title, type: 'link', url: data.data.url, metadata: data.data, parentId: null, position });
+    try {
+      const { data } = await api.post('/link-preview', { url: url.trim() });
+      return await s.createItem({ name: data.data.title, type: 'link', url: data.data.url, metadata: data.data, parentId: null, position });
+    } catch (error) {
+      const message = requestMessage(error, 'This URL could not be added.');
+      s.pushToast(message, 'error');
+      throw new Error(message);
+    }
   }
 
   async function uploadFiles(files, position = { x: 180, y: 120 }) {
@@ -52,8 +62,9 @@ function DesktopPage() {
         useDesktopStore.setState((state) => ({ items: [...state.items, data.data] }));
         s.socket?.emit('desktop:broadcast', { type: 'item:created', payload: data.data });
         setUploads((state) => state.map((row) => row.task === task ? { ...row, status: 'Done' } : row));
-      } catch {
+      } catch (error) {
         setUploads((state) => state.map((row) => row.task === task ? { ...row, status: 'Failed' } : row));
+        s.pushToast(`${file.name}: ${requestMessage(error, 'Upload failed.')}`, 'error');
       }
     }
   }
