@@ -4,7 +4,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 
 ## 1. Deploy the API to Railway
 
-1. Create a Railway project from this repository. Railway reads the root `railway.json`.
+1. Create a Railway project from this repository. Set **Root Directory** to `server`; Railway reads `server/.nvmrc` and `server/railway.json`, then uses Node 20.18.1 as required by the server's Cheerio dependency.
 2. Add the following Railway service variables. Do not commit these values:
 
    ```text
