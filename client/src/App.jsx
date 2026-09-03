@@ -12,6 +12,8 @@ import WindowManager from './components/WindowManager.jsx';
 import PenToolbar from './components/PenToolbar.jsx';
 import ToastRegion from './components/ToastRegion.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
+import TrashBin from './components/TrashBin.jsx';
+import TrashDialog from './components/TrashDialog.jsx';
 
 function DesktopPage() {
   const s = useDesktopStore();
@@ -19,10 +21,12 @@ function DesktopPage() {
   const fileInput = useRef();
   const [linkOpen, setLinkOpen] = useState(false);
   const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const [trashOpen, setTrashOpen] = useState(false);
   const [uploads, setUploads] = useState([]);
 
   useEffect(() => {
     s.fetchItems();
+    s.fetchTrash().catch(() => {});
     s.fetchWindows();
     s.fetchSettings().catch(() => {});
     s.fetchStrokes().catch(() => {});
@@ -76,6 +80,7 @@ function DesktopPage() {
       <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
     </header>
     <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} />
+    <TrashBin count={s.trashItems.length} onOpen={() => setTrashOpen(true)} />
     <WindowManager />
     <PenToolbar />
     <nav className='dock' aria-label='Desktop actions'>
@@ -89,6 +94,7 @@ function DesktopPage() {
     {uploads.length > 0 && <aside className='upload-queue'>{uploads.map((upload) => <p key={upload.task}>{upload.name}<span>{upload.status}</span></p>)}</aside>}
     {linkOpen && <AddLinkDialog onAdd={addLink} onClose={() => setLinkOpen(false)} />}
     {appearanceOpen && <AppearancePanel settings={s.settings} onSave={s.saveSettings} onUpload={s.uploadSettingAsset} onClose={() => setAppearanceOpen(false)} />}
+    {trashOpen && <TrashDialog onClose={() => setTrashOpen(false)} />}
     <ContextMenu onAddLink={() => setLinkOpen(true)} />
     <ToastRegion />
     <CustomCursor cursor={s.settings.cursor} />

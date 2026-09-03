@@ -22,6 +22,11 @@ const itemSchema = new mongoose.Schema(
     type: { type: String, required: true, enum: ['folder', 'image', 'video', 'audio', 'link', 'note', 'file'] },
     parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', default: null },
     position: { x: { type: Number, default: 0, min: 0 }, y: { type: Number, default: 0, min: 0 }, revision: { type: Number, default: 0, min: 0 } },
+    deletedAt: { type: Date, default: null },
+    deletedFrom: {
+      parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', default: null },
+      position: { x: Number, y: Number }
+    },
     size: { width: Number, height: Number },
     content: { type: String, maxlength: 10000, required: [function requiresContent() { return this.type === 'note'; }, 'A note requires content'] },
     url: { type: String, required: [function requiresUrl() { return this.type === 'link'; }, 'A link requires a URL'] },
@@ -32,6 +37,7 @@ const itemSchema = new mongoose.Schema(
 );
 itemSchema.index({ parentId: 1 });
 itemSchema.index({ parentId: 1, type: 1 });
+itemSchema.index({ deletedAt: 1 });
 itemSchema.index({ createdBy: 1 });
 
 itemSchema.pre('validate', function validateItem(next) {

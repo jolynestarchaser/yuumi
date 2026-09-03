@@ -9,7 +9,7 @@ export default function ContextMenu({ onAddLink }) {
   const clear = useDesktopStore((state) => state.setContextMenu);
   const create = useDesktopStore((state) => state.createItem);
   const update = useDesktopStore((state) => state.updateItem);
-  const remove = useDesktopStore((state) => state.deleteItem);
+  const remove = useDesktopStore((state) => state.trashItem);
   const move = useDesktopStore((state) => state.moveItem);
   const open = useDesktopStore((state) => state.openWindow);
   const [action, setAction] = useState(null);
@@ -41,7 +41,7 @@ export default function ContextMenu({ onAddLink }) {
         <button onClick={() => beginAction('rename')}>Rename</button>
         <button onClick={() => beginAction('icon')}>Change icon / thumbnail</button>
         {item.parentId && <button onClick={() => { move(item._id, null, { x: 60, y: 60 }); clear(null); }}>Move to desktop</button>}
-        <button className='danger' onClick={() => beginAction('delete')}>Delete</button>
+        <button className='danger' onClick={() => beginAction('delete')}>Move to Trash</button>
       </> : <>
         <button onClick={newFolder}>New folder</button>
         <button onClick={newNote}>New note</button>
@@ -55,6 +55,6 @@ export default function ContextMenu({ onAddLink }) {
       </form>
     </GlassDialog>}
     {action?.type === 'icon' && <IconPickerDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}
-    {action?.type === 'delete' && <ConfirmDialog title='Delete item?' message={`${action.item.name} will be removed from the shared desktop.`} onClose={() => setAction(null)} onConfirm={async () => { await remove(action.item._id); setAction(null); }} />}
+    {action?.type === 'delete' && <ConfirmDialog title='Move item to Trash?' confirmLabel='Move to Trash' message={`${action.item.name} can be restored from Trash later.`} onClose={() => setAction(null)} onConfirm={async () => { await remove(action.item._id); setAction(null); }} />}
   </>;
 }

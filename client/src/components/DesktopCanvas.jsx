@@ -9,6 +9,7 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
   const selectedId = useDesktopStore((state) => state.selectedId);
   const select = useDesktopStore((state) => state.setSelected);
   const move = useDesktopStore((state) => state.moveItem);
+  const trashItem = useDesktopStore((state) => state.trashItem);
   const previewMove = useDesktopStore((state) => state.previewMove);
   const openWindow = useDesktopStore((state) => state.openWindow);
   const context = useDesktopStore((state) => state.setContextMenu);
@@ -33,6 +34,7 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
   async function drop({ active, over, delta }) {
     const item = active.data.current.item;
     if (!item) return;
+    if (over?.id === 'trash') return trashItem(item._id);
     const folderId = String(over?.id || '').startsWith('folder:') ? String(over.id).slice(7) : null;
     if (folderId && folderId !== item._id) return move(item._id, folderId, { x: 32, y: 32 });
     const rect = canvas.current.getBoundingClientRect();
@@ -56,7 +58,7 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
       const item = rootItems.find((row) => row._id === selectedId);
       if (event.key === 'Escape') { setTool('select'); select(null); context(null); }
       if (tool === 'select' && item && event.key === 'Enter') openWindow(item);
-      if (tool === 'select' && item && event.key === 'Delete') useDesktopStore.getState().deleteItem(item._id);
+      if (tool === 'select' && item && event.key === 'Delete') useDesktopStore.getState().trashItem(item._id);
     };
     globalThis.window.addEventListener('keydown', keydown);
     return () => globalThis.window.removeEventListener('keydown', keydown);

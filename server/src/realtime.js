@@ -17,7 +17,7 @@ async function ensureFolder(parentId) {
   if (parentId == null) return null;
   if (!mongoose.isValidObjectId(parentId)) throw new Error('Invalid destination folder');
   const folder = await Item.findById(parentId);
-  if (!folder || folder.type !== 'folder') throw new Error('Destination must be a folder');
+  if (!folder || folder.deletedAt || folder.type !== 'folder') throw new Error('Destination must be a folder');
   return folder;
 }
 
@@ -37,7 +37,7 @@ export function setupRealtime(io) {
     socket.on('desktop:join', async () => {
       socket.join(room);
       const [items, windows, strokes, settings] = await Promise.all([
-        Item.find({ parentId: null }).sort({ updatedAt: -1 }),
+        Item.find({ parentId: null, deletedAt: null }).sort({ updatedAt: -1 }),
         DesktopWindow.find().sort({ z: 1 }),
         DesktopStroke.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(2000),
         DesktopSettings.findOne({ key: 'shared-desktop' })
@@ -54,7 +54,7 @@ export function setupRealtime(io) {
     socket.on('item:commit', async ({ id, parentId = null, position, revision }, ack = () => {}) => {
       if (!finitePosition(position)) return ack({ ok: false, message: 'Invalid position' });
       try {
-        const item = await Item.findById(id); if (!item) return ack({ ok: false, message: 'Item not found' });
+        const item = await Item.findById(id); if (!item) return ack({ ok: false, message: 'Item not found' }); if (item.deletedAt) return ack({ ok: false, message: 'Item is in Trash' });
         await ensureFolder(parentId);
         if (item.type === 'folder' && await wouldCreateCycle(item, parentId)) return ack({ ok: false, message: 'A folder cannot contain itself' });
         if ((item.position.revision || 0) !== revision) return ack({ ok: false, stale: true, item });
