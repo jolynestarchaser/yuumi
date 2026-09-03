@@ -3,7 +3,8 @@ import { io } from 'socket.io-client';
 import { api } from '../lib/api.js';
 
 const defaultSettings = { wallpaper: { type: 'preset', value: 'neon', colors: ['#b6ff00', '#2453ff'], angle: 135, fit: 'cover', position: { x: 50, y: 50 }, backgroundColor: '#06113e', dimness: 18, blur: 0, brightness: 100, saturation: 100 }, iconTheme: 'soft', cursor: { enabled: true, style: 'orb', shape: 'arrow', color: '#b6ff00' }, snapToGrid: false };
-const apiOrigin = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api\/?$/, '');
+const defaultApiUrl = import.meta.env.PROD ? 'https://yuumi-production.up.railway.app/api' : 'http://localhost:5000/api';
+const apiOrigin = (import.meta.env.VITE_API_URL || defaultApiUrl).replace(/\/api\/?$/, '');
 
 export const useDesktopStore = create((set, get) => ({
   items: [], windows: [], strokes: [], remoteInk: {}, selectedId: null, loading: false, contextMenu: null, settings: defaultSettings, socket: null, connected: false, playingId: null,

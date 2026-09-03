@@ -26,7 +26,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 2. Add these Production environment variables:
 
    ```text
-   VITE_API_URL=https://<api-domain>/api
+   VITE_API_URL=https://yuumi-production.up.railway.app/api
    VITE_DESKTOP_PIN=<shared four-digit PIN>
    ```
 
