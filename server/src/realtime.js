@@ -3,6 +3,7 @@ import Item from './models/Item.js';
 import DesktopWindow from './models/DesktopWindow.js';
 import DesktopSettings from './models/DesktopSettings.js';
 import DesktopStroke from './models/DesktopStroke.js';
+import DesktopText from './models/DesktopText.js';
 
 const locks = new Map();
 const room = 'shared-desktop';
@@ -12,6 +13,9 @@ const validColor = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.tes
 const validStroke = (stroke) => stroke && Array.isArray(stroke.points) && stroke.points.length >= 2 && stroke.points.length <= 4000
   && stroke.points.every((point) => Number.isFinite(point.x) && Number.isFinite(point.y) && point.x >= 0 && point.x <= 1440 && point.y >= 0 && point.y <= 900)
   && validColor(stroke.color) && Number.isFinite(stroke.width) && stroke.width >= 1 && stroke.width <= 32;
+const validText = (text) => text && typeof text.text === 'string' && text.text.trim().length <= 1000 && text.text.trim().length > 0
+  && Number.isFinite(text.x) && text.x >= 0 && text.x <= 1440 && Number.isFinite(text.y) && text.y >= 0 && text.y <= 900
+  && validColor(text.color) && Number.isFinite(text.size) && text.size >= 12 && text.size <= 64;
 
 async function ensureFolder(parentId) {
   if (parentId == null) return null;
@@ -36,13 +40,14 @@ export function setupRealtime(io) {
   io.on('connection', (socket) => {
     socket.on('desktop:join', async () => {
       socket.join(room);
-      const [items, windows, strokes, settings] = await Promise.all([
+      const [items, windows, strokes, texts, settings] = await Promise.all([
         Item.find({ parentId: null, deletedAt: null }).sort({ updatedAt: -1 }),
         DesktopWindow.find().sort({ z: 1 }),
         DesktopStroke.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(2000),
+        DesktopText.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(500),
         DesktopSettings.findOne({ key: 'shared-desktop' })
       ]);
-      socket.emit('desktop:snapshot', { items, windows, strokes, settings });
+      socket.emit('desktop:snapshot', { items, windows, strokes, texts, settings });
       socket.to(room).emit('presence:changed', { id: socket.id, online: true });
     });
     socket.on('item:lock', ({ id }, ack = () => {}) => {
@@ -94,6 +99,22 @@ export function setupRealtime(io) {
     socket.on('ink:clear', async (_payload, ack = () => {}) => {
       await DesktopStroke.deleteMany({ desktopKey: 'shared-desktop' });
       io.to(room).emit('ink:cleared');
+      ack({ ok: true });
+    });
+    socket.on('text:commit', async (annotation, ack = () => {}) => {
+      if (!validText(annotation)) return ack({ ok: false, message: 'Invalid desktop text' });
+      try {
+        const saved = await DesktopText.create({ ...annotation, text: annotation.text.trim(), desktopKey: 'shared-desktop', createdBy: socket.id });
+        io.to(room).emit('text:created', saved);
+        ack({ ok: true, text: saved });
+      } catch (error) {
+        ack({ ok: false, message: error.message || 'Text could not be saved' });
+      }
+    });
+    socket.on('text:delete', async ({ id }, ack = () => {}) => {
+      if (!mongoose.isValidObjectId(id)) return ack({ ok: false, message: 'Invalid text ID' });
+      await DesktopText.deleteOne({ _id: id, desktopKey: 'shared-desktop' });
+      io.to(room).emit('text:deleted', { id });
       ack({ ok: true });
     });
     socket.on('window:commit', async ({ itemId, patch, revision }, ack = () => {}) => {

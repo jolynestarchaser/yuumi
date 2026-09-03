@@ -19,9 +19,14 @@ export default function InkLayer({ canvasRef }) {
   const endPreview = useDesktopStore((state) => state.endStrokePreview);
   const commit = useDesktopStore((state) => state.commitStroke);
   const erase = useDesktopStore((state) => state.eraseStrokes);
+  const texts = useDesktopStore((state) => state.texts);
+  const commitText = useDesktopStore((state) => state.commitText);
+  const eraseTexts = useDesktopStore((state) => state.eraseTexts);
   const active = useRef([]);
   const lastPreview = useRef(0);
   const [draft, setDraft] = useState(null);
+  const [draftText, setDraftText] = useState(null);
+  const textInput = useRef(null);
 
   function logicalPoint(event) {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -32,6 +37,14 @@ export default function InkLayer({ canvasRef }) {
   function eraseAt(point) {
     const ids = strokes.filter((stroke) => nearStroke(stroke, point)).map((stroke) => stroke._id);
     if (ids.length) erase(ids);
+    const textIds = texts.filter((text) => point.x >= text.x - 14 && point.x <= text.x + Math.max(70, text.text.length * text.size * 0.64) && point.y >= text.y - text.size && point.y <= text.y + text.size).map((text) => text._id);
+    if (textIds.length) eraseTexts(textIds);
+  }
+
+  function saveText() {
+    const annotation = draftText && { text: draftText.value.trim(), x: draftText.x, y: draftText.y, color: pen.color, size: Math.max(16, pen.width * 3) };
+    setDraftText(null);
+    if (annotation?.text) commitText(annotation);
   }
 
   function down(event) {
@@ -41,12 +54,17 @@ export default function InkLayer({ canvasRef }) {
     const point = logicalPoint(event);
     if (!point) return;
     if (tool === 'eraser') return eraseAt(point);
+    if (tool === 'text') {
+      setDraftText({ ...point, value: '' });
+      requestAnimationFrame(() => textInput.current?.focus());
+      return;
+    }
     active.current = [point];
     setDraft({ points: active.current, color: pen.color, width: pen.width, opacity: 1 });
   }
 
   function move(event) {
-    if (tool === 'select') return;
+    if (tool === 'select' || tool === 'text') return;
     const point = logicalPoint(event);
     if (!point) return;
     if (tool === 'eraser') {
@@ -66,7 +84,7 @@ export default function InkLayer({ canvasRef }) {
   }
 
   function up() {
-    if (tool === 'select' || tool === 'eraser') return;
+    if (tool === 'select' || tool === 'eraser' || tool === 'text') return;
     const stroke = { points: active.current, color: pen.color, width: pen.width, opacity: 1 };
     active.current = [];
     setDraft(null);
@@ -80,5 +98,11 @@ export default function InkLayer({ canvasRef }) {
       {Object.entries(remoteInk).map(([id, stroke]) => <path key={id} d={path(stroke.points)} stroke={stroke.color} strokeWidth={stroke.width} strokeOpacity={stroke.opacity || 1} fill='none' strokeLinecap='round' strokeLinejoin='round' />)}
       {draft && <path d={path(draft.points)} stroke={draft.color} strokeWidth={draft.width} fill='none' strokeLinecap='round' strokeLinejoin='round' />}
     </svg>
+    <div className='desktop-text-layer' aria-live='polite'>
+      {texts.map((text) => <p key={text._id} className='desktop-text' style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%`, color: text.color, fontSize: `${text.size}px` }}>{text.text}</p>)}
+      {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: pen.color, fontSize: `${Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
+        <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here…' rows={1} />
+      </form>}
+    </div>
   </div>;
 }

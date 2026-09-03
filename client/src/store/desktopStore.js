@@ -7,20 +7,21 @@ const defaultApiUrl = import.meta.env.PROD ? 'https://yuumi-production.up.railwa
 const apiOrigin = (import.meta.env.VITE_API_URL || defaultApiUrl).replace(/\/api\/?$/, '');
 
 export const useDesktopStore = create((set, get) => ({
-  items: [], trashItems: [], windows: [], strokes: [], remoteInk: {}, selectedId: null, loading: false, contextMenu: null, settings: defaultSettings, socket: null, connected: false, playingId: null,
+  items: [], trashItems: [], windows: [], strokes: [], texts: [], remoteInk: {}, selectedId: null, loading: false, contextMenu: null, settings: defaultSettings, socket: null, connected: false, playingId: null,
   tool: 'select', penSettings: { color: '#b6ff00', width: 5 }, toasts: [],
   fetchItems: async (parentId = 'root') => { set({ loading: true }); try { const { data } = await api.get('/items', { params: { parentId } }); set({ items: data.data }); } finally { set({ loading: false }); } },
   fetchTrash: async () => { const { data } = await api.get('/items', { params: { scope: 'trash' } }); set({ trashItems: data.data }); return data.data; },
   fetchWindows: async () => { const { data } = await api.get('/desktop/windows'); set({ windows: data.data }); },
   fetchSettings: async () => { const { data } = await api.get('/settings/desktop'); set({ settings: data.data }); },
   fetchStrokes: async () => { const { data } = await api.get('/desktop/strokes'); set({ strokes: data.data }); },
+  fetchTexts: async () => { const { data } = await api.get('/desktop/texts'); set({ texts: data.data }); },
   fetchFolderItems: async (parentId) => { const { data } = await api.get('/items', { params: { parentId } }); set((state) => ({ items: [...state.items.filter((item) => String(item.parentId || '') !== String(parentId)), ...data.data] })); return data.data; },
   connectRealtime: () => {
     if (get().socket) return;
     const socket = io(apiOrigin, { reconnection: true, reconnectionDelay: 800, reconnectionDelayMax: 8000 });
     socket.on('connect', () => { set({ connected: true }); socket.emit('desktop:join'); });
     socket.on('disconnect', () => set({ connected: false }));
-    socket.on('desktop:snapshot', ({ items, windows, strokes, settings }) => set((state) => ({ items: [...state.items.filter((item) => item.parentId), ...items], windows, strokes: strokes || [], settings: settings || state.settings })));
+    socket.on('desktop:snapshot', ({ items, windows, strokes, texts, settings }) => set((state) => ({ items: [...state.items.filter((item) => item.parentId), ...items], windows, strokes: strokes || [], texts: texts || [], settings: settings || state.settings })));
     socket.on('item:preview', ({ id, position }) => set((state) => ({ items: state.items.map((item) => item._id === id ? { ...item, position: { ...item.position, ...position } } : item) })));
     socket.on('item:updated', (item) => set((state) => ({ items: state.items.some((row) => row._id === item._id) ? state.items.map((row) => row._id === item._id ? item : row) : [...state.items, item] })));
     socket.on('item:created', (item) => set((state) => ({ items: state.items.some((row) => row._id === item._id) ? state.items : [...state.items, item] })));
@@ -34,6 +35,8 @@ export const useDesktopStore = create((set, get) => ({
     socket.on('ink:created', (stroke) => set((state) => ({ strokes: state.strokes.some((row) => row._id === stroke._id) ? state.strokes : [...state.strokes, stroke] })));
     socket.on('ink:deleted', ({ ids }) => set((state) => ({ strokes: state.strokes.filter((stroke) => !ids.includes(stroke._id)) })));
     socket.on('ink:cleared', () => set({ strokes: [], remoteInk: {} }));
+    socket.on('text:created', (text) => set((state) => ({ texts: state.texts.some((row) => row._id === text._id) ? state.texts : [...state.texts, text] })));
+    socket.on('text:deleted', ({ id }) => set((state) => ({ texts: state.texts.filter((text) => text._id !== id) })));
     set({ socket });
   },
   createItem: async (payload) => { const { data } = await api.post('/items', payload); set((state) => ({ items: state.items.some((item) => item._id === data.data._id) ? state.items : [...state.items, data.data] })); get().socket?.emit('desktop:broadcast', { type: 'item:created', payload: data.data }); return data.data; },
@@ -57,6 +60,8 @@ export const useDesktopStore = create((set, get) => ({
   commitStroke: async (stroke) => { const socket = get().socket; if (socket?.connected) return new Promise((resolve) => socket.emit('ink:commit', stroke, (result) => { if (result?.stroke) set((state) => ({ strokes: [...state.strokes, result.stroke] })); if (!result?.ok) get().pushToast(result?.message || 'The stroke could not be saved.', 'error'); resolve(result); })); const { data } = await api.post('/desktop/strokes', stroke); set((state) => ({ strokes: [...state.strokes, data.data] })); },
   eraseStrokes: async (ids) => { if (!ids.length) return; const socket = get().socket; if (socket?.connected) socket.emit('ink:erase', { ids }); else await Promise.all(ids.map((id) => api.delete(`/desktop/strokes/${id}`))); set((state) => ({ strokes: state.strokes.filter((stroke) => !ids.includes(stroke._id)) })); },
   clearStrokes: async () => { const socket = get().socket; if (socket?.connected) socket.emit('ink:clear', {}); else await api.delete('/desktop/strokes'); set({ strokes: [], remoteInk: {} }); },
+  commitText: async (annotation) => { const socket = get().socket; if (socket?.connected) return new Promise((resolve) => socket.emit('text:commit', annotation, (result) => { if (result?.text) set((state) => ({ texts: state.texts.some((row) => row._id === result.text._id) ? state.texts : [...state.texts, result.text] })); if (!result?.ok) get().pushToast(result?.message || 'Text could not be saved.', 'error'); resolve(result); })); const { data } = await api.post('/desktop/texts', annotation); set((state) => ({ texts: [...state.texts, data.data] })); return data.data; },
+  eraseTexts: async (ids) => { if (!ids.length) return; const socket = get().socket; if (socket?.connected) ids.forEach((id) => socket.emit('text:delete', { id })); else await Promise.all(ids.map((id) => api.delete(`/desktop/texts/${id}`))); set((state) => ({ texts: state.texts.filter((text) => !ids.includes(text._id)) })); },
   undoStroke: () => { const stroke = get().strokes.at(-1); if (stroke) get().eraseStrokes([stroke._id]); },
   pushToast: (message, tone = '') => { const id = `${Date.now()}-${Math.random()}`; set((state) => ({ toasts: [...state.toasts, { id, message, tone }] })); setTimeout(() => get().dismissToast(id), 4000); },
   dismissToast: (id) => set((state) => ({ toasts: state.toasts.filter((toast) => toast.id !== id) })),

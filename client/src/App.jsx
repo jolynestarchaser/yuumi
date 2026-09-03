@@ -34,6 +34,7 @@ function DesktopPage() {
     s.fetchWindows();
     s.fetchSettings().catch(() => {});
     s.fetchStrokes().catch(() => {});
+    s.fetchTexts().catch(() => {});
     s.connectRealtime();
   }, []);
 
