@@ -1,0 +1,10 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.jsx';
+import './styles.css';
+import './context-menu.css';
+import './windows.css';
+import './customization.css';
+import './folder-desktop.css';
+import './icon-picker.css';
+createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>);
