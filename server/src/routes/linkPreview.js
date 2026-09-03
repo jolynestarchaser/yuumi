@@ -27,19 +27,26 @@ function youtubeVideo(url) {
   return { title: 'YouTube video', description: 'Watch on YouTube', previewImage: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, favicon: 'https://www.youtube.com/favicon.ico', siteName: 'YouTube', provider: 'youtube', videoId: id, embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0` };
 }
 
-function spotifyEmbed(url) {
+async function spotifyEmbed(url) {
   const host = url.hostname.replace(/^www\./, '').toLowerCase();
   if (host !== 'open.spotify.com') return null;
   const [mediaType, providerId] = url.pathname.split('/').filter(Boolean);
   if (!['track', 'album', 'playlist', 'episode', 'show', 'artist'].includes(mediaType) || !/^[A-Za-z0-9]{22}$/.test(providerId || '')) return null;
   const label = mediaType === 'track' ? 'Track' : `${mediaType[0].toUpperCase()}${mediaType.slice(1)}`;
+  let preview = {};
+  try {
+    const response = await axios.get('https://open.spotify.com/oembed', { params: { url: url.href }, timeout: 5_000, maxContentLength: 200_000 });
+    preview = { title: response.data.title, previewImage: response.data.thumbnail_url };
+  } catch {
+    // The playable embed remains available even if Spotify's optional oEmbed preview is unavailable.
+  }
   return {
-    title: `Spotify ${label}`,
+    title: preview.title || `Spotify ${label}`,
     description: `Play this ${mediaType} in Spotify.`,
     favicon: 'https://open.spotify.com/favicon.ico',
     siteName: 'Spotify',
     provider: 'spotify',
-    providerId,
+    previewImage: preview.previewImage || '', providerId,
     mediaType,
     embedUrl: `https://open.spotify.com/embed/${mediaType}/${providerId}?utm_source=generator`
   };
@@ -49,7 +56,7 @@ router.post('/', asyncRoute(async (req, res) => {
   const url = await safeUrl(req.body.url);
   const youtube = youtubeVideo(url);
   if (youtube) return res.json({ success: true, data: { ...youtube, url: url.href } });
-  const spotify = spotifyEmbed(url);
+  const spotify = await spotifyEmbed(url);
   if (spotify) return res.json({ success: true, data: { ...spotify, url: url.href } });
   const response = await axios.get(url.href, { timeout: 5000, maxContentLength: 1_000_000, responseType: 'text', maxRedirects: 0, headers: { 'User-Agent': 'CuteDesktopPreview/1.0' } });
   const $ = cheerio.load(response.data);
