@@ -5,6 +5,11 @@ import { X } from 'lucide-react';
 export default function GlassDialog({ title, eyebrow, onClose, children, actions, className = '' }) {
   const titleId = useId();
   const surface = useRef(null);
+  const closeRef = useRef(onClose);
+
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const previous = document.activeElement;
@@ -12,7 +17,7 @@ export default function GlassDialog({ title, eyebrow, onClose, children, actions
     const focusable = surface.current?.querySelector(focusableSelector);
     focusable?.focus();
     const keydown = (event) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') closeRef.current();
       if (event.key !== 'Tab' || !surface.current) return;
       const nodes = [...surface.current.querySelectorAll(focusableSelector)].filter((node) => !node.disabled);
       if (!nodes.length) return;
@@ -22,7 +27,7 @@ export default function GlassDialog({ title, eyebrow, onClose, children, actions
     };
     globalThis.window.addEventListener('keydown', keydown);
     return () => { globalThis.window.removeEventListener('keydown', keydown); previous?.focus?.(); };
-  }, [onClose]);
+  }, []);
 
   return createPortal(
     <div className='modal-backdrop' onMouseDown={onClose}>
