@@ -6,7 +6,7 @@ const assetSchema = new mongoose.Schema({
 }, { _id: false });
 
 const metadataSchema = new mongoose.Schema({
-  title: String, description: String, siteName: String, favicon: String, previewImage: String, provider: String
+  title: String, description: String, siteName: String, favicon: String, previewImage: String, provider: String, providerId: String, mediaType: String, embedUrl: String
 }, { _id: false });
 
 const appearanceSchema = new mongoose.Schema({

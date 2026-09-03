@@ -9,6 +9,7 @@
 .item-visual { background: var(--icon-background, linear-gradient(145deg, #ffffff5e, #ffffff12)); }
 .desktop-item.drop-target .item-visual { box-shadow: 0 0 0 3px #b6ff00, 0 0 30px #b6ff00aa; }
 .youtube-window { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; height: 100%; padding: 14px; background: #020621; }.youtube-window iframe { width: 100%; height: 100%; min-height: 220px; border: 0; border-radius: 13px; background: #000; }.youtube-window a { justify-self: center; padding: 9px 13px; border-radius: 10px; color: #06113e; background: #b6ff00; font-size: 12px; font-weight: 800; text-decoration: none; }
+.spotify-mini-player { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 10px; height: 100%; padding: 12px; background: linear-gradient(145deg, #111c2d, #071657); }.spotify-mini-player iframe { width: 100%; min-height: 352px; height: 100%; border: 0; border-radius: 12px; background: #191414; }.spotify-mini-player a { justify-self: center; padding: 8px 12px; border-radius: 10px; color: #071657; background: #1ed760; font-size: 11px; font-weight: 800; text-decoration: none; }
 
 .ink-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; touch-action: none; }
 .ink-layer.active { z-index: 4; pointer-events: auto; cursor: crosshair; }
