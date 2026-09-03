@@ -28,6 +28,11 @@ function DesktopPage() {
     return error.response?.data?.error?.message || fallback;
   }
 
+  function finishUpload(task, status, delay) {
+    setUploads((state) => state.map((row) => row.task === task ? { ...row, status } : row));
+    setTimeout(() => setUploads((state) => state.filter((row) => row.task !== task)), delay);
+  }
+
   useEffect(() => {
     s.fetchItems();
     s.fetchTrash().catch(() => {});
@@ -62,9 +67,9 @@ function DesktopPage() {
         const { data } = await api.post('/media/file', body);
         useDesktopStore.setState((state) => ({ items: [...state.items, data.data] }));
         s.socket?.emit('desktop:broadcast', { type: 'item:created', payload: data.data });
-        setUploads((state) => state.map((row) => row.task === task ? { ...row, status: 'Done' } : row));
+        finishUpload(task, 'Done', 4000);
       } catch (error) {
-        setUploads((state) => state.map((row) => row.task === task ? { ...row, status: 'Failed' } : row));
+        finishUpload(task, 'Failed', 8000);
         s.pushToast(`${file.name}: ${requestMessage(error, 'Upload failed.')}`, 'error');
       }
     }
@@ -100,7 +105,7 @@ function DesktopPage() {
       <button onClick={newNote}><NotebookPen /><span>Note</span></button>
       <button onClick={() => setLinkOpen(true)}><Link2 /><span>Add URL</span></button>
       <button onClick={() => fileInput.current.click()}><Upload /><span>Upload</span></button>
-      {s.windows.filter((window) => window.minimized).map((window) => <button key={window.itemId} onClick={() => s.updateWindow(window, { minimized: false })}><Music2 /><span>Restore</span></button>)}
+      {s.windows.filter((window) => window.minimized).map((window) => { const item = s.items.find((row) => row._id === window.itemId); return <button key={window.itemId} title={`Restore ${item?.name || 'window'}`} onClick={() => s.updateWindow(window, { minimized: false })}><Music2 /><span>{item?.name || 'Restore'}</span></button>; })}
       <input ref={fileInput} hidden type='file' multiple onChange={(event) => uploadFiles([...event.target.files])} />
     </nav>
     {uploads.length > 0 && <aside className='upload-queue'>{uploads.map((upload) => <p key={upload.task}>{upload.name}<span>{upload.status}</span></p>)}</aside>}
