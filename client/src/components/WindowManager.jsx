@@ -4,8 +4,30 @@ import { useDesktopStore } from '../store/desktopStore.js';
 import FolderDesktop from './FolderDesktop.jsx';
 
 function WindowContent({ item }) {
-  const update = useDesktopStore((s) => s.updateItem); const [draft, setDraft] = useState(item.content || ''); const timer = useRef();
-  useEffect(() => () => clearTimeout(timer.current), []);
+  const update = useDesktopStore((s) => s.updateItem);
+  const [nameDraft, setNameDraft] = useState(item.name);
+  const [draft, setDraft] = useState(item.content || '');
+  const timers = useRef({ name: null, content: null });
+  const composing = useRef(false);
+  useEffect(() => {
+    setNameDraft(item.name);
+    setDraft(item.content || '');
+  }, [item._id]);
+  useEffect(() => () => { clearTimeout(timers.current.name); clearTimeout(timers.current.content); }, []);
+  function saveName(value) {
+    clearTimeout(timers.current.name);
+    const name = value.trim();
+    if (name && name !== item.name) update(item._id, { name });
+  }
+  function queueName(value) {
+    if (composing.current) return;
+    clearTimeout(timers.current.name);
+    timers.current.name = setTimeout(() => saveName(value), 650);
+  }
+  function queueContent(value) {
+    clearTimeout(timers.current.content);
+    timers.current.content = setTimeout(() => update(item._id, { content: value }), 650);
+  }
   if (item.type === 'image') return <img className='window-media' src={item.asset?.secureUrl} alt={item.name} />;
   if (item.type === 'video') return <video className='window-media' src={item.asset?.secureUrl} poster={item.asset?.thumbnailUrl} controls data-no-drag />;
   if (item.type === 'audio') return <section className='audio-window'><div className='album-disc'><Play fill='currentColor' /></div><h2>{item.name}</h2><audio src={item.asset?.secureUrl} controls data-no-drag /></section>;
@@ -13,7 +35,7 @@ function WindowContent({ item }) {
   if (item.type === 'link' && item.metadata?.provider === 'spotify') return <section className='spotify-mini-player'><iframe data-no-drag src={item.metadata.embedUrl} title={item.name} allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' loading='lazy' /><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>Open in Spotify</a></section>;
   if (item.type === 'link') return <section className='link-preview'><img src={item.metadata?.previewImage} alt='' /><p>{item.metadata?.siteName}</p><h2>{item.metadata?.title || item.name}</h2><p>{item.metadata?.description}</p><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>Open website</a></section>;
   if (item.type === 'file') return <section className='file-window'><Download size={42} /><h2>{item.name}</h2><p>{item.asset?.mimeType || 'File'} · {Math.ceil((item.asset?.bytes || 0) / 1024)} KB</p><a data-no-drag href={item.asset?.secureUrl} target='_blank' rel='noreferrer' download>Download file</a></section>;
-  if (item.type === 'note') return <section className='note-window'><input data-no-drag value={item.name} onChange={(event) => update(item._id, { name: event.target.value })} /><textarea data-no-drag value={draft} onChange={(event) => { const value = event.target.value; setDraft(value); clearTimeout(timer.current); timer.current = setTimeout(() => update(item._id, { content: value }), 600); }} placeholder='Write something...' /><small>Autosaves after you pause</small></section>;
+  if (item.type === 'note') return <section className='note-window'><input data-no-drag value={nameDraft} onPointerDown={(event) => event.stopPropagation()} onCompositionStart={() => { composing.current = true; }} onCompositionEnd={(event) => { composing.current = false; queueName(event.currentTarget.value); }} onChange={(event) => { const value = event.target.value; setNameDraft(value); queueName(value); }} onBlur={() => { if (nameDraft.trim()) saveName(nameDraft); else setNameDraft(item.name); }} placeholder='Note title' /><textarea data-no-drag value={draft} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { const value = event.target.value; setDraft(value); queueContent(value); }} onBlur={() => { clearTimeout(timers.current.content); update(item._id, { content: draft }); }} placeholder='Write something...' /><small>Autosaves after you pause</small></section>;
   return <FolderContent item={item} />;
 }
 
