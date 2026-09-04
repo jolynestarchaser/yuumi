@@ -14,7 +14,7 @@ export default function FolderDesktop({ folder }) {
   const setContextMenu = useDesktopStore((state) => state.setContextMenu);
   const [selectedId, setSelectedId] = useState(null);
   const canvas = useRef(null);
-  const pointer = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const pointer = useSensor(PointerSensor, { activationConstraint: { distance: 12 } });
   const sensors = useSensors(pointer);
   const children = useMemo(() => items.filter((item) => String(item.parentId || '') === String(folder._id)), [items, folder._id]);
   const snap = (value) => settings.snapToGrid ? Math.round(value / 16) * 16 : value;

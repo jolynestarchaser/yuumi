@@ -23,7 +23,7 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
   const dragOrigins = useRef(new Map());
   const marqueeMoved = useRef(false);
   const [marquee, setMarquee] = useState(null);
-  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 12 } });
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 160, tolerance: 8 } });
   const sensors = useSensors(pointerSensor, touchSensor);
   const rootItems = useMemo(() => items.filter((item) => !item.parentId), [items]);
