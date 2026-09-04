@@ -21,11 +21,13 @@ export default function InkLayer({ canvasRef }) {
   const erase = useDesktopStore((state) => state.eraseStrokes);
   const texts = useDesktopStore((state) => state.texts);
   const commitText = useDesktopStore((state) => state.commitText);
+  const updateText = useDesktopStore((state) => state.updateText);
   const eraseTexts = useDesktopStore((state) => state.eraseTexts);
   const active = useRef([]);
   const lastPreview = useRef(0);
   const [draft, setDraft] = useState(null);
   const [draftText, setDraftText] = useState(null);
+  const [selectedTextId, setSelectedTextId] = useState(null);
   const textInput = useRef(null);
 
   function logicalPoint(event) {
@@ -45,9 +47,20 @@ export default function InkLayer({ canvasRef }) {
   }
 
   function saveText() {
-    const annotation = draftText && { text: draftText.value.trim(), x: draftText.x, y: draftText.y, color: pen.color, size: Math.max(16, pen.width * 3) };
+    const annotation = draftText && { _id: draftText._id, text: draftText.value.trim(), x: draftText.x, y: draftText.y, color: draftText.color || pen.color, size: draftText.size || Math.max(16, pen.width * 3) };
     setDraftText(null);
-    if (annotation?.text) commitText(annotation);
+    if (annotation?.text) {
+      if (annotation._id) updateText(annotation);
+      else commitText(annotation);
+    }
+  }
+
+  function editText(event, text) {
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedTextId(text._id);
+    setDraftText({ ...text, value: text.text });
+    requestAnimationFrame(() => textInput.current?.focus());
   }
 
   function down(event) {
@@ -102,8 +115,8 @@ export default function InkLayer({ canvasRef }) {
       {draft && <path d={path(draft.points)} stroke={draft.color} strokeWidth={draft.width} fill='none' strokeLinecap='round' strokeLinejoin='round' />}
     </svg>
     <div className='desktop-text-layer' aria-live='polite'>
-      {texts.map((text) => <p key={text._id} className='desktop-text' style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%`, color: text.color, fontSize: `${text.size}px` }}>{text.text}</p>)}
-      {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: pen.color, fontSize: `${Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
+      {texts.map((text) => <p key={text._id} className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''}`} style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%`, color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => event.stopPropagation()} title='Double-click to edit'>{text.text}</p>)}
+      {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: draftText.color || pen.color, fontSize: `${draftText.size || Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
           <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here...' rows={1} />
       </form>}
     </div>

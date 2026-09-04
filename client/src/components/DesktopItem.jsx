@@ -27,7 +27,7 @@ export default function DesktopItem({ item, selected, iconTheme, onSelect, onOpe
     '--icon-background': appearance.iconBackground
   };
 
-  return <article ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }} style={style} className={`desktop-item icon-theme-${iconTheme} ${item.type} ${selected ? 'selected' : ''} ${droppable.isOver ? 'drop-target' : ''} ${draggable.isDragging ? 'dragging' : ''}`} {...draggable.listeners} {...draggable.attributes} onClick={(event) => { event.stopPropagation(); onSelect(item); }} onDoubleClick={() => onOpen(item)} onContextMenu={(event) => { event.preventDefault(); event.stopPropagation(); onContext(event, item); }}>
+  return <article ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }} style={style} className={`desktop-item icon-theme-${iconTheme} ${item.type} ${selected ? 'selected' : ''} ${droppable.isOver ? 'drop-target' : ''} ${draggable.isDragging ? 'dragging' : ''}`} {...draggable.listeners} {...draggable.attributes} onClick={(event) => { event.stopPropagation(); onSelect(item, event); }} onDoubleClick={() => onOpen(item)} onContextMenu={(event) => { event.preventDefault(); event.stopPropagation(); onContext(event, item); }}>
     <div className='item-visual'>
       {visual}
       {item.type === 'video' && <span className='play-badge'><Play size={15} fill='currentColor' /></span>}

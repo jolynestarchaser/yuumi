@@ -111,6 +111,17 @@ export function setupRealtime(io) {
         ack({ ok: false, message: error.message || 'Text could not be saved' });
       }
     });
+    socket.on('text:update', async (annotation, ack = () => {}) => {
+      if (!mongoose.isValidObjectId(annotation?._id) || !validText(annotation)) return ack({ ok: false, message: 'Invalid desktop text' });
+      try {
+        const saved = await DesktopText.findOneAndUpdate({ _id: annotation._id, desktopKey: 'shared-desktop' }, { text: annotation.text.trim(), x: annotation.x, y: annotation.y, color: annotation.color, size: annotation.size }, { new: true });
+        if (!saved) return ack({ ok: false, message: 'Text not found' });
+        io.to(room).emit('text:updated', saved);
+        ack({ ok: true, text: saved });
+      } catch (error) {
+        ack({ ok: false, message: error.message || 'Text could not be updated' });
+      }
+    });
     socket.on('text:delete', async ({ id }, ack = () => {}) => {
       if (!mongoose.isValidObjectId(id)) return ack({ ok: false, message: 'Invalid text ID' });
       await DesktopText.deleteOne({ _id: id, desktopKey: 'shared-desktop' });

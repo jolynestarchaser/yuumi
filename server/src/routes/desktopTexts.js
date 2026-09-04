@@ -18,6 +18,17 @@ router.post('/', async (req, res) => {
   res.status(201).json({ success: true, data: annotation });
 });
 
+router.patch('/:id', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) throw new Error('Invalid text ID');
+  const annotation = await DesktopText.findOne({ _id: req.params.id, desktopKey: 'shared-desktop' });
+  if (!annotation) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Text not found.' } });
+  const { text, x, y, color, size } = req.body;
+  if (typeof text !== 'string' || !text.trim() || !validPoint(x, 1440) || !validPoint(y, 900) || !validColor(color) || !Number.isFinite(size) || size < 12 || size > 64) throw new Error('Invalid desktop text');
+  Object.assign(annotation, { text: text.trim(), x, y, color, size });
+  await annotation.save();
+  res.json({ success: true, data: annotation });
+});
+
 router.delete('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) throw new Error('Invalid text ID');
   const annotation = await DesktopText.findByIdAndDelete(req.params.id);
