@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { DndContext, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, MouseSensor, TouchSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
 import { ArrowDownAZ, Shapes } from 'lucide-react';
 import DesktopItem from './DesktopItem.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
@@ -14,8 +14,9 @@ export default function FolderDesktop({ folder }) {
   const setContextMenu = useDesktopStore((state) => state.setContextMenu);
   const [selectedId, setSelectedId] = useState(null);
   const canvas = useRef(null);
-  const pointer = useSensor(PointerSensor, { activationConstraint: { distance: 12 } });
-  const sensors = useSensors(pointer);
+  const mouse = useSensor(MouseSensor, { activationConstraint: { distance: 12 } });
+  const touch = useSensor(TouchSensor, { activationConstraint: { delay: 160, tolerance: 8 } });
+  const sensors = useSensors(mouse, touch);
   const children = useMemo(() => items.filter((item) => String(item.parentId || '') === String(folder._id)), [items, folder._id]);
   const snap = (value) => settings.snapToGrid ? Math.round(value / 16) * 16 : value;
 

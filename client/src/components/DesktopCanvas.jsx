@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { DndContext, PointerSensor, TouchSensor, pointerWithin, rectIntersection, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, MouseSensor, TouchSensor, pointerWithin, rectIntersection, useSensor, useSensors } from '@dnd-kit/core';
 import DesktopItem from './DesktopItem.jsx';
 import InkLayer from './InkLayer.jsx';
 import TrashBin from './TrashBin.jsx';
@@ -23,9 +23,9 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
   const dragOrigins = useRef(new Map());
   const marqueeMoved = useRef(false);
   const [marquee, setMarquee] = useState(null);
-  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 12 } });
+  const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 12 } });
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 160, tolerance: 8 } });
-  const sensors = useSensors(pointerSensor, touchSensor);
+  const sensors = useSensors(mouseSensor, touchSensor);
   const rootItems = useMemo(() => items.filter((item) => !item.parentId), [items]);
   const snap = (value) => settings.snapToGrid ? Math.round(value / 16) * 16 : value;
 
