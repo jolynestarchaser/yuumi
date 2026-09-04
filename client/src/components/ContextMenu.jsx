@@ -2,6 +2,7 @@ import { useState } from 'react';
 import GlassDialog from './GlassDialog.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import IconPickerDialog from './IconPickerDialog.jsx';
+import SpriteDialog from './SpriteDialog.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 export default function ContextMenu({ onAddLink }) {
@@ -40,6 +41,7 @@ export default function ContextMenu({ onAddLink }) {
         {item.type === 'folder' && <><button onClick={newFolder}>New folder inside</button><button onClick={newNote}>New note inside</button></>}
         <button onClick={() => beginAction('rename')}>Rename</button>
         <button onClick={() => beginAction('icon')}>Change icon / thumbnail</button>
+        {item.type === 'image' && <button onClick={() => beginAction('sprite')}>Animate sprite sheet</button>}
         {item.parentId && <button onClick={() => { move(item._id, null, { x: 60, y: 60 }); clear(null); }}>Move to desktop</button>}
         <button className='danger' onClick={() => beginAction('delete')}>Move to Trash</button>
       </> : <>
@@ -55,6 +57,7 @@ export default function ContextMenu({ onAddLink }) {
       </form>
     </GlassDialog>}
     {action?.type === 'icon' && <IconPickerDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}
+    {action?.type === 'sprite' && <SpriteDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}
     {action?.type === 'delete' && <ConfirmDialog title='Move item to Trash?' confirmLabel='Move to Trash' message={`${action.item.name} can be restored from Trash later.`} onClose={() => setAction(null)} onConfirm={async () => { await remove(action.item._id); setAction(null); }} />}
   </>;
 }

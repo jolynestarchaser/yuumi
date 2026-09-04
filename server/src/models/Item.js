@@ -13,7 +13,12 @@ const appearanceSchema = new mongoose.Schema({
   iconType: { type: String, enum: ['default', 'lucide', 'emoji', 'image'], default: 'default' },
   iconValue: { type: String, maxlength: 1000 },
   iconColor: { type: String, maxlength: 32 },
-  iconBackground: { type: String, maxlength: 32 }
+  iconBackground: { type: String, maxlength: 32 },
+  sprite: {
+    enabled: { type: Boolean, default: false },
+    frames: { type: Number, min: 1, max: 120, default: 1 },
+    fps: { type: Number, min: 1, max: 60, default: 8 }
+  }
 }, { _id: false });
 
 const itemSchema = new mongoose.Schema(

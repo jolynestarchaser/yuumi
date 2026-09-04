@@ -9,10 +9,14 @@ export default function DesktopItem({ item, selected, iconTheme, onSelect, onOpe
   const droppable = useDroppable({ id: `folder:${item._id}`, disabled: item.type !== 'folder' });
   const appearance = item.appearance || {};
   const spotify = item.type === 'link' && item.metadata?.provider === 'spotify';
+  const sprite = item.type === 'image' && appearance.sprite?.enabled && appearance.sprite.frames > 1;
+  const animatedGif = item.type === 'image' && item.asset?.mimeType === 'image/gif';
   const customType = ['lucide', 'emoji', 'image'].includes(appearance.iconType);
-  const naturalThumbnail = item.type === 'image' ? item.asset?.thumbnailUrl || item.asset?.secureUrl : item.type === 'link' ? item.metadata?.previewImage : null;
+  const naturalThumbnail = item.type === 'image' ? animatedGif ? item.asset?.secureUrl : item.asset?.thumbnailUrl || item.asset?.secureUrl : item.type === 'link' ? item.metadata?.previewImage : null;
   const Icon = appearance.iconType === 'lucide' ? iconComponents[appearance.iconValue] || (spotify ? Music2 : defaultIcons[item.type]) || File : (spotify ? Music2 : defaultIcons[item.type]) || File;
-  const visual = appearance.iconType === 'emoji'
+  const visual = sprite
+    ? <span className='sprite-sheet' style={{ '--sprite-image': `url("${item.asset?.secureUrl}")`, '--sprite-frames': appearance.sprite.frames, '--sprite-duration': `${appearance.sprite.frames / appearance.sprite.fps}s` }} aria-label={`${item.name} animated sprite`} />
+    : appearance.iconType === 'emoji'
     ? <span className='emoji-icon'>{appearance.iconValue}</span>
     : appearance.iconType === 'image'
       ? <img className='custom-item-icon' src={appearance.iconValue} alt='' />
@@ -27,7 +31,7 @@ export default function DesktopItem({ item, selected, iconTheme, onSelect, onOpe
     '--icon-background': appearance.iconBackground
   };
 
-  return <article ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }} style={style} className={`desktop-item icon-theme-${iconTheme} ${item.type} ${selected ? 'selected' : ''} ${droppable.isOver ? 'drop-target' : ''} ${draggable.isDragging ? 'dragging' : ''}`} {...draggable.listeners} {...draggable.attributes} onClick={(event) => { event.stopPropagation(); onSelect(item, event); }} onDoubleClick={() => onOpen(item)} onContextMenu={(event) => { event.preventDefault(); event.stopPropagation(); onContext(event, item); }}>
+  return <article ref={(node) => { draggable.setNodeRef(node); droppable.setNodeRef(node); }} style={style} className={`desktop-item icon-theme-${iconTheme} ${item.type} ${animatedGif ? 'animated-sprite' : ''} ${sprite ? 'sprite-item' : ''} ${selected ? 'selected' : ''} ${droppable.isOver ? 'drop-target' : ''} ${draggable.isDragging ? 'dragging' : ''}`} {...draggable.listeners} {...draggable.attributes} onClick={(event) => { event.stopPropagation(); onSelect(item, event); }} onDoubleClick={() => onOpen(item)} onContextMenu={(event) => { event.preventDefault(); event.stopPropagation(); onContext(event, item); }}>
     <div className='item-visual'>
       {visual}
       {item.type === 'video' && <span className='play-badge'><Play size={15} fill='currentColor' /></span>}
