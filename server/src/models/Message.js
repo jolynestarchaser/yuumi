@@ -1,5 +1,15 @@
 import mongoose from 'mongoose';
 
+export const messageAnimationTypes = Object.freeze([
+  'none',
+  'hearts',
+  'sparkles',
+  'emoji-rain',
+  'confetti',
+  'bubbles',
+  'stars'
+]);
+
 const messageSchema = new mongoose.Schema({
   sender: { type: String, enum: ['joe', 'focus'], required: true, index: true },
   recipient: { type: String, enum: ['joe', 'focus'], required: true, index: true },
@@ -7,7 +17,7 @@ const messageSchema = new mongoose.Schema({
   subject: { type: String, trim: true, maxlength: 120, default: '' },
   body: { type: String, trim: true, maxlength: 5000, required: true },
   emoji: { type: String, maxlength: 16, default: '💌' },
-  animation: { type: String, enum: ['none', 'hearts', 'sparkles', 'emoji-rain'], default: 'hearts' },
+  animation: { type: String, enum: messageAnimationTypes, default: 'hearts' },
   readAt: { type: Date, default: null },
   operationId: { type: String, required: true, unique: true, index: true }
 }, { timestamps: true });

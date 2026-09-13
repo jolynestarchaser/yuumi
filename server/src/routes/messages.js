@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import mongoose from 'mongoose';
-import Message from '../models/Message.js';
+import Message, { messageAnimationTypes } from '../models/Message.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 
 const router = Router();
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
   const body = typeof req.body?.body === 'string' ? req.body.body.trim() : '';
   const subject = typeof req.body?.subject === 'string' ? req.body.subject.trim() : '';
   const kind = ['alert', 'letter'].includes(req.body?.kind) ? req.body.kind : 'letter';
-  const animation = ['none', 'hearts', 'sparkles', 'emoji-rain'].includes(req.body?.animation) ? req.body.animation : 'hearts';
+  const animation = messageAnimationTypes.includes(req.body?.animation) ? req.body.animation : 'hearts';
   const emoji = typeof req.body?.emoji === 'string' ? req.body.emoji.slice(0, 16) : '💌';
   if (!['joe', 'focus'].includes(recipient) || recipient === req.desktop.profile || !body || body.length > 5000 || subject.length > 120) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Message details are invalid.' } });
   const operationId = typeof req.body?.operationId === 'string' && req.body.operationId.length <= 80 ? req.body.operationId : crypto.randomUUID();

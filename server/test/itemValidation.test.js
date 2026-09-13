@@ -42,7 +42,11 @@ test('secret items default to hidden mode without changing their type', () => {
 });
 
 test('messages only accept the supported animation presets', () => {
-  const message = new Message({ sender: 'joe', recipient: 'focus', body: 'hello', operationId: 'test-animation', animation: 'hearts' });
+  const message = new Message({ sender: 'joe', recipient: 'focus', body: 'hello', operationId: 'test-animation', animation: 'confetti' });
+  assert.equal(message.validateSync(), undefined);
+  message.animation = 'bubbles';
+  assert.equal(message.validateSync(), undefined);
+  message.animation = 'stars';
   assert.equal(message.validateSync(), undefined);
   message.animation = 'script';
   assert.match(message.validateSync()?.message || '', /animation/);
