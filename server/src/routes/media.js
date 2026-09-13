@@ -2,8 +2,11 @@ import { Router } from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import Item from '../models/Item.js';
+import { optionalDesktopSession } from '../middleware/auth.js';
+import { revisionService, itemSnapshot } from '../services/historyService.js';
 
 const router = Router();
+router.use(optionalDesktopSession);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
 const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
@@ -34,8 +37,11 @@ function handleMedia(type, allowed) {
       const item = await Item.create({
         name: req.body.name || req.file.originalname, type, parentId: req.body.parentId || null,
         position: { x: Math.max(0, Number(req.body.x) || 0), y: Math.max(0, Number(req.body.y) || 0) },
-        asset: { publicId: result.public_id, url: result.url, secureUrl: result.secure_url, thumbnailUrl: result.eager?.[0]?.secure_url, originalName: req.file.originalname, extension: req.file.originalname.split('.').pop(), resourceType: resourceTypeFor(type), mimeType: req.file.mimetype, bytes: result.bytes, width: result.width, height: result.height, duration: result.duration }
+        asset: { publicId: result.public_id, url: result.url, secureUrl: result.secure_url, thumbnailUrl: result.eager?.[0]?.secure_url, originalName: req.file.originalname, extension: req.file.originalname.split('.').pop(), resourceType: resourceTypeFor(type), mimeType: req.file.mimetype, bytes: result.bytes, width: result.width, height: result.height, duration: result.duration },
+        updatedBy: req.desktop?.profile || 'unknown'
       });
+      await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision || 0, operation: 'create', actor: req.desktop?.profile, snapshot: itemSnapshot(item) });
+      req.app.get('io')?.to('shared-desktop').emit('item:created', item);
       res.status(201).json({ success: true, data: item });
     } catch (error) {
       try { await cloudinary.uploader.destroy(result.public_id, { resource_type: resourceTypeFor(type) }); } catch { /* Preserve the original database error. */ }

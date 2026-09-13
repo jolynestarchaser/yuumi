@@ -11,6 +11,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
    ```text
    MONGODB_URI=<Atlas connection string>
    JWT_SECRET=<long random secret>
+   DESKTOP_PIN=<shared four-digit PIN>
    CLIENT_ORIGIN=https://<your-vercel-domain>
    CLOUDINARY_CLOUD_NAME=<cloud name>
    CLOUDINARY_API_KEY=<API key>
@@ -28,7 +29,6 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 
    ```text
    VITE_API_URL=https://yuumi-production.up.railway.app/api
-   VITE_DESKTOP_PIN=<shared four-digit PIN>
    ```
 
 3. Deploy, copy the Vercel URL, and set it as Railway's `CLIENT_ORIGIN`. Redeploy Railway after changing CORS.

@@ -2,8 +2,10 @@ import { Router } from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import DesktopSettings from '../models/DesktopSettings.js';
+import { optionalDesktopSession } from '../middleware/auth.js';
 
 const router = Router();
+router.use(optionalDesktopSession);
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const presets = new Set(['neon', 'sunset', 'midnight']);
 const themes = new Set(['soft', 'glass', 'classic']);
@@ -58,6 +60,7 @@ router.patch('/', async (req, res) => {
   }
   if (snapToGrid !== undefined) { if (typeof snapToGrid !== 'boolean') throw new Error('snapToGrid must be boolean'); settings.snapToGrid = snapToGrid; }
   await settings.save();
+  req.app.get('io')?.to('shared-desktop').emit('settings:updated', settings);
   res.json({ success: true, data: settings });
 });
 router.post('/assets/:kind', upload.single('file'), async (req, res) => {
