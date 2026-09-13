@@ -29,6 +29,7 @@ export default function InkLayer({ canvasRef }) {
   const [draft, setDraft] = useState(null);
   const [draftText, setDraftText] = useState(null);
   const [selectedTextId, setSelectedTextId] = useState(null);
+  const [movingText, setMovingText] = useState(null);
   const [historyText, setHistoryText] = useState(null);
   const textInput = useRef(null);
 
@@ -64,6 +65,41 @@ export default function InkLayer({ canvasRef }) {
     setSelectedTextId(text._id);
     setDraftText({ ...text, value: text.text });
     requestAnimationFrame(() => textInput.current?.focus());
+  }
+
+  function startTextMove(event, text) {
+    if (tool !== 'select' || event.button !== 0) return;
+    const point = logicalPoint(event);
+    if (!point) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setSelectedTextId(text._id);
+    setMovingText({
+      id: text._id,
+      pointerId: event.pointerId,
+      start: point,
+      origin: { x: text.x, y: text.y },
+      text
+    });
+  }
+
+  function moveText(event) {
+    if (!movingText || movingText.pointerId !== event.pointerId) return;
+    const point = logicalPoint(event);
+    if (!point) return;
+    const x = Math.max(0, Math.min(WIDTH, movingText.origin.x + point.x - movingText.start.x));
+    const y = Math.max(0, Math.min(HEIGHT, movingText.origin.y + point.y - movingText.start.y));
+    setMovingText((current) => current ? { ...current, x, y } : null);
+  }
+
+  function endTextMove(event) {
+    if (!movingText || movingText.pointerId !== event.pointerId) return;
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    const moved = Math.hypot((movingText.x ?? movingText.origin.x) - movingText.origin.x, (movingText.y ?? movingText.origin.y) - movingText.origin.y) > 1;
+    const next = { ...movingText.text, x: movingText.x ?? movingText.origin.x, y: movingText.y ?? movingText.origin.y };
+    setMovingText(null);
+    if (moved) updateText(next).catch(() => {});
   }
 
   function down(event) {
@@ -118,7 +154,12 @@ export default function InkLayer({ canvasRef }) {
       {draft && <path d={path(draft.points)} stroke={draft.color} strokeWidth={draft.width} fill='none' strokeLinecap='round' strokeLinejoin='round' />}
     </svg>
     <div className='desktop-text-layer' aria-live='polite'>
-      {texts.map((text) => <span key={text._id} className={`desktop-text-wrap ${selectedTextId === text._id ? 'selected' : ''}`} style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%` }}><p className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''}`} style={{ color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => event.stopPropagation()} title='Double-click to edit'>{text.text}</p>{selectedTextId === text._id && <button className='text-history-button' data-no-drag onClick={(event) => { event.stopPropagation(); setHistoryText(text); }}>↺</button>}</span>)}
+      {texts.map((text) => {
+        const isMoving = movingText?.id === text._id;
+        const x = isMoving ? movingText.x ?? movingText.origin.x : text.x;
+        const y = isMoving ? movingText.y ?? movingText.origin.y : text.y;
+        return <span key={text._id} className={`desktop-text-wrap ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ left: `${(x / WIDTH) * 100}%`, top: `${(y / HEIGHT) * 100}%` }}><p className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => startTextMove(event, text)} onPointerMove={moveText} onPointerUp={endTextMove} onPointerCancel={endTextMove} title='Drag to move · Double-click to edit'>{text.text}</p>{selectedTextId === text._id && <button className='text-history-button' data-no-drag onClick={(event) => { event.stopPropagation(); setHistoryText(text); }}>↺</button>}</span>;
+      })}
       {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: draftText.color || pen.color, fontSize: `${draftText.size || Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
           <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here...' rows={1} />
       </form>}
