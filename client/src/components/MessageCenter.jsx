@@ -97,6 +97,12 @@ export default function MessageCenter() {
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
+    // A profile switch starts a new notification session; do not carry
+    // dismissed/chime bookkeeping from the previous user into this inbox.
+    played.current.clear();
+  }, [profile]);
+
+  useEffect(() => {
     let cancelled = false;
     setReady(false);
     setSelected(null);
