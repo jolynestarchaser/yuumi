@@ -175,7 +175,6 @@
 
 @keyframes mail-badge-pop { from { opacity:0; transform:scale(.25) rotate(-18deg); } to { opacity:1; transform:scale(1) rotate(0); } }
 @keyframes incoming-backdrop { from { opacity:0; } to { opacity:1; } }
-@keyframes letter-dialog-arrive { from { opacity:0; transform:translate(-50%,-44%) scale(.84); } 70% { transform:translate(-50%,-51%) scale(1.02); } to { opacity:1; transform:translate(-50%,-50%) scale(1); } }
 @keyframes envelope-hover { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-4px) rotate(2deg); } }
 @keyframes orbit-glyph { 0%,100% { opacity:.3; transform:translateY(8px) rotate(-8deg) scale(.75); } 50% { opacity:1; transform:translateY(-6px) rotate(7deg) scale(1.08); } }
 @keyframes celebration-rise { 0% { opacity:0; transform:translate3d(0,30px,0) scale(.3) rotate(0); } 14% { opacity:1; } 82% { opacity:.9; } 100% { opacity:0; transform:translate3d(var(--particle-drift),-108dvh,0) scale(var(--particle-scale)) rotate(var(--particle-rotation)); } }

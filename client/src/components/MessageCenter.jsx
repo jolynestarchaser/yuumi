@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BellRing, Heart, Mail, Send, Sparkles, Volume2, VolumeX } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 import GlassDialog from './GlassDialog.jsx';
@@ -94,6 +94,7 @@ export default function MessageCenter() {
   const [formError, setFormError] = useState('');
   const [soundEnabled, setSoundEnabled] = useState(readSoundPreference);
   const played = useRef(new Set());
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     let cancelled = false;
@@ -243,7 +244,7 @@ export default function MessageCenter() {
   const incoming = nextUnread && !open ? createPortal(<>
     <CelebrationLayer message={nextUnread} visible={celebrating} />
     <button type='button' className='incoming-letter-backdrop' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง' />
-    <motion.aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`} initial={{ opacity: 0, scale: 0.86, x: '-50%', y: '-46%' }} animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }} transition={{ type: 'spring', stiffness: 360, damping: 28 }}>
+    <motion.aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`} initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.86, x: '-50%', y: '-46%' }} animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }} transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 28 }}>
       <div className='incoming-windowbar' aria-hidden='true'><span><i /><i /><i /></span><b>Yuu & Mi message</b></div>
       <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} accentColor={nextUnread.accentColor} />
       <div className='incoming-letter-heading'>
