@@ -32,6 +32,7 @@ export default function InkLayer({ canvasRef }) {
   const [movingText, setMovingText] = useState(null);
   const [historyText, setHistoryText] = useState(null);
   const textInput = useRef(null);
+  const movingTextRef = useRef(null);
 
   function logicalPoint(event) {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -75,29 +76,34 @@ export default function InkLayer({ canvasRef }) {
     event.stopPropagation();
     event.currentTarget.setPointerCapture?.(event.pointerId);
     setSelectedTextId(text._id);
-    setMovingText({
+    const moving = {
       id: text._id,
       pointerId: event.pointerId,
       start: point,
       origin: { x: text.x, y: text.y },
       text
-    });
+    };
+    movingTextRef.current = moving;
+    setMovingText(moving);
   }
 
   function moveText(event) {
-    if (!movingText || movingText.pointerId !== event.pointerId) return;
+    const moving = movingTextRef.current;
+    if (!moving || moving.pointerId !== event.pointerId) return;
     const point = logicalPoint(event);
     if (!point) return;
-    const x = Math.max(0, Math.min(WIDTH, movingText.origin.x + point.x - movingText.start.x));
-    const y = Math.max(0, Math.min(HEIGHT, movingText.origin.y + point.y - movingText.start.y));
-    setMovingText((current) => current ? { ...current, x, y } : null);
+    const next = { ...moving, x: Math.max(0, Math.min(WIDTH, moving.origin.x + point.x - moving.start.x)), y: Math.max(0, Math.min(HEIGHT, moving.origin.y + point.y - moving.start.y)) };
+    movingTextRef.current = next;
+    setMovingText(next);
   }
 
   function endTextMove(event) {
-    if (!movingText || movingText.pointerId !== event.pointerId) return;
+    const moving = movingTextRef.current;
+    if (!moving || moving.pointerId !== event.pointerId) return;
     event.currentTarget.releasePointerCapture?.(event.pointerId);
-    const moved = Math.hypot((movingText.x ?? movingText.origin.x) - movingText.origin.x, (movingText.y ?? movingText.origin.y) - movingText.origin.y) > 1;
-    const next = { ...movingText.text, x: movingText.x ?? movingText.origin.x, y: movingText.y ?? movingText.origin.y };
+    const moved = Math.hypot((moving.x ?? moving.origin.x) - moving.origin.x, (moving.y ?? moving.origin.y) - moving.origin.y) > 1;
+    const next = { ...moving.text, x: moving.x ?? moving.origin.x, y: moving.y ?? moving.origin.y };
+    movingTextRef.current = null;
     setMovingText(null);
     if (moved) updateText(next).catch(() => {});
   }
