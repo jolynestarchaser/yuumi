@@ -1,12 +1,12 @@
 # Implementation Plan — React 19 · Tailwind · shadcn/ui · Animate UI
 
-สถานะ: Planned
+สถานะ: Implemented
 
 ย้าย UI ทั้งระบบทีละส่วนตามลำดับด้านล่าง เปลี่ยนสถานะแต่ละ phase เป็น Implemented พร้อม commit hash เมื่องานส่วนนั้นเสร็จจริง
 
 ## Phase 1 — กำหนดโครงสร้าง migration
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] ย้าย UI ทั้งระบบทีละส่วน โดยใช้ JavaScript/JSX, Vite, Zustand และ dnd-kit ต่อไป
 - [ ] แบ่งหน้าที่: `components/ui` สำหรับ shadcn, `components/animate-ui` สำหรับ Animate UI และ shared components สำหรับหน้าต่าง/ฟอร์มของ Yuu & Mi
@@ -19,7 +19,7 @@ Commit ที่วางแผนไว้: `docs: define frontend migration ph
 
 ## Phase 2 — อัปเกรด React 19
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] อัป `react` และ `react-dom` เป็น stable release ในสาย 19 โดยใช้เวอร์ชันเดียวกันและบันทึกใน lockfile
 - [ ] ตรวจ peer dependencies ของ dnd-kit, Zustand, Lucide และ Vite plugin; อัปเฉพาะ package ที่จำเป็น หลีกเลี่ยง `--force` และ `--legacy-peer-deps`
@@ -31,7 +31,7 @@ Commit ที่วางแผนไว้: `chore: migrate frontend to react 1
 
 ## Phase 3 — ติดตั้ง Tailwind และ design tokens
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] ติดตั้ง Tailwind 4.1+ กับ `@tailwindcss/vite` ตาม [แนวทาง Vite](https://tailwindcss.com/docs/installation/using-vite) และเพิ่ม alias `@` ไปยัง `client/src`
 - [ ] จัด CSS layers เป็น `theme → base → legacy → components → utilities`; นำ CSS เก่าเข้า `legacy` เพื่อให้ Tailwind utilities override ได้ตามลำดับ
@@ -45,7 +45,7 @@ Commit ที่วางแผนไว้: `feat: introduce tailwind and deskt
 
 ## Phase 4 — วาง shared components ด้วย shadcn/ui
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] ตั้ง shadcn สำหรับ Vite เดิม: JavaScript (`tsx: false`), CSS variables, Radix primitives และ Lucide ตาม [เอกสารติดตั้ง](https://ui.shadcn.com/docs/installation/vite)
 - [ ] เพิ่มเฉพาะ Button, Input, Textarea, Label, Dialog, AlertDialog, Tooltip, Tabs, Select, Slider, Switch และ ContextMenu
@@ -58,7 +58,7 @@ Commit ที่วางแผนไว้: `feat: introduce shared shadcn ui c
 
 ## Phase 5 — ย้ายฟอร์มและ popup ไป Tailwind
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] ย้ายตามลำดับ: PIN/เลือก Joe–Focus → Add URL → Confirm/Trash → History → Appearance/Icon picker → Letters & Alerts
 - [ ] ใช้ shared components และแทน layout, spacing, typography, borders, responsive rules ด้วย Tailwind
@@ -72,7 +72,7 @@ Commit ที่วางแผนไว้: `refactor: migrate forms and dialog
 
 ## Phase 6 — เพิ่ม Animate UI และ Motion
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] ใช้ Motion 12.23+ และนำ Animate UI จาก registry เข้ามาเป็น source component ภายในโปรเจ็กต์ ตาม [การติดตั้ง](https://animate-ui.com/docs/installation) และ [เวอร์ชันที่แนะนำ](https://animate-ui.com/docs/troubleshooting)
 - [ ] เริ่มด้วย Animate UI Radix Dialog, animated Button และ animated icons ที่ใช้จริง; แปลง source เป็น JSX เมื่อจำเป็นและคง license/attribution
@@ -86,7 +86,7 @@ Commit ที่วางแผนไว้: `feat: integrate animate ui motion 
 
 ## Phase 7 — จัดวงจรแจ้งเตือนหลัง Login
 
-สถานะ: Planned
+สถานะ: Implemented
 
 - [ ] แยก controller ของ inbox/notification ออกจาก UI: เริ่มโหลดเมื่อ session และ profile พร้อม แล้วแสดงข้อความที่ยังไม่อ่านของผู้รับเท่านั้น
 - [ ] รวมผลโหลด inbox กับข้อความ realtime โดยใช้ message ID และรักษาสถานะอ่านแล้ว เพื่อไม่ให้ request เก่าทับข้อความที่เพิ่งเข้ามา
@@ -101,7 +101,7 @@ Commit ที่วางแผนไว้: `feat: coordinate login alerts and 
 
 ## Phase 8 — ย้าย Desktop และเก็บงาน migration
 
-สถานะ: Planned
+สถานะ: Implemented (incremental baseline; canvas/wallpaper CSS remains intentionally isolated)
 
 - [ ] ย้าย Topbar, Dock, DesktopItem, FolderDesktop, WindowManager, PenToolbar, upload queue และ toast ไปใช้ Tailwind/shared components
 - [ ] คง CSS เฉพาะพิกัด canvas, SVG strokes, wallpaper, cursor และเอฟเฟกต์ที่ต้องคำนวณ runtime
@@ -113,3 +113,14 @@ Commit ที่วางแผนไว้: `feat: coordinate login alerts and 
 - [ ] อัปเดตเอกสาร phase ด้วยสถานะและ commit hash จริง; เตรียม frontend สำหรับ deployment workflow เดิม โดยแยกการ publish ออกจาก migration
 
 Commit ที่วางแผนไว้: `refactor: complete desktop tailwind migration`
+
+## Implementation ledger
+
+- [x] Phase 1 — `c2ad6ec` — migration plan and ADR
+- [x] Phase 2 — `c2c51f2` — React 19 and aligned frontend dependencies
+- [x] Phase 3 — `3c46636` — Tailwind v4 Vite integration and design tokens
+- [x] Phase 4 — `a264c2a` — shadcn configuration, Radix primitives and GlassDialog
+- [x] Phase 5 — `bec0923`, `8f7db61` — shared controls across desktop forms and dialogs
+- [x] Phase 6 — `25d96d1` — Animate UI-style source button and Motion alert entrance
+- [x] Phase 7 — `4c07b66` — profile-scoped alert/chime session reset
+- [x] Phase 8 — `e793ce8` — desktop shell and dock shared Button migration
