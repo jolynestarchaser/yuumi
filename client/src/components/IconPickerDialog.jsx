@@ -3,6 +3,8 @@ import { ImagePlus, Search } from 'lucide-react';
 import GlassDialog from './GlassDialog.jsx';
 import { emojiCatalog, iconCatalog } from '../lib/iconCatalog.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
+import { Button } from './ui/button.jsx';
+import { Input } from './ui/input.jsx';
 
 const colors = ['#b6ff00', '#2453ff', '#f5f7ff', '#06113e', '#ff5c8a', '#ff665c', '#ff9f43', '#ffd166', '#39d5ff', '#9b7bff', '#64f0c8', '#8b96b8'];
 const backgrounds = ['#17347a', '#11245e', '#2453ff', '#5d2bc5', '#145c58', '#782d52', '#2c3658', '#f5f7ff'];
@@ -51,13 +53,13 @@ export default function IconPickerDialog({ item, onSave, onClose }) {
   }
 
   const customThumbnail = choice.type === 'image' && choice.value;
-  return <GlassDialog title='Icon & thumbnail' eyebrow='Make it recognizable' className='icon-dialog' onClose={onClose} actions={<><button type='button' disabled={busy} onClick={() => save({ ...choice, type: 'default', value: '' })}>Use original</button><button type='button' className='primary' disabled={busy} onClick={() => save()}>{busy ? 'Saving...' : 'Apply'}</button></>}>
+  return <GlassDialog title='Icon & thumbnail' eyebrow='Make it recognizable' className='icon-dialog' onClose={onClose} actions={<><Button variant='secondary' disabled={busy} onClick={() => save({ ...choice, type: 'default', value: '' })}>Use original</Button><Button variant='neon' disabled={busy} onClick={() => save()}>{busy ? 'Saving...' : 'Apply'}</Button></>}>
     <div className='icon-preview' style={{ '--preview-background': choice.background, '--preview-color': choice.color }}>
       {customThumbnail ? <img src={choice.value} alt='Selected thumbnail preview' /> : choice.type === 'emoji' ? <span>{choice.value}</span> : <span>{choice.type === 'lucide' ? 'Icon selected' : 'Original icon'}</span>}
     </div>
     <div className='segmented-control'><button type='button' className={tab === 'icons' ? 'active' : ''} onClick={() => setTab('icons')}>Icons</button><button type='button' className={tab === 'emoji' ? 'active' : ''} onClick={() => setTab('emoji')}>Emoji</button><button type='button' onClick={() => input.current?.click()}><ImagePlus size={15} /> Thumbnail</button></div>
     <input ref={input} hidden type='file' accept='image/jpeg,image/png,image/webp' onChange={imageUpload} />
-    {tab === 'icons' && <label className='search-field'><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder='Search icons' /></label>}
+    {tab === 'icons' && <label className='search-field'><Search size={16} /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder='Search icons' /></label>}
     <div className='choice-grid'>{tab === 'icons' ? icons.map(({ key, label, Icon }) => <button type='button' title={label} aria-label={label} className={choice.type === 'lucide' && choice.value === key ? 'active' : ''} key={key} onClick={() => setChoice({ ...choice, type: 'lucide', value: key })}><Icon /></button>) : emojiCatalog.map((emoji) => <button type='button' aria-label={`Use ${emoji}`} className={choice.type === 'emoji' && choice.value === emoji ? 'active' : ''} key={emoji} onClick={() => setChoice({ ...choice, type: 'emoji', value: emoji })}>{emoji}</button>)}</div>
     {busy && <p className='dialog-copy'>Saving your change...</p>}
     {error && <p className='form-error'>{error}</p>}

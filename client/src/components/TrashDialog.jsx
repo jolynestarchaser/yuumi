@@ -3,6 +3,7 @@ import { File, Folder, RotateCcw, Trash2 } from 'lucide-react';
 import GlassDialog from './GlassDialog.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
+import { Button } from './ui/button.jsx';
 
 export default function TrashDialog({ onClose }) {
   const items = useDesktopStore((state) => state.trashItems);
@@ -16,7 +17,7 @@ export default function TrashDialog({ onClose }) {
   const iconFor = (item) => item.type === 'folder' ? <Folder /> : <File />;
 
   return <>
-    <GlassDialog title='Trash' eyebrow={`${items.length} item${items.length === 1 ? '' : 's'} ready to restore`} onClose={onClose} className='trash-dialog' actions={items.length ? <button type='button' className='danger-button' onClick={() => setConfirm('empty')}><Trash2 size={15} />Empty Trash</button> : null}>
+    <GlassDialog title='Trash' eyebrow={`${items.length} item${items.length === 1 ? '' : 's'} ready to restore`} onClose={onClose} className='trash-dialog' actions={items.length ? <Button variant='destructive' onClick={() => setConfirm('empty')}><Trash2 size={15} />Empty Trash</Button> : null}>
       {items.length === 0 ? <p className='dialog-copy'>Trash is empty. Drag an item here or choose “Move to Trash” to keep the desktop tidy.</p> : <div className='trash-list'>
         {items.map((item) => <article key={item._id} className='trash-row'>
           <div className='trash-item-icon'>{iconFor(item)}</div><p><strong>{item.name}</strong><span>{item.type}</span></p>

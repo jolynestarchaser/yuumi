@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import GlassDialog from './GlassDialog.jsx';
+import { Button } from './ui/button.jsx';
+import { Input } from './ui/input.jsx';
 
 export default function SpriteDialog({ item, onSave, onClose }) {
   const current = item.appearance?.sprite || {};
@@ -13,8 +15,8 @@ export default function SpriteDialog({ item, onSave, onClose }) {
       onClose();
     } finally { setBusy(false); }
   }
-  return <GlassDialog title='Animate sprite sheet' eyebrow='One horizontal row of frames' onClose={onClose} actions={<><button type='button' onClick={onClose}>Cancel</button><button type='button' className='primary' disabled={busy} onClick={save}>{busy ? 'Saving...' : 'Animate'}</button></>}>
-    <div className='dialog-form'><label>Frames<input type='number' min='2' max='120' value={frames} onChange={(event) => setFrames(event.target.value)} /></label><label>Frames per second<input type='number' min='1' max='60' value={fps} onChange={(event) => setFps(event.target.value)} /></label></div>
+  return <GlassDialog title='Animate sprite sheet' eyebrow='One horizontal row of frames' onClose={onClose} actions={<><Button variant='secondary' onClick={onClose}>Cancel</Button><Button variant='neon' disabled={busy} onClick={save}>{busy ? 'Saving...' : 'Animate'}</Button></>}>
+    <div className='dialog-form'><label>Frames<Input type='number' min='2' max='120' value={frames} onChange={(event) => setFrames(event.target.value)} /></label><label>Frames per second<Input type='number' min='1' max='60' value={fps} onChange={(event) => setFps(event.target.value)} /></label></div>
     <p className='dialog-copy'>Upload a PNG/WebP sprite sheet with frames arranged left-to-right, then set its frame count and speed here.</p>
   </GlassDialog>;
 }
