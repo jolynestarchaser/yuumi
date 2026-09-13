@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { BellRing, Heart, Mail, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { BellRing, Heart, Mail, Send, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 import GlassDialog from './GlassDialog.jsx';
@@ -238,11 +238,12 @@ export default function MessageCenter() {
 
   const incoming = nextUnread && !open ? createPortal(<>
     <CelebrationLayer message={nextUnread} visible={celebrating} />
-    <aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} role='alertdialog' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`}>
-      <button type='button' className='close-dialog' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง'><X size={16} /></button>
+    <button type='button' className='incoming-letter-backdrop' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง' />
+    <aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`}>
+      <div className='incoming-windowbar' aria-hidden='true'><span><i /><i /><i /></span><b>Yuu & Mi message</b></div>
       <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} accentColor={nextUnread.accentColor} />
       <div className='incoming-letter-heading'>
-        <span className='incoming-envelope'><MessageMark {...nextUnread} size={25} /></span>
+        <span className='incoming-envelope'><MessageMark {...nextUnread} size={46} /></span>
         <div><p className='eyebrow'>{nextUnread.kind === 'alert' ? 'ข้อความพิเศษมาถึง' : 'มีจดหมายมาถึง'}</p><small>จาก {profileName(nextUnread.sender)}</small></div>
       </div>
       <h3>{nextUnread.subject || 'A little note for you'}</h3>
