@@ -59,15 +59,16 @@
 /* All dialogs render into document.body; this layer stays above persisted desktop window z values. */
 .modal-backdrop { z-index:2147480000; }
 .message-dialog {
-  width:min(94vw,820px);
+  width:min(94vw,840px);
+  max-width:min(94vw,840px);
   max-height:min(720px,calc(100dvh - 32px));
   overflow:hidden;
-  padding:20px;
+  padding:22px;
 }
-.message-dialog .dialog-heading { align-items:flex-start; }
+.message-dialog .dialog-heading { align-items:flex-start; padding-right:38px; }
 .message-dialog h2 { display:flex; align-items:center; gap:8px; }
-.message-dialog .dialog-content { min-height:0; }
-.message-commandbar { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:12px 0; }
+.message-dialog .dialog-content { min-width:0; min-height:0; }
+.message-commandbar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; margin:16px 0 14px; padding:10px; border:1px solid #ffffff18; border-radius:15px; background:linear-gradient(100deg,#ffffff0b,#b6ff0008); }
 .message-commandbar button, .message-kind-picker button, .incoming-actions button {
   display:inline-flex;
   align-items:center;
@@ -81,8 +82,8 @@
 }
 .sound-toggle { padding:7px 10px; }
 .compact-primary { padding:8px 12px; }
-.mailbox-layout { display:grid; grid-template-columns:minmax(230px,.82fr) minmax(280px,1.18fr); gap:12px; min-height:300px; }
-.message-list { display:grid; align-content:start; gap:7px; max-height:min(52dvh,390px); overflow:auto; padding:2px 5px 2px 2px; scrollbar-color:#b6ff0066 transparent; }
+.mailbox-layout { display:grid; grid-template-columns:minmax(220px,.82fr) minmax(0,1.28fr); gap:14px; min-height:320px; }
+.message-list { display:grid; align-content:start; gap:7px; min-width:0; max-height:min(52dvh,410px); overflow:auto; padding:2px 5px 2px 2px; scrollbar-color:#b6ff0066 transparent; }
 .message-row { display:flex; gap:10px; width:100%; min-width:0; padding:10px; border:1px solid #ffffff20; border-radius:14px; color:#eff5ff; text-align:left; background:#ffffff0d; transition:transform .18s ease,border-color .18s ease,background .18s ease; }
 .message-row:hover { border-color:#ffffff55; background:#ffffff16; transform:translateX(3px); }
 .message-row.unread { border-color:#b6ff0080; background:linear-gradient(110deg,#b6ff001c,#2453ff14); box-shadow:inset 3px 0 #b6ff00; }
@@ -95,7 +96,7 @@
 .empty-mailbox { margin:auto; padding:38px 12px; color:#cbd6f7; text-align:center; line-height:1.7; }
 .empty-mailbox svg { display:block; margin:0 auto 8px; color:#b6ff00; }
 .empty-mailbox small { color:#93a4d7; }
-.message-detail { position:relative; min-height:300px; max-height:min(52dvh,390px); overflow:auto; display:grid; place-items:center; align-content:center; gap:8px; padding:22px; border:1px solid #ffffff22; border-radius:18px; color:#9dacd8; text-align:center; background:radial-gradient(circle at 82% 12%,#b6ff0018,transparent 28%),linear-gradient(145deg,#ffffff10,#2453ff0c); }
+.message-detail { position:relative; min-width:0; min-height:320px; max-height:min(52dvh,410px); overflow:auto; display:grid; place-items:center; align-content:center; gap:8px; padding:24px; border:1px solid #ffffff22; border-radius:18px; color:#9dacd8; text-align:center; background:radial-gradient(circle at 82% 12%,#b6ff0018,transparent 28%),linear-gradient(145deg,#ffffff10,#2453ff0c); }
 .message-detail.has-message { display:block; color:#f1f5ff; text-align:left; }
 .message-detail h3 { margin:10px 0 6px; font-size:22px; letter-spacing:-.035em; }
 .message-detail p:last-child { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.6; }
@@ -159,13 +160,14 @@
 .note-toolbar { display:flex; gap:8px; align-items:center; }.note-toolbar input { flex:1; }.note-toolbar button { display:inline-flex; gap:5px; align-items:center; padding:8px 10px; color:#fff; border:1px solid #ffffff2c; border-radius:10px; background:#ffffff14; font-size:11px; }
 .history-dialog { width:min(94vw,680px); }.history-list { display:grid; gap:8px; max-height:55vh; overflow:auto; margin-top:15px; }.history-row { display:flex; justify-content:space-between; gap:10px; padding:12px; border:1px solid #ffffff20; border-radius:13px; background:#ffffff0d; }.history-row strong { display:block; }.history-row small { display:block; margin-top:3px; color:#bdc8e9; font:10px 'DM Mono',monospace; }.history-row p { max-width:520px; margin:7px 0 0; color:#dbe3ff; white-space:pre-wrap; }.history-row button { align-self:center; display:grid; place-items:center; width:34px; height:34px; color:#06113e; border:0; border-radius:10px; background:#b6ff00; }
 .secret-item .item-visual { border-color:#ff9bc755; background:linear-gradient(145deg,#ff9bc733,#ffffff10); }.secret-icon { color:#ffb5cc !important; }
-@media (max-width: 680px) {
-  .message-dialog { width:calc(100vw - 16px); max-height:calc(100dvh - 18px); padding:14px; border-radius:18px; }
-  .message-commandbar { align-items:stretch; }
-  .message-commandbar button { min-width:0; font-size:10px; }
+@media (max-width: 760px) {
+  .message-dialog { width:calc(100vw - 16px); max-width:calc(100vw - 16px); max-height:calc(100dvh - 18px); padding:14px; border-radius:18px; }
+  .message-dialog .dialog-heading { padding-right:32px; }
+  .message-commandbar { grid-template-columns:1fr; align-items:stretch; gap:7px; margin:12px 0; padding:8px; }
+  .message-commandbar button { width:100%; min-width:0; font-size:11px; }
   .mailbox-layout { grid-template-columns:1fr; min-height:0; }
-  .message-list { max-height:210px; }
-  .message-detail { min-height:150px; max-height:210px; padding:16px; }
+  .message-list { max-height:min(34dvh,280px); padding-right:2px; }
+  .message-detail { min-height:180px; max-height:min(34dvh,280px); padding:16px; }
   .message-detail:not(.has-message) { display:none; }
   .effect-picker { grid-template-columns:repeat(7,72px); }
   .incoming-letter { width:calc(100vw - 20px); max-height:calc(100dvh - 20px); }
