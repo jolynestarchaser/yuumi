@@ -4,6 +4,7 @@ import DesktopWindow from './models/DesktopWindow.js';
 import DesktopSettings from './models/DesktopSettings.js';
 import DesktopStroke from './models/DesktopStroke.js';
 import DesktopText from './models/DesktopText.js';
+import { revisionService, textSnapshot } from './services/historyService.js';
 
 const locks = new Map();
 const room = 'shared-desktop';
@@ -38,17 +39,19 @@ async function wouldCreateCycle(item, parentId) {
 export function setupRealtime(io) {
   const release = (key, socket) => { if (locks.get(key)?.socketId === socket.id) { locks.delete(key); io.to(room).emit('item:unlock', { key }); } };
   io.on('connection', (socket) => {
+    const actor = socket.data.desktop?.profile || 'unknown';
+    socket.join(`profile:${actor}`);
     socket.on('desktop:join', async () => {
       socket.join(room);
       const [items, windows, strokes, texts, settings] = await Promise.all([
         Item.find({ parentId: null, deletedAt: null }).sort({ updatedAt: -1 }),
         DesktopWindow.find().sort({ z: 1 }),
         DesktopStroke.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(2000),
-        DesktopText.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(500),
+        DesktopText.find({ desktopKey: 'shared-desktop', deletedAt: null }).sort({ createdAt: 1 }).limit(500),
         DesktopSettings.findOne({ key: 'shared-desktop' })
       ]);
       socket.emit('desktop:snapshot', { items, windows, strokes, texts, settings });
-      socket.to(room).emit('presence:changed', { id: socket.id, online: true });
+      socket.to(room).emit('presence:changed', { id: socket.id, profile: actor, online: true });
     });
     socket.on('item:lock', ({ id }, ack = () => {}) => {
       const key = `item:${id}`; const current = locks.get(key);
@@ -64,6 +67,7 @@ export function setupRealtime(io) {
         if (item.type === 'folder' && await wouldCreateCycle(item, parentId)) return ack({ ok: false, message: 'A folder cannot contain itself' });
         if ((item.position.revision || 0) !== revision) return ack({ ok: false, stale: true, item });
         item.parentId = parentId;
+        item.updatedBy = actor;
         item.position = { x: Math.max(0, position.x), y: Math.max(0, position.y), revision: revision + 1 };
         await item.save();
         release(`item:${id}`, socket);
@@ -81,7 +85,7 @@ export function setupRealtime(io) {
     socket.on('ink:commit', async (stroke, ack = () => {}) => {
       if (!validStroke(stroke)) return ack({ ok: false, message: 'Invalid stroke' });
       try {
-        const saved = await DesktopStroke.create({ ...stroke, desktopKey: 'shared-desktop', createdBy: socket.id });
+        const saved = await DesktopStroke.create({ ...stroke, desktopKey: 'shared-desktop', createdBy: actor });
         socket.to(room).emit('ink:created', saved);
         socket.to(room).emit('ink:end', { owner: socket.id });
         ack({ ok: true, stroke: saved });
@@ -104,7 +108,8 @@ export function setupRealtime(io) {
     socket.on('text:commit', async (annotation, ack = () => {}) => {
       if (!validText(annotation)) return ack({ ok: false, message: 'Invalid desktop text' });
       try {
-        const saved = await DesktopText.create({ ...annotation, text: annotation.text.trim(), desktopKey: 'shared-desktop', createdBy: socket.id });
+        const saved = await DesktopText.create({ ...annotation, text: annotation.text.trim(), desktopKey: 'shared-desktop', createdBy: actor, updatedBy: actor, revision: 0 });
+        await revisionService.record({ entityType: 'desktop-text', entityId: saved._id, revision: 0, operation: 'create', actor, snapshot: textSnapshot(saved) });
         io.to(room).emit('text:created', saved);
         ack({ ok: true, text: saved });
       } catch (error) {
@@ -114,7 +119,12 @@ export function setupRealtime(io) {
     socket.on('text:update', async (annotation, ack = () => {}) => {
       if (!mongoose.isValidObjectId(annotation?._id) || !validText(annotation)) return ack({ ok: false, message: 'Invalid desktop text' });
       try {
-        const saved = await DesktopText.findOneAndUpdate({ _id: annotation._id, desktopKey: 'shared-desktop' }, { text: annotation.text.trim(), x: annotation.x, y: annotation.y, color: annotation.color, size: annotation.size }, { new: true });
+        const current = await DesktopText.findOne({ _id: annotation._id, desktopKey: 'shared-desktop', deletedAt: null });
+        if (!current) return ack({ ok: false, message: 'Text not found' });
+        if (Number(annotation.revision || 0) !== (current.revision || 0)) return ack({ ok: false, stale: true, text: current, message: 'This text changed elsewhere' });
+        Object.assign(current, { text: annotation.text.trim(), x: annotation.x, y: annotation.y, color: annotation.color, size: annotation.size, updatedBy: actor, revision: (current.revision || 0) + 1 });
+        const saved = await current.save();
+        await revisionService.record({ entityType: 'desktop-text', entityId: saved._id, revision: saved.revision, operation: 'update', actor, snapshot: textSnapshot(saved) });
         if (!saved) return ack({ ok: false, message: 'Text not found' });
         io.to(room).emit('text:updated', saved);
         ack({ ok: true, text: saved });
@@ -124,7 +134,8 @@ export function setupRealtime(io) {
     });
     socket.on('text:delete', async ({ id }, ack = () => {}) => {
       if (!mongoose.isValidObjectId(id)) return ack({ ok: false, message: 'Invalid text ID' });
-      await DesktopText.deleteOne({ _id: id, desktopKey: 'shared-desktop' });
+      const current = await DesktopText.findOne({ _id: id, desktopKey: 'shared-desktop' });
+      if (current) { await revisionService.record({ entityType: 'desktop-text', entityId: current._id, revision: (current.revision || 0) + 1, operation: 'delete', actor, snapshot: textSnapshot(current) }); await DesktopText.updateOne({ _id: id }, { deletedAt: new Date(), revision: (current.revision || 0) + 1 }); }
       io.to(room).emit('text:deleted', { id });
       ack({ ok: true });
     });
@@ -137,7 +148,6 @@ export function setupRealtime(io) {
     });
     socket.on('window:preview', ({ itemId, bounds }) => { if (finiteBounds(bounds)) socket.to(room).emit('window:preview', { itemId, bounds }); });
     socket.on('window:close', async ({ itemId }) => { await DesktopWindow.deleteOne({ itemId }); io.to(room).emit('window:deleted', { itemId }); });
-    socket.on('desktop:broadcast', (event) => { if (['item:created', 'item:deleted', 'item:updated', 'settings:updated'].includes(event?.type)) socket.to(room).emit(event.type, event.payload); });
-    socket.on('disconnect', () => { for (const [key, lock] of locks) if (lock.socketId === socket.id) release(key, socket); socket.to(room).emit('presence:changed', { id: socket.id, online: false }); });
+    socket.on('disconnect', () => { for (const [key, lock] of locks) if (lock.socketId === socket.id) release(key, socket); socket.to(room).emit('presence:changed', { id: socket.id, profile: actor, online: false }); });
   });
 }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import mongoose from 'mongoose';
 import Item from '../src/models/Item.js';
 import DesktopStroke from '../src/models/DesktopStroke.js';
+import Message from '../src/models/Message.js';
 
 const creator = new mongoose.Types.ObjectId();
 
@@ -31,4 +32,18 @@ test('desktop strokes validate color and logical points', () => {
   assert.match(invalid.validateSync()?.message || '', /validation failed/i);
   const valid = new DesktopStroke({ points: [{ x: 1, y: 1 }, { x: 2, y: 2 }], color: '#b6ff00', width: 5 });
   assert.equal(valid.validateSync(), undefined);
+});
+
+test('secret items default to hidden mode without changing their type', () => {
+  const item = new Item({ name: 'Vault', type: 'folder', position: { x: 0, y: 0 } });
+  assert.equal(item.secret, false);
+  item.secret = true;
+  assert.equal(item.validateSync(), undefined);
+});
+
+test('messages only accept the supported animation presets', () => {
+  const message = new Message({ sender: 'joe', recipient: 'focus', body: 'hello', operationId: 'test-animation', animation: 'hearts' });
+  assert.equal(message.validateSync(), undefined);
+  message.animation = 'script';
+  assert.match(message.validateSync()?.message || '', /animation/);
 });

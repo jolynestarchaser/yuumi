@@ -36,7 +36,11 @@ const itemSchema = new mongoose.Schema(
     content: { type: String, maxlength: 10000, required: [function requiresContent() { return this.type === 'note'; }, 'A note requires content'] },
     url: { type: String, required: [function requiresUrl() { return this.type === 'link'; }, 'A link requires a URL'] },
     asset: { type: assetSchema, required: [function requiresAsset() { return ['image', 'video', 'audio', 'file'].includes(this.type); }, 'Media requires an asset URL'], validate: { validator(asset) { return !['image', 'video', 'audio', 'file'].includes(this.type) || Boolean(asset?.secureUrl); }, message: 'Media requires an asset URL' } }, metadata: metadataSchema, appearance: appearanceSchema,
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    secret: { type: Boolean, default: false, index: true },
+    secretLabel: { type: String, trim: true, maxlength: 80 },
+    contentRevision: { type: Number, default: 0, min: 0 },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updatedBy: { type: String, enum: ['joe', 'focus', 'system', 'unknown'], default: 'unknown' }
   },
   { timestamps: true }
 );

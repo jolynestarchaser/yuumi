@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useDesktopStore } from '../store/desktopStore.js';
+import HistoryDialog from './HistoryDialog.jsx';
 
 const WIDTH = 1440;
 const HEIGHT = 900;
@@ -28,6 +29,7 @@ export default function InkLayer({ canvasRef }) {
   const [draft, setDraft] = useState(null);
   const [draftText, setDraftText] = useState(null);
   const [selectedTextId, setSelectedTextId] = useState(null);
+  const [historyText, setHistoryText] = useState(null);
   const textInput = useRef(null);
 
   function logicalPoint(event) {
@@ -46,12 +48,13 @@ export default function InkLayer({ canvasRef }) {
     if (textIds.length) eraseTexts(textIds);
   }
 
-  function saveText() {
-    const annotation = draftText && { _id: draftText._id, text: draftText.value.trim(), x: draftText.x, y: draftText.y, color: draftText.color || pen.color, size: draftText.size || Math.max(16, pen.width * 3) };
+  async function saveText() {
+    const annotation = draftText && { _id: draftText._id, revision: draftText.revision || 0, text: draftText.value.trim(), x: draftText.x, y: draftText.y, color: draftText.color || pen.color, size: draftText.size || Math.max(16, pen.width * 3) };
+    const draftSnapshot = draftText;
     setDraftText(null);
     if (annotation?.text) {
-      if (annotation._id) updateText(annotation);
-      else commitText(annotation);
+      const result = annotation._id ? await updateText(annotation) : await commitText(annotation);
+      if (result?.stale && draftSnapshot) { setDraftText(draftSnapshot); requestAnimationFrame(() => textInput.current?.focus()); }
     }
   }
 
@@ -115,10 +118,10 @@ export default function InkLayer({ canvasRef }) {
       {draft && <path d={path(draft.points)} stroke={draft.color} strokeWidth={draft.width} fill='none' strokeLinecap='round' strokeLinejoin='round' />}
     </svg>
     <div className='desktop-text-layer' aria-live='polite'>
-      {texts.map((text) => <p key={text._id} className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''}`} style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%`, color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => event.stopPropagation()} title='Double-click to edit'>{text.text}</p>)}
+      {texts.map((text) => <span key={text._id} className={`desktop-text-wrap ${selectedTextId === text._id ? 'selected' : ''}`} style={{ left: `${(text.x / WIDTH) * 100}%`, top: `${(text.y / HEIGHT) * 100}%` }}><p className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''}`} style={{ color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => event.stopPropagation()} title='Double-click to edit'>{text.text}</p>{selectedTextId === text._id && <button className='text-history-button' data-no-drag onClick={(event) => { event.stopPropagation(); setHistoryText(text); }}>↺</button>}</span>)}
       {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: draftText.color || pen.color, fontSize: `${draftText.size || Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
           <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here...' rows={1} />
       </form>}
-    </div>
+    </div>{historyText && <HistoryDialog entityType='desktop-text' entity={historyText} onClose={() => setHistoryText(null)} />}
   </div>;
 }

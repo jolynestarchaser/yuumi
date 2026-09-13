@@ -7,7 +7,10 @@ const desktopTextSchema = new mongoose.Schema({
   y: { type: Number, required: true, min: 0, max: 900 },
   color: { type: String, required: true, match: /^#[0-9a-f]{6}$/i },
   size: { type: Number, required: true, min: 12, max: 64 },
-  createdBy: { type: String, maxlength: 120 }
+  createdBy: { type: String, maxlength: 120 },
+  updatedBy: { type: String, maxlength: 120 },
+  revision: { type: Number, default: 0, min: 0 },
+  deletedAt: { type: Date, default: null }
 }, { timestamps: true });
 
 desktopTextSchema.index({ desktopKey: 1, createdAt: 1 });
