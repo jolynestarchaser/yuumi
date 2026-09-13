@@ -69,6 +69,7 @@ export default function MessageCenter() {
   const [open, setOpen] = useState(false);
   const [compose, setCompose] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [form, setForm] = useState({ ...DEFAULT_FORM });
   const [ready, setReady] = useState(false);
   const [dismissedIds, setDismissedIds] = useState(() => new Set());
   const [celebrating, setCelebrating] = useState(false);
