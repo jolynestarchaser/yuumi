@@ -51,3 +51,13 @@ test('messages only accept the supported animation presets', () => {
   message.animation = 'script';
   assert.match(message.validateSync()?.message || '', /animation/);
 });
+
+test('messages persist a whitelisted icon and any valid hex accent color', () => {
+  const message = new Message({ sender: 'joe', recipient: 'focus', body: 'hello', operationId: 'test-icon', icon: 'rocket', accentColor: '#2d55ff' });
+  assert.equal(message.validateSync(), undefined);
+  message.icon = 'external-svg';
+  assert.match(message.validateSync()?.message || '', /icon/);
+  message.icon = 'heart';
+  message.accentColor = 'blue';
+  assert.match(message.validateSync()?.message || '', /accentColor/);
+});

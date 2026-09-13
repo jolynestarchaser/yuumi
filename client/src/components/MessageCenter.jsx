@@ -4,6 +4,7 @@ import { BellRing, Heart, Mail, Send, Sparkles, Volume2, VolumeX, X } from 'luci
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 import GlassDialog from './GlassDialog.jsx';
+import { iconCatalog, iconComponents } from '../lib/iconCatalog.jsx';
 import {
   LETTER_EFFECTS,
   createCelebrationParticles,
@@ -16,9 +17,15 @@ const DEFAULT_FORM = Object.freeze({
   subject: '',
   body: '',
   kind: 'letter',
+  icon: 'heart',
+  accentColor: '#ff8fa5',
   emoji: '💌',
   animation: 'hearts'
 });
+
+const messageIconKeys = new Set(['heart', 'star', 'sparkles', 'bell', 'gift', 'music', 'cloud', 'coffee', 'sun', 'rocket', 'game', 'idea', 'message', 'palette']);
+const messageIconOptions = iconCatalog.filter(({ key }) => messageIconKeys.has(key));
+const effectIconNames = Object.freeze({ none: 'message', hearts: 'heart', sparkles: 'sparkles', 'emoji-rain': 'palette', confetti: 'gift', bubbles: 'cloud', stars: 'star' });
 
 const recipientFor = (profile) => profile === 'joe' ? 'focus' : 'joe';
 const profileName = (profile) => profile === 'joe' ? 'Joe' : 'Focus';
@@ -31,10 +38,16 @@ function readSoundPreference() {
   }
 }
 
-function EffectOrbit({ animation, emoji }) {
+function MessageMark({ icon, emoji, accentColor, size = 22, className = '' }) {
+  const Icon = iconComponents[icon];
+  if (!Icon) return <span className={`legacy-message-emoji ${className}`}>{emoji || '💌'}</span>;
+  return <Icon className={`message-mark ${className}`} size={size} strokeWidth={2.15} fill={icon === 'heart' ? 'currentColor' : 'none'} style={{ color: accentColor || '#ff8fa5' }} aria-hidden='true' />;
+}
+
+function EffectOrbit({ animation, emoji, accentColor }) {
   const effect = resolveLetterEffect(animation, emoji);
   if (!effect.glyphs.length) return null;
-  return <div className={`letter-orbit ${effect.name}`} aria-hidden='true'>
+  return <div className={`letter-orbit ${effect.name}`} style={{ '--letter-accent': accentColor || '#ff8fa5' }} aria-hidden='true'>
     {effect.glyphs.slice(0, 5).map((glyph, index) => <span key={`${glyph}-${index}`} style={{ '--i': index }}>{glyph}</span>)}
   </div>;
 }
@@ -46,7 +59,7 @@ function CelebrationLayer({ message, visible }) {
     count: 22
   }), [message?._id, message?.animation, message?.emoji]);
   if (!visible || !particles.length) return null;
-  return <div className={`letter-celebration effect-${message.animation}`} aria-hidden='true'>
+  return <div className={`letter-celebration effect-${message.animation}`} style={{ '--letter-accent': message.accentColor || '#ff8fa5' }} aria-hidden='true'>
     {particles.map((particle) => <span key={particle.id} style={{
       '--particle-x': `${particle.x}vw`,
       '--particle-delay': `${particle.delay}s`,
@@ -197,24 +210,28 @@ export default function MessageCenter() {
       </div>
       <input aria-label='หัวข้อจดหมาย' placeholder='หัวข้อจดหมาย' maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
       <textarea aria-label='ข้อความ' placeholder='เขียนข้อความถึงอีกคน…' maxLength={5000} required value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
-      <div className='effect-heading'><span>บรรยากาศตอนเปิด</span><strong>{effect.glyphs[0] ?? '—'} {effect.label}</strong></div>
+      <div className='message-symbol-heading'><span>สัญลักษณ์ประจำจดหมาย</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> สีที่เลือก</strong></div>
+      <div className='message-icon-picker' aria-label='เลือกไอคอนจดหมาย'>
+        {messageIconOptions.map(({ key, label }) => <button type='button' key={key} className={form.icon === key ? 'active' : ''} style={{ '--message-accent': form.accentColor }} title={label} aria-label={label} onClick={() => setForm((value) => ({ ...value, icon: key }))}><MessageMark icon={key} accentColor={form.accentColor} size={20} /></button>)}
+      </div>
+      <label className='accent-color-field'>สี icon <span><input aria-label='เลือกสี icon' type='color' value={form.accentColor} onChange={(event) => setForm((value) => ({ ...value, accentColor: event.target.value }))} /><output>{form.accentColor}</output></span></label>
+      <div className='effect-heading'><span>บรรยากาศตอนเปิด</span><strong><MessageMark icon={effectIconNames[form.animation]} accentColor={form.accentColor} size={17} /> {effect.label}</strong></div>
       <div className='effect-picker'>
         {Object.entries(LETTER_EFFECTS).map(([name, option]) => <button type='button' key={name} className={form.animation === name ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, animation: name }))}>
-          <span>{option.glyphs[0] ?? '—'}</span><small>{option.label}</small>
+          <span><MessageMark icon={effectIconNames[name]} accentColor={form.accentColor} size={20} /></span><small>{option.label}</small>
         </button>)}
       </div>
-      <label className='emoji-field'>Emoji ประจำซอง<input aria-label='Emoji ประจำซอง' value={form.emoji} maxLength={16} onChange={(event) => setForm((value) => ({ ...value, emoji: event.target.value }))} /></label>
       {formError && <p className='form-error' role='alert'>{formError}</p>}
       <div className='dialog-actions'><button type='button' onClick={() => { setCompose(false); setFormError(''); }}>ยกเลิก</button><button className='primary' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label='Inbox'>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>
-          <span className='message-emoji'>{message.emoji || '💌'}</span>
+          <span className='message-emoji'><MessageMark {...message} /></span>
           <span className='message-row-copy'><strong>{message.subject || 'A special message'}</strong><small>จาก {profileName(message.sender)} · {new Date(message.createdAt).toLocaleString()}</small><span>{message.body}</span></span>
         </button>) : <p className='empty-mailbox'><Sparkles size={22} /> ยังไม่มีข้อความ<br /><small>ลองเขียนฉบับแรกถึง {profileName(recipientFor(profile))}</small></p>}
       </div>
       <article className={`message-detail ${selected ? 'has-message' : ''}`}>
-        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} /><p className='eyebrow'>{selected.kind === 'alert' ? 'Special alert' : `From ${profileName(selected.sender)}`}</p><div className='detail-emoji'>{selected.emoji || '💌'}</div><h3>{selected.subject || 'A special message'}</h3><p>{selected.body}</p></> : <><Mail size={30} /><strong>เลือกจดหมายเพื่อเปิดอ่าน</strong><small>ข้อความใหม่จะมีขอบสี Neon</small></>}
+        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} accentColor={selected.accentColor} /><p className='eyebrow'>{selected.kind === 'alert' ? 'Special alert' : `From ${profileName(selected.sender)}`}</p><div className='detail-emoji'><MessageMark {...selected} size={31} /></div><h3>{selected.subject || 'A special message'}</h3><p>{selected.body}</p></> : <><Mail size={30} /><strong>เลือกจดหมายเพื่อเปิดอ่าน</strong><small>ข้อความใหม่จะมีขอบสี Neon</small></>}
       </article>
     </div>}
   </GlassDialog> : null;
@@ -223,9 +240,9 @@ export default function MessageCenter() {
     <CelebrationLayer message={nextUnread} visible={celebrating} />
     <aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} role='alertdialog' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`}>
       <button type='button' className='close-dialog' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง'><X size={16} /></button>
-      <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} />
+      <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} accentColor={nextUnread.accentColor} />
       <div className='incoming-letter-heading'>
-        <span className='incoming-envelope'>{nextUnread.emoji || '💌'}</span>
+        <span className='incoming-envelope'><MessageMark {...nextUnread} size={25} /></span>
         <div><p className='eyebrow'>{nextUnread.kind === 'alert' ? 'ข้อความพิเศษมาถึง' : 'มีจดหมายมาถึง'}</p><small>จาก {profileName(nextUnread.sender)}</small></div>
       </div>
       <h3>{nextUnread.subject || 'A little note for you'}</h3>

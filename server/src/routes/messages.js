@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import mongoose from 'mongoose';
-import Message, { messageAnimationTypes } from '../models/Message.js';
+import Message, { messageAnimationTypes, messageIconTypes } from '../models/Message.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 
 const router = Router();
@@ -33,10 +33,14 @@ router.post('/', async (req, res) => {
   const subject = typeof req.body?.subject === 'string' ? req.body.subject.trim() : '';
   const kind = ['alert', 'letter'].includes(req.body?.kind) ? req.body.kind : 'letter';
   const animation = messageAnimationTypes.includes(req.body?.animation) ? req.body.animation : 'hearts';
+  const icon = messageIconTypes.includes(req.body?.icon) ? req.body.icon : 'heart';
+  const accentColor = typeof req.body?.accentColor === 'string' && /^#[0-9a-f]{6}$/i.test(req.body.accentColor)
+    ? req.body.accentColor
+    : '#ff8fa5';
   const emoji = typeof req.body?.emoji === 'string' ? req.body.emoji.slice(0, 16) : '💌';
   if (!['joe', 'focus'].includes(recipient) || recipient === req.desktop.profile || !body || body.length > 5000 || subject.length > 120) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Message details are invalid.' } });
   const operationId = typeof req.body?.operationId === 'string' && req.body.operationId.length <= 80 ? req.body.operationId : crypto.randomUUID();
-  const message = await Message.findOneAndUpdate({ operationId }, { sender: req.desktop.profile, recipient, kind, subject, body, emoji, animation, operationId }, { upsert: true, new: true, setDefaultsOnInsert: true });
+  const message = await Message.findOneAndUpdate({ operationId }, { sender: req.desktop.profile, recipient, kind, subject, body, icon, accentColor, emoji, animation, operationId }, { upsert: true, new: true, setDefaultsOnInsert: true });
   req.app.get('io')?.to(`profile:${recipient}`).emit('message:received', message);
   res.status(201).json({ success: true, data: message });
 });
