@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import GlassDialog from './GlassDialog.jsx';
+import { Button } from './ui/button.jsx';
+import { Input } from './ui/input.jsx';
+import { AnimatedButton } from './animate-ui/AnimatedButton.jsx';
 
 export default function AddLinkDialog({ initialUrl = '', onAdd, onClose }) {
   const [url, setUrl] = useState(initialUrl);
@@ -18,9 +21,9 @@ export default function AddLinkDialog({ initialUrl = '', onAdd, onClose }) {
   return <GlassDialog title='Add a URL' eyebrow='Save a corner of the web' onClose={onClose}>
     <form className='dialog-form' onSubmit={submit}>
       <p className='dialog-copy'>We will turn it into a rich card on your shared desktop.</p>
-      <input autoFocus type='url' placeholder='https://example.com' value={url} onChange={(event) => setUrl(event.target.value)} required />
+      <Input autoFocus type='url' placeholder='https://example.com' value={url} onChange={(event) => setUrl(event.target.value)} required />
       <small className='form-error'>{error}</small>
-      <div className='dialog-actions'><button type='button' onClick={onClose}>Cancel</button><button className='primary' disabled={saving}>{saving ? 'Adding...' : 'Add to desktop'}</button></div>
+      <div className='dialog-actions'><Button variant='secondary' onClick={onClose}>Cancel</Button><AnimatedButton variant='neon' type='submit' disabled={saving}>{saving ? 'Adding...' : 'Add to desktop'}</AnimatedButton></div>
     </form>
   </GlassDialog>;
 }

@@ -3,6 +3,8 @@ import GlassDialog from './GlassDialog.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import IconPickerDialog from './IconPickerDialog.jsx';
 import SpriteDialog from './SpriteDialog.jsx';
+import { Button } from './ui/button.jsx';
+import { Input } from './ui/input.jsx';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 export default function ContextMenu({ onAddLink }) {
@@ -53,8 +55,8 @@ export default function ContextMenu({ onAddLink }) {
     </menu>}
     {action?.type === 'rename' && <GlassDialog title='Rename item' eyebrow='Desktop item' onClose={() => setAction(null)}>
       <form className='dialog-form' onSubmit={async (event) => { event.preventDefault(); if (name.trim()) await update(action.item._id, { name: name.trim() }); setAction(null); }}>
-        <label>Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={160} /></label>
-        <div className='dialog-actions'><button type='button' onClick={() => setAction(null)}>Cancel</button><button className='primary'>Save name</button></div>
+        <label>Name<Input value={name} onChange={(event) => setName(event.target.value)} maxLength={160} /></label>
+        <div className='dialog-actions'><Button variant='secondary' onClick={() => setAction(null)}>Cancel</Button><Button variant='neon' type='submit'>Save name</Button></div>
       </form>
     </GlassDialog>}
     {action?.type === 'icon' && <IconPickerDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}

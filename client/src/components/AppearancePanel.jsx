@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { ImagePlus, MousePointer2, RotateCcw } from 'lucide-react';
 import GlassDialog from './GlassDialog.jsx';
+import { Button } from './ui/button.jsx';
+import { Slider } from './ui/slider.jsx';
 
 const presets = ['neon', 'sunset', 'midnight'];
 const themes = ['soft', 'glass', 'classic'];
@@ -8,7 +10,7 @@ const colors = ['#b6ff00', '#2453ff', '#06113e', '#f5f7ff', '#ff5c8a', '#ff9f43'
 const defaults = { type: 'preset', value: 'neon', colors: ['#b6ff00', '#2453ff'], angle: 135, fit: 'cover', position: { x: 50, y: 50 }, backgroundColor: '#06113e', dimness: 18, blur: 0, brightness: 100, saturation: 100 };
 
 function Range({ label, value, min, max, unit = '', onChange }) {
-  return <label className='range-setting'><span>{label}<b>{value}{unit}</b></span><input type='range' min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} /></label>;
+  return <label className='range-setting'><span>{label}<b>{value}{unit}</b></span><Slider min={min} max={max} value={[value]} onValueChange={([next]) => onChange(next)} aria-label={label} /></label>;
 }
 
 export default function AppearancePanel({ settings, onSave, onUpload, onClose }) {
@@ -64,7 +66,7 @@ export default function AppearancePanel({ settings, onSave, onUpload, onClose })
   }
 
   const preview = wallpaper.type === 'gradient' ? `linear-gradient(${wallpaper.angle}deg, ${wallpaper.colors.join(', ')})` : wallpaper.type === 'solid' ? wallpaper.colors[0] : undefined;
-  return <GlassDialog title='Desktop appearance' eyebrow='Make it yours' className='customize-dialog' onClose={onClose} actions={<><button onClick={() => setWallpaper(defaults)}><RotateCcw size={15} /> Reset</button><button className='primary' disabled={busy} onClick={apply}>{busy ? 'Saving...' : 'Apply'}</button></>}>
+  return <GlassDialog title='Desktop appearance' eyebrow='Make it yours' className='customize-dialog' onClose={onClose} actions={<><Button variant='secondary' onClick={() => setWallpaper(defaults)}><RotateCcw size={15} /> Reset</Button><Button variant='neon' disabled={busy} onClick={apply}>{busy ? 'Saving...' : 'Apply'}</Button></>}>
     <div className='appearance-layout'>
       <div className='wallpaper-preview' style={{ '--preview-background': preview, '--preview-image': wallpaper.type === 'image' ? `url(${wallpaper.asset?.url})` : undefined, '--preview-fit': wallpaper.fit, '--preview-x': `${wallpaper.position.x}%`, '--preview-y': `${wallpaper.position.y}%`, '--preview-dim': wallpaper.dimness / 100 }}><span>Live preview</span></div>
       <div className='segmented-control wallpaper-types'>

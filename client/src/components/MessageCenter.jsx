@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BellRing, Heart, Mail, Send, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 import GlassDialog from './GlassDialog.jsx';
+import { Button } from './ui/button.jsx';
+import { Input } from './ui/input.jsx';
+import { Textarea } from './ui/textarea.jsx';
 import { iconCatalog, iconComponents } from '../lib/iconCatalog.jsx';
 import {
   LETTER_EFFECTS,
@@ -208,8 +212,8 @@ export default function MessageCenter() {
         <button type='button' className={form.kind === 'letter' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'letter' }))}><Mail size={15} /> จดหมาย</button>
         <button type='button' className={form.kind === 'alert' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'alert' }))}><BellRing size={15} /> ข้อความด่วน</button>
       </div>
-      <input aria-label='หัวข้อจดหมาย' placeholder='หัวข้อจดหมาย' maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
-      <textarea aria-label='ข้อความ' placeholder='เขียนข้อความถึงอีกคน…' maxLength={5000} required value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
+      <Input aria-label='หัวข้อจดหมาย' placeholder='หัวข้อจดหมาย' maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
+      <Textarea aria-label='ข้อความ' placeholder='เขียนข้อความถึงอีกคน…' maxLength={5000} required value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
       <div className='message-symbol-heading'><span>สัญลักษณ์ประจำจดหมาย</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> สีที่เลือก</strong></div>
       <div className='message-icon-picker' aria-label='เลือกไอคอนจดหมาย'>
         {messageIconOptions.map(({ key, label }) => <button type='button' key={key} className={form.icon === key ? 'active' : ''} style={{ '--message-accent': form.accentColor }} title={label} aria-label={label} onClick={() => setForm((value) => ({ ...value, icon: key }))}><MessageMark icon={key} accentColor={form.accentColor} size={20} /></button>)}
@@ -222,7 +226,7 @@ export default function MessageCenter() {
         </button>)}
       </div>
       {formError && <p className='form-error' role='alert'>{formError}</p>}
-      <div className='dialog-actions'><button type='button' onClick={() => { setCompose(false); setFormError(''); }}>ยกเลิก</button><button className='primary' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</button></div>
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); }}>ยกเลิก</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</Button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label='Inbox'>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>
@@ -239,7 +243,7 @@ export default function MessageCenter() {
   const incoming = nextUnread && !open ? createPortal(<>
     <CelebrationLayer message={nextUnread} visible={celebrating} />
     <button type='button' className='incoming-letter-backdrop' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง' />
-    <aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`}>
+    <motion.aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`} initial={{ opacity: 0, scale: 0.86, x: '-50%', y: '-46%' }} animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }} transition={{ type: 'spring', stiffness: 360, damping: 28 }}>
       <div className='incoming-windowbar' aria-hidden='true'><span><i /><i /><i /></span><b>Yuu & Mi message</b></div>
       <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} accentColor={nextUnread.accentColor} />
       <div className='incoming-letter-heading'>
@@ -249,7 +253,7 @@ export default function MessageCenter() {
       <h3>{nextUnread.subject || 'A little note for you'}</h3>
       <p className='incoming-copy'>{nextUnread.body}</p>
       <div className='incoming-actions'><button type='button' onClick={dismissIncoming}>ไว้ทีหลัง</button><button type='button' className='primary' onClick={openIncoming}>เปิดอ่าน <Sparkles size={14} /></button></div>
-    </aside>
+    </motion.aside>
   </>, document.body) : null;
 
   return <>
