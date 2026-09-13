@@ -37,10 +37,11 @@ export default function ContextMenu({ onAddLink }) {
   return <>
     {menu && <menu className='context-menu' style={{ position: 'fixed', left: menu.x, top: menu.y }}>
       {item ? <>
-        <button onClick={() => { open(item); clear(null); }}>Open</button>
+        <button onClick={() => { if (item.secret) { useDesktopStore.getState().pushToast('Double-click the secret item to reveal it first.'); } else open(item); clear(null); }}>{item.secret ? 'Reveal item first' : 'Open'}</button>
         {item.type === 'folder' && <><button onClick={newFolder}>New folder inside</button><button onClick={newNote}>New note inside</button></>}
         <button onClick={() => beginAction('rename')}>Rename</button>
         <button onClick={() => beginAction('icon')}>Change icon / thumbnail</button>
+        <button onClick={async () => { await update(item._id, { secret: !item.secret }); clear(null); }}>{item.secret ? 'Show item' : 'Make secret'}</button>
         {item.type === 'image' && <button onClick={() => beginAction('sprite')}>Animate sprite sheet</button>}
         {item.parentId && <button onClick={() => { move(item._id, null, { x: 60, y: 60 }); clear(null); }}>Move to desktop</button>}
         <button className='danger' onClick={() => beginAction('delete')}>Move to Trash</button>
