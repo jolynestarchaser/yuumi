@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "node --test --experimental-test-coverage src/lib/letterEffects.test.js src/lib/messageState.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
