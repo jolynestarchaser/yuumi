@@ -4,6 +4,11 @@ import DesktopStroke from '../models/DesktopStroke.js';
 
 const router = Router();
 const validColor = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+const legacyCanvas = { width: 1440, height: 900 };
+const validCanvas = (canvas) => canvas && Number.isFinite(canvas.width) && Number.isFinite(canvas.height)
+  && canvas.width >= 240 && canvas.width <= 4096 && canvas.height >= 160 && canvas.height <= 4096;
+const validPoints = (points, canvas) => Array.isArray(points) && points.length >= 2 && points.length <= 4000
+  && points.every((point) => Number.isFinite(point.x) && Number.isFinite(point.y) && point.x >= 0 && point.x <= canvas.width && point.y >= 0 && point.y <= canvas.height);
 
 router.get('/', async (_req, res) => {
   const strokes = await DesktopStroke.find({ desktopKey: 'shared-desktop' }).sort({ createdAt: 1 }).limit(2000);
@@ -11,9 +16,9 @@ router.get('/', async (_req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { points, color, width, opacity = 1 } = req.body;
-  if (!Array.isArray(points) || points.length < 2 || points.length > 4000 || !validColor(color) || !Number.isFinite(width)) throw new Error('Invalid stroke');
-  const stroke = await DesktopStroke.create({ desktopKey: 'shared-desktop', points, color, width, opacity });
+  const { points, color, width, opacity = 1, canvas = legacyCanvas } = req.body;
+  if (!validCanvas(canvas) || !validPoints(points, canvas) || !validColor(color) || !Number.isFinite(width)) throw new Error('Invalid stroke');
+  const stroke = await DesktopStroke.create({ desktopKey: 'shared-desktop', points, color, width, opacity, canvas });
   res.status(201).json({ success: true, data: stroke });
 });
 

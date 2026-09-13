@@ -1,8 +1,13 @@
 import mongoose from 'mongoose';
 
 const pointSchema = new mongoose.Schema({
-  x: { type: Number, required: true, min: 0, max: 1440 },
-  y: { type: Number, required: true, min: 0, max: 900 }
+  x: { type: Number, required: true, min: 0, max: 4096 },
+  y: { type: Number, required: true, min: 0, max: 4096 }
+}, { _id: false });
+
+const canvasSchema = new mongoose.Schema({
+  width: { type: Number, required: true, min: 240, max: 4096 },
+  height: { type: Number, required: true, min: 160, max: 4096 }
 }, { _id: false });
 
 const desktopStrokeSchema = new mongoose.Schema({
@@ -15,6 +20,7 @@ const desktopStrokeSchema = new mongoose.Schema({
       message: 'A stroke requires between 2 and 4000 points'
     }
   },
+  canvas: { type: canvasSchema, default: () => ({ width: 1440, height: 900 }) },
   color: { type: String, required: true, match: /^#[0-9a-f]{6}$/i },
   width: { type: Number, required: true, min: 1, max: 32 },
   opacity: { type: Number, min: 0.1, max: 1, default: 1 },

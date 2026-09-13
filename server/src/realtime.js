@@ -11,8 +11,12 @@ const room = 'shared-desktop';
 const finitePosition = (position) => position && Number.isFinite(position.x) && Number.isFinite(position.y);
 const finiteBounds = (bounds) => bounds && ['x', 'y', 'width', 'height'].every((key) => Number.isFinite(bounds[key])) && bounds.width >= 240 && bounds.height >= 160;
 const validColor = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
-const validStroke = (stroke) => stroke && Array.isArray(stroke.points) && stroke.points.length >= 2 && stroke.points.length <= 4000
-  && stroke.points.every((point) => Number.isFinite(point.x) && Number.isFinite(point.y) && point.x >= 0 && point.x <= 1440 && point.y >= 0 && point.y <= 900)
+const legacyCanvas = { width: 1440, height: 900 };
+const strokeCanvas = (stroke) => stroke?.canvas || legacyCanvas;
+const validCanvas = (canvas) => canvas && Number.isFinite(canvas.width) && Number.isFinite(canvas.height)
+  && canvas.width >= 240 && canvas.width <= 4096 && canvas.height >= 160 && canvas.height <= 4096;
+const validStroke = (stroke) => validCanvas(strokeCanvas(stroke)) && Array.isArray(stroke?.points) && stroke.points.length >= 2 && stroke.points.length <= 4000
+  && stroke.points.every((point) => Number.isFinite(point.x) && Number.isFinite(point.y) && point.x >= 0 && point.x <= strokeCanvas(stroke).width && point.y >= 0 && point.y <= strokeCanvas(stroke).height)
   && validColor(stroke.color) && Number.isFinite(stroke.width) && stroke.width >= 1 && stroke.width <= 32;
 const validText = (text) => text && typeof text.text === 'string' && text.text.trim().length <= 1000 && text.text.trim().length > 0
   && Number.isFinite(text.x) && text.x >= 0 && text.x <= 1440 && Number.isFinite(text.y) && text.y >= 0 && text.y <= 900
