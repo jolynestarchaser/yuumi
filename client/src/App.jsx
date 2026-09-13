@@ -13,6 +13,7 @@ import PenToolbar from './components/PenToolbar.jsx';
 import ToastRegion from './components/ToastRegion.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
 import TrashDialog from './components/TrashDialog.jsx';
+import MessageCenter from './components/MessageCenter.jsx';
 
 const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File };
 
@@ -37,6 +38,7 @@ function MinimizedWindowButton({ item, window, onRestore }) {
 function DesktopPage() {
   const s = useDesktopStore();
   const logout = useAuthStore((state) => state.logout);
+  const profile = useAuthStore((state) => state.profile);
   const fileInput = useRef();
   const [linkOpen, setLinkOpen] = useState(false);
   const [appearanceOpen, setAppearanceOpen] = useState(false);
@@ -62,6 +64,7 @@ function DesktopPage() {
     s.fetchTexts().catch(() => {});
     s.connectRealtime();
     api.get('/spotify/status').then(({ data }) => setSpotify(data.data)).catch(() => {});
+    return () => s.disconnectRealtime();
   }, []);
 
   async function addLink(url, position = { x: 180, y: 120 }) {
@@ -87,7 +90,6 @@ function DesktopPage() {
       try {
         const { data } = await api.post('/media/file', body);
         useDesktopStore.setState((state) => ({ items: [...state.items, data.data] }));
-        s.socket?.emit('desktop:broadcast', { type: 'item:created', payload: data.data });
         finishUpload(task, 'Done', 4000);
       } catch (error) {
         finishUpload(task, 'Failed', 8000);
@@ -114,8 +116,8 @@ function DesktopPage() {
   return <div className={`app-shell ${s.settings.cursor?.enabled ? 'has-custom-cursor' : ''}`}>
     <header className='topbar'>
       <div className='window-controls' aria-hidden='true'><i /><i /><i /></div>
-      <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span></div>
-      <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><button disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
+      <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span><span className={`active-profile ${profile}`}>{profile === 'joe' ? 'Joe' : 'Focus'}</span></div>
+      <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><MessageCenter /><button disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
     </header>
     <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} trashCount={s.trashItems.length} onTrashOpen={() => setTrashOpen(true)} />
     <WindowManager />
@@ -139,5 +141,9 @@ function DesktopPage() {
 }
 
 export default function App() {
-  return useAuthStore((state) => state.unlocked) ? <DesktopPage /> : <LoginPage />;
+  const unlocked = useAuthStore((state) => state.unlocked);
+  const profile = useAuthStore((state) => state.profile);
+  const restoreSession = useAuthStore((state) => state.restoreSession);
+  useEffect(() => { if (unlocked) restoreSession(); }, [unlocked, restoreSession]);
+  return unlocked && profile ? <DesktopPage /> : <LoginPage />;
 }
