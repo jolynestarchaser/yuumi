@@ -1,4 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: Manrope, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --color-neon: #b6ff00;
+  --color-royal: #2453ff;
+  --color-navy: #06113e;
+  --color-ink: #eff5ff;
+  --color-pink: #ff8fa5;
+  --radius-glass: 22px;
+}
+
+@layer base {
+  :root { font-family: var(--font-sans); }
+}
 
 :root { font-family: Manrope, sans-serif; color: #effff6; background: #071657; } * { box-sizing: border-box; } body { margin: 0; min-width: 320px; } button, input { font: inherit; } button { cursor: pointer; } button:focus-visible, input:focus-visible { outline: 3px solid #b6ff00; outline-offset: 3px; }
 .login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 17% 20%, #b6ff00 0 3%, transparent 26%), radial-gradient(circle at 80% 80%, #2d55ff 0 7%, transparent 42%), #071657; }.login-card { width: min(100%, 440px); padding: 42px; color: #effff6; border: 1px solid rgba(255,255,255,.38); border-radius: 28px; background: rgba(11,28,87,.57); box-shadow: 0 24px 80px #02062180; backdrop-filter: blur(28px); }.eyebrow { margin: 0; color: #b6ff00; font: 500 10px 'DM Mono', monospace; letter-spacing: .14em; text-transform: uppercase; }.login-card h1 { margin: 9px 0; font-size: 42px; letter-spacing: -.07em; }.intro { line-height: 1.65; color: #d4dbff; }.login-card form { display: grid; gap: 14px; margin-top: 25px; }.login-card label { font-weight: 700; font-size: 13px; }.login-card input, .glass-dialog input { width: 100%; margin-top: 6px; padding: 12px 14px; color: white; border: 1px solid rgba(255,255,255,.28); border-radius: 12px; background: rgba(1,8,41,.34); }.login-card form button, .primary { border: 0; border-radius: 12px; padding: 12px 16px; color: #071657; background: #b6ff00; font-weight: 800; }.form-error { min-height: 16px; margin: 0; color: #ffbac6; }
