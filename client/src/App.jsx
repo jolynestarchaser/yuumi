@@ -14,6 +14,7 @@ import ToastRegion from './components/ToastRegion.jsx';
 import CustomCursor from './components/CustomCursor.jsx';
 import TrashDialog from './components/TrashDialog.jsx';
 import MessageCenter from './components/MessageCenter.jsx';
+import { Button } from './components/ui/button.jsx';
 
 const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File };
 
@@ -29,10 +30,10 @@ function MinimizedWindowButton({ item, window, onRestore }) {
           ? item.metadata?.previewImage
           : null;
   const Icon = minimizedIcons[item?.type] || File;
-  return <button className='dock-window-item' title={`Restore ${item?.name || 'window'}`} onClick={() => onRestore(window)}>
+  return <Button variant='ghost' className='dock-window-item' title={`Restore ${item?.name || 'window'}`} onClick={() => onRestore(window)}>
     <span className='dock-window-visual'>{thumbnail ? <img src={thumbnail} alt='' /> : appearance.iconType === 'emoji' ? appearance.iconValue : <Icon />}</span>
     <span>{item?.name || 'Restore'}</span>
-  </button>;
+  </Button>;
 }
 
 function DesktopPage() {
@@ -117,16 +118,16 @@ function DesktopPage() {
     <header className='topbar'>
       <div className='window-controls' aria-hidden='true'><i /><i /><i /></div>
       <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span><span className={`active-profile ${profile}`}>{profile === 'joe' ? 'Joe' : 'Focus'}</span></div>
-      <div className='topbar-actions'><button onClick={() => s.arrangeItems('name')}>Clean up</button><button className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</button><MessageCenter /><button disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</button><button onClick={() => setAppearanceOpen(true)}>Customize</button><button onClick={logout}>Lock</button></div>
+      <div className='topbar-actions'><Button variant='ghost' onClick={() => s.arrangeItems('name')}>Clean up</Button><Button variant='ghost' className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</Button><MessageCenter /><Button variant='ghost' disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</Button><Button variant='ghost' onClick={() => setAppearanceOpen(true)}>Customize</Button><Button variant='ghost' onClick={logout}>Lock</Button></div>
     </header>
     <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} trashCount={s.trashItems.length} onTrashOpen={() => setTrashOpen(true)} />
     <WindowManager />
     <PenToolbar />
     <nav className='dock' aria-label='Desktop actions'>
-      <button onClick={() => s.createItem({ name: 'New Folder', type: 'folder', parentId: null, position: { x: 80, y: 100 } })}><FolderPlus /><span>Folder</span></button>
-      <button onClick={newNote}><NotebookPen /><span>Note</span></button>
-      <button onClick={() => setLinkOpen(true)}><Link2 /><span>Add URL</span></button>
-      <button onClick={() => fileInput.current.click()}><Upload /><span>Upload</span></button>
+      <Button variant='ghost' onClick={() => s.createItem({ name: 'New Folder', type: 'folder', parentId: null, position: { x: 80, y: 100 } })}><FolderPlus /><span>Folder</span></Button>
+      <Button variant='ghost' onClick={newNote}><NotebookPen /><span>Note</span></Button>
+      <Button variant='ghost' onClick={() => setLinkOpen(true)}><Link2 /><span>Add URL</span></Button>
+      <Button variant='ghost' onClick={() => fileInput.current.click()}><Upload /><span>Upload</span></Button>
       {s.windows.filter((window) => window.minimized).map((window) => <MinimizedWindowButton key={window.itemId} window={window} item={s.items.find((row) => row._id === window.itemId)} onRestore={(value) => s.updateWindow(value, { minimized: false })} />)}
       <input ref={fileInput} hidden type='file' multiple onChange={(event) => uploadFiles([...event.target.files])} />
     </nav>
