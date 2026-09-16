@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Download, History, Maximize2, Minimize2, Pause, Play, X } from 'lucide-react';
 import { useDesktopStore } from '../store/desktopStore.js';
 import FolderDesktop from './FolderDesktop.jsx';
@@ -6,9 +6,11 @@ import HistoryDialog from './HistoryDialog.jsx';
 
 function NoteWindow({ item, onRegisterClose }) {
   const update = useDesktopStore((state) => state.updateItem);
+  const pushToast = useDesktopStore((state) => state.pushToast);
   const [name, setName] = useState(item.name);
   const [content, setContent] = useState(item.content || '');
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const nameRef = useRef(item.name);
   const contentRef = useRef(item.content || '');
 
@@ -19,18 +21,30 @@ function NoteWindow({ item, onRegisterClose }) {
     contentRef.current = item.content || '';
   }, [item._id]);
 
+  const save = useCallback(async ({ announce = false } = {}) => {
+    const nextName = nameRef.current.trim();
+    const nextContent = contentRef.current;
+    const patch = { ...(nextName && nextName !== item.name ? { name: nextName } : {}), ...(nextContent !== (item.content || '') ? { content: nextContent } : {}) };
+    if (!Object.keys(patch).length) return item;
+    setSaving(true);
+    try {
+      const saved = await update(item._id, patch);
+      if (announce) pushToast('Note saved.');
+      return saved;
+    } catch (error) {
+      pushToast(error.response?.data?.error?.message || 'Could not save this note.', 'error');
+      throw error;
+    } finally {
+      setSaving(false);
+    }
+  }, [item, pushToast, update]);
+
   useEffect(() => {
-    const save = async () => {
-      const nextName = nameRef.current.trim();
-      const nextContent = contentRef.current;
-      const patch = { ...(nextName && nextName !== item.name ? { name: nextName } : {}), ...(nextContent !== (item.content || '') ? { content: nextContent } : {}) };
-      if (Object.keys(patch).length) await update(item._id, patch);
-    };
     onRegisterClose?.(save);
     return () => onRegisterClose?.(null);
-  }, [item._id, item.name, item.content, onRegisterClose, update]);
+  }, [onRegisterClose, save]);
 
-  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; }} onBlur={() => { if (!nameRef.current.trim()) { setName(item.name); nameRef.current = item.name; } }} placeholder='Note title' /><button data-no-drag onClick={() => setHistoryOpen(true)}><History size={14} /> History</button></div><textarea data-no-drag value={content} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; }} placeholder='Write something...' /><small>Saves when you close this window · revision {item.contentRevision || 0}</small></section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
+  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; }} onBlur={() => { if (!nameRef.current.trim()) { setName(item.name); nameRef.current = item.name; } }} placeholder='Note title' /><button data-no-drag type='button' disabled={saving} onClick={() => { void save({ announce: true }).catch(() => {}); }}>{saving ? 'Saving…' : 'Save'}</button><button data-no-drag type='button' onClick={() => setHistoryOpen(true)}><History size={14} /> History</button></div><textarea data-no-drag value={content} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; }} placeholder='Write something...' /><small>Save anytime, or close the window to save · revision {item.contentRevision || 0}</small></section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
 }
 
 function LegacyWindowContent({ item, onRegisterClose }) {
@@ -101,7 +115,14 @@ function DesktopWindow({ window, item }) {
   const style = window.maximized
     ? { zIndex: window.z }
     : { left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height, zIndex: window.z };
-  async function closeWithSave() { try { await saveBeforeClose.current?.(); } catch { /* Keep close reliable; unsaved edits remain in the local draft only. */ } close(window.itemId); }
+  async function closeWithSave() {
+    try {
+      await saveBeforeClose.current?.();
+      close(window.itemId);
+    } catch {
+      // Keep the editor open so the user can retry after a failed save.
+    }
+  }
   return <section className={`desktop-window ${window.maximized ? 'maximized' : ''}`} style={style} onPointerDown={() => update(window, { z: window.z + 1 })}><header onPointerDown={start}><div className='traffic-lights'><button data-no-drag onClick={() => { void closeWithSave(); }}><X size={11} /></button><button data-no-drag onClick={() => update(window, { minimized: true })}><Minimize2 size={11} /></button><button data-no-drag onClick={() => update(window, { maximized: !window.maximized, restoreBounds: window.maximized ? undefined : bounds })}><Maximize2 size={11} /></button></div><span>{item.name}</span></header><div className='window-body'>{<WindowContent item={item} onRegisterClose={(save) => { saveBeforeClose.current = save; }} />}</div><i className='resize-handle' onPointerDown={(event) => start(event, true)} /></section>;
 }
 
