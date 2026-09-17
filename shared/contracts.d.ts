@@ -1,7 +1,7 @@
 export type Profile = 'joe' | 'focus';
 export type Actor = Profile | 'system' | 'unknown';
 export type Timestamp = string | Date;
-export type ItemKind = 'folder' | 'image' | 'video' | 'audio' | 'link' | 'note' | 'file' | 'calendar';
+export type ItemKind = 'folder' | 'image' | 'video' | 'audio' | 'link' | 'note' | 'file' | 'calendar' | 'map';
 export interface Point { x: number; y: number }
 export interface Bounds extends Point { width: number; height: number }
 export interface Asset {

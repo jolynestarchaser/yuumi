@@ -4,7 +4,7 @@ const boundsSchema = new mongoose.Schema({ x: Number, y: Number, width: Number, 
 
 const desktopWindowSchema = new mongoose.Schema({
   itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true, unique: true },
-  kind: { type: String, required: true, enum: ['folder', 'image', 'video', 'audio', 'link', 'note', 'file', 'calendar'] },
+  kind: { type: String, required: true, enum: ['folder', 'image', 'video', 'audio', 'link', 'note', 'file', 'calendar', 'map'] },
   bounds: { type: boundsSchema, required: true, default: () => ({ x: 120, y: 90, width: 620, height: 440 }) },
   restoreBounds: boundsSchema,
   minimized: { type: Boolean, default: false },

@@ -24,7 +24,7 @@ const appearanceSchema = new mongoose.Schema({
 const itemSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 160 },
-    type: { type: String, required: true, enum: ['folder', 'image', 'video', 'audio', 'link', 'note', 'file', 'calendar'] },
+    type: { type: String, required: true, enum: ['folder', 'image', 'video', 'audio', 'link', 'note', 'file', 'calendar', 'map'] },
     parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', default: null },
     position: { x: { type: Number, default: 0, min: 0 }, y: { type: Number, default: 0, min: 0 }, revision: { type: Number, default: 0, min: 0 } },
     deletedAt: { type: Date, default: null },

@@ -1,10 +1,10 @@
 import { useI18n, translate as t } from '../lib/i18n.js';
-import { CalendarDays, Heart, ImagePlus, Mail, PawPrint, Sparkles } from 'lucide-react';
+import { CalendarDays, Globe2, Heart, ImagePlus, Mail, PawPrint, Sparkles } from 'lucide-react';
 import GlassDialog from './GlassDialog.js';
 import { currentRelease } from '../lib/releases.js';
 import './whats-new.css';
 
-const icons = { pet: PawPrint, pixel: ImagePlus, letter: Mail, calendar: CalendarDays };
+const icons = { pet: PawPrint, pixel: ImagePlus, letter: Mail, calendar: CalendarDays, map: Globe2 };
 
 export default function WhatsNewDialog({ onClose, onMeetCompanion }) {
   useI18n();

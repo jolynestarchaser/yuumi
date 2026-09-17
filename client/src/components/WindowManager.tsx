@@ -5,6 +5,7 @@ import { useDesktopStore } from '../store/desktopStore.js';
 import FolderDesktop from './FolderDesktop.js';
 import HistoryDialog from './HistoryDialog.js';
 import RelationshipCalendar from './RelationshipCalendar.js';
+import TravelMap from './TravelMap.js';
 
 function NoteWindow({ item, onRegisterClose }) {
   useI18n();
@@ -54,6 +55,7 @@ function WindowContent({ item, onRegisterClose }) {
   useI18n();
   if (item.type === 'note') return <NoteWindow item={item} onRegisterClose={onRegisterClose} />;
   if (item.type === 'calendar') return <RelationshipCalendar item={item} />;
+  if (item.type === 'map') return <TravelMap item={item} />;
   if (item.type === 'image') return <img className='window-media' src={item.asset?.secureUrl} alt={item.name} />;
   if (item.type === 'video') return <video className='window-media' src={item.asset?.secureUrl} poster={item.asset?.thumbnailUrl} controls data-no-drag />;
   if (item.type === 'audio') return <section className='audio-window'><div className='album-disc'><Play fill='currentColor' /></div><h2>{item.name}</h2><audio src={item.asset?.secureUrl} controls data-no-drag /></section>;

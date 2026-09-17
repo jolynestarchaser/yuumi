@@ -1,6 +1,6 @@
 import { useI18n, translate as t } from './lib/i18n.js';
 import { useEffect, useRef, useState } from 'react';
-import { AudioLines, CalendarDays, File, FileImage, Folder, FolderPlus, Link2, Music2, NotebookPen, PawPrint, StickyNote, Upload, Video } from 'lucide-react';
+import { AudioLines, CalendarDays, File, FileImage, Folder, FolderPlus, Globe2, Link2, Music2, NotebookPen, PawPrint, StickyNote, Upload, Video } from 'lucide-react';
 import { useAuthStore } from './store/authStore.js';
 import { useDesktopStore } from './store/desktopStore.js';
 import { api, apiOrigin } from './lib/api.js';
@@ -21,7 +21,7 @@ import WhatsNewDialog from './components/WhatsNewDialog.js';
 import { acknowledgeRelease, hasUnseenRelease } from './lib/releases.js';
 import { Button } from './components/ui/button.js';
 
-const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File, calendar: CalendarDays };
+const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File, calendar: CalendarDays, map: Globe2 };
 
 function MinimizedWindowButton({ item, window, onRestore }) {
   useI18n();
@@ -122,6 +122,10 @@ function DesktopPage() {
     const item = await s.createItem({ name: 'Our calendar', type: 'calendar', content: JSON.stringify({ togetherSince: new Date().toISOString().slice(0, 10), events: [] }), parentId: null, position: { x: 300, y: 110 } });
     s.openWindow(item);
   }
+  async function newTravelMap() {
+    const item = await s.createItem({ name: 'Our travel map', type: 'map', content: JSON.stringify({ rotation: { lon: 15, lat: 18 }, pins: [] }), parentId: null, position: { x: 420, y: 110 } });
+    s.openWindow(item);
+  }
 
   useEffect(() => {
     const paste = (event) => {
@@ -146,6 +150,7 @@ function DesktopPage() {
       <Button variant='ghost' onClick={() => s.createItem({ name: 'New Folder', type: 'folder', parentId: null, position: { x: 80, y: 100 } })}><FolderPlus /><span>{t("Folder")}</span></Button>
       <Button variant='ghost' onClick={newNote}><NotebookPen /><span>{t("Note")}</span></Button>
       <Button variant='ghost' onClick={newCalendar}><CalendarDays /><span>{t("Calendar")}</span></Button>
+      <Button variant='ghost' onClick={newTravelMap}><Globe2 /><span>{t('Travel map')}</span></Button>
       <Button variant='ghost' onClick={() => setCompanionOpen(true)}><PawPrint /><span>{t("Companion")}</span></Button>
       <Button variant='ghost' onClick={() => setLinkOpen(true)}><Link2 /><span>{t("Add URL")}</span></Button>
       <Button variant='ghost' onClick={() => fileInput.current.click()}><Upload /><span>{t("Upload")}</span></Button>

@@ -1,10 +1,10 @@
 import { useI18n, translate as t } from '../lib/i18n.js';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
-import { AudioLines, CalendarDays, File, FileImage, FileText, Folder, Link2, LockKeyhole, Music2, Play, Video } from 'lucide-react';
+import { AudioLines, CalendarDays, File, FileImage, FileText, Folder, Globe2, Link2, LockKeyhole, Music2, Play, Video } from 'lucide-react';
 import { useState } from 'react';
 import { iconComponents } from '../lib/iconCatalog.js';
 
-const defaultIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: FileText, file: File, calendar: CalendarDays };
+const defaultIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: FileText, file: File, calendar: CalendarDays, map: Globe2 };
 
 export default function DesktopItem({ item, selected, iconTheme, onSelect, onOpen, onContext, onAudio }) {
   useI18n();

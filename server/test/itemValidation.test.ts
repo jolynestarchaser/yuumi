@@ -79,3 +79,8 @@ test('calendar items are valid shared desktop items', () => {
   const item = new Item({ name: 'Our calendar', type: 'calendar', content: '{"togetherSince":"2026-01-01","events":[]}', position: { x: 0, y: 0 } });
   assert.equal(item.validateSync(), undefined);
 });
+
+test('travel map items are valid shared desktop items', () => {
+  const item = new Item({ name: 'Our travel map', type: 'map', content: '{"pins":[]}', position: { x: 0, y: 0 } });
+  assert.equal(item.validateSync(), undefined);
+});
