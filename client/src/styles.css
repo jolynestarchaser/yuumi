@@ -196,3 +196,6 @@
 @keyframes envelope-hover { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-4px) rotate(2deg); } }
 @keyframes orbit-glyph { 0%,100% { opacity:.3; transform:translateY(8px) rotate(-8deg) scale(.75); } 50% { opacity:1; transform:translateY(-6px) rotate(7deg) scale(1.08); } }
 @keyframes celebration-rise { 0% { opacity:0; transform:translate3d(0,30px,0) scale(.3) rotate(0); } 14% { opacity:1; } 82% { opacity:.9; } 100% { opacity:0; transform:translate3d(var(--particle-drift),-108dvh,0) scale(var(--particle-scale)) rotate(var(--particle-rotation)); } }
+.travel-map-geography { pointer-events:none; }
+.travel-graticule { fill:none; stroke:#b7edff55; stroke-width:.45; }
+.travel-land { fill:#78d894; stroke:#246d65; stroke-width:.65; }

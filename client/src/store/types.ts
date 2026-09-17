@@ -20,7 +20,7 @@ export interface DesktopStore {
   fetchMessages(folder?: string): Promise<MessageData[]>; fetchFolderItems(parentId: string): Promise<DesktopItemData[]>;
   connectRealtime(): void; disconnectRealtime(): void;
   createItem(payload: Partial<DesktopItemData> & Pick<DesktopItemData, 'name' | 'type'>): Promise<DesktopItemData>;
-  updateItem(id: string, patch: Partial<DesktopItemData>): Promise<DesktopItemData>;
+  updateItem(id: string, patch: Partial<DesktopItemData>, expectedRevision?: number): Promise<DesktopItemData>;
   trashItem(id: string): Promise<void>; deleteItem(id: string): Promise<void>; restoreItem(id: string): Promise<DesktopItemData>;
   deletePermanently(id: string): Promise<void>; emptyTrash(): Promise<void>;
   moveItem(id: string, parentId: string | null, position: Point): Promise<unknown>;
