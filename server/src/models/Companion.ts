@@ -28,12 +28,28 @@ const schema = new mongoose.Schema<StoredCompanion>({
     type: new mongoose.Schema({
       visualStyle: { type: String, enum: ['soft', 'pixel'], required: true },
       animated: { type: Boolean, required: true },
-      usePortrait: { type: Boolean, required: true }
+      usePortrait: { type: Boolean, required: true },
+      species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'] },
+      customDescription: { type: String, maxlength: 500 },
+      face: { type: String, enum: ['gentle', 'happy', 'sleepy', 'mischievous', 'starry'] },
+      gender: { type: String, enum: ['unspecified', 'female', 'male', 'nonbinary'] },
+      theme: { type: String, enum: ['lavender', 'forest', 'ocean', 'sunset', 'starlight', 'candy', 'custom'] },
+      silhouette: { type: String, enum: ['round', 'bean', 'fluffy'] },
+      bodyColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
+      accentColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
+      eyeColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
+      voice: { type: new mongoose.Schema({ enabled: Boolean, language: { type: String, enum: ['th-TH', 'en-US'] }, voiceURI: { type: String, maxlength: 300 }, rate: { type: Number, min: .5, max: 1.5 }, pitch: { type: Number, min: .5, max: 2 }, preset: { type: String, enum: ['natural', 'spark', 'fairy', 'dragon', 'robot', 'custom'] } }, { _id: false }), default: undefined }
     }, { _id: false }),
     default: undefined
   },
   memories: { type: [memorySchema], default: [], validate: (rows) => rows.length <= 80 },
   turns: { type: [turnSchema], default: [], validate: (rows) => rows.length <= 60 },
+  evolutions: { type: [new mongoose.Schema({
+    level: { type: Number, min: 3, required: true },
+    species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'], required: true },
+    path: { type: String, enum: ['explorer', 'guardian', 'trickster'], required: true },
+    at: { type: Date, required: true }
+  }, { _id: false })], default: [], validate: (rows) => rows.length <= 40 },
   portrait: { url: String, publicId: String, createdAt: Date },
   revision: { type: Number, default: 0 },
   budget: { day: String, chats: { type: Number, default: 0 }, portraits: { type: Number, default: 0 }, lastChat: Date, lastPortrait: Date },

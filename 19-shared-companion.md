@@ -42,7 +42,51 @@ and personality/inspiration controls. Both people can care for the same characte
 Manual checks: switch styles during creation; hatch and refresh; switch back with a saved
 portrait; pause motion; test reduced motion, mobile layout, and both profile snapshots.
 
-## Server configuration
+## Desktop roaming, design, voice, and growth
+
+- App UI defaults to Thai with a device-local EN/TH choice in Settings. Both
+  languages live in `client/src/locales/en.json` and `th.json`; changing the
+  language updates the whole app without replacing user-written content.
+  Chat, thoughts, and memory text can be explicitly translated through the existing
+  server translation endpoint. Translation changes display only, never saved memories.
+- Creation and the Personality editor offer spirit, bunny, cat, fox, dragon, robot,
+  storybook child, and custom species plus body/accent/eye colors. Custom species use
+  a starter until a portrait is generated from the description. Saved design edits
+  are revision-checked and preserve XP, memory, and existing portraits.
+- Optional device speech supports Thai/English voices, rate 0.5–1.5 and pitch 0.5–2.
+  Voice lists vary by browser/OS. Speech is initiated by a preview/listen click and
+  canceled when the voice component unmounts; no Gemini speech calls are made.
+- Custom race reveals a required 1–500 character description, passed to chat and
+  prioritized in portrait prompts. Face, silhouette, gender identity, and six
+  coordinated palettes persist alongside the design. Selecting a palette changes
+  body, accent, and eye colors together; manual colors mark it as custom.
+- Five fantasy-style voice presets tune device speech pitch/rate. They are not
+  character voice clones; audible results depend on installed voices. Gender does
+  not force a voice or color palette.
+- The creator is a wide two-column workbench with a live preview and Look/Colors/Voice
+  panels. Small viewports retain scrolling. Language selection is in Settings,
+  never a separate companion preference.
+- Go out opens a bounded walking pet above the desktop dock. Speech bubbles use
+  needs and dominant traits, with no background generation or XP rewards. Pause,
+  chat, and return-home controls remain available. Hidden tabs skip wandering updates;
+  reduced motion and the avatar animation setting stop walking. Roaming is session-local.
+- Care earns 8 XP and successful chat earns 4. Every 80 XP adds a level; levels 3, 6,
+  9, etc. roll an evolution path (explorer, guardian, trickster). Species bias and
+  accumulated traits weight the random choice. The result persists under the companion
+  lock and deduplicated actions cannot reroll it. The latest 40 evolutions are retained.
+- Gemini supplies a validated one-trait growth signal per successful chat; the server
+  caps the increment at one. Gemini never sets XP, levels, or evolution outcomes.
+  Dialogue receives the latest evolution and can suggest preferences or activities.
+- Evolution adds a visual emblem and informs the next generated portrait. Existing
+  custom artwork remains until the user explicitly generates a replacement.
+- Hatching shows a colored egg wobbling and cracking before saving the character.
+  Leaving before the animation completes cancels the pending creation; failed saves
+  return to the review step with the draft intact. No paid call or extra XP is triggered.
+- Successful care triggers snack, hop, cuddle, sleep, or explore reactions. Failed
+  actions do not celebrate. Both styles support reactions; reduced motion and the
+  animation switch disable movement. Generated portraits move as a single image.
+
+## Provider configuration
 
 Set only on the backend (Railway service variables or an uncommitted `server/.env`):
 

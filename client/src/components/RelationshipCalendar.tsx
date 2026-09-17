@@ -1,3 +1,4 @@
+import { useI18n, getLocale, translate as t } from '../lib/i18n.js';
 import { useMemo, useState } from 'react';
 import { CalendarDays, Heart, Plus, Trash2 } from 'lucide-react';
 import { useDesktopStore } from '../store/desktopStore.js';
@@ -18,6 +19,7 @@ function daysTogether(date) {
 }
 
 export default function RelationshipCalendar({ item }) {
+  useI18n();
   const updateItem = useDesktopStore((state) => state.updateItem);
   const pushToast = useDesktopStore((state) => state.pushToast);
   const [calendar, setCalendar] = useState(() => readCalendar(item.content));
@@ -40,9 +42,9 @@ export default function RelationshipCalendar({ item }) {
   }
 
   return <section className='relationship-calendar'>
-    <header><span><CalendarDays size={19} /> Our little calendar</span><b><Heart size={14} fill='currentColor' /> {daysTogether(calendar.togetherSince)} days together</b></header>
-    <label className='calendar-since'>Together since <input data-no-drag type='date' value={calendar.togetherSince} onChange={(event) => save({ ...calendar, togetherSince: event.target.value })} /></label>
-    <form className='calendar-add-event' onSubmit={addEvent}><input data-no-drag aria-label='ชื่อวันสำคัญ' value={title} maxLength={100} onChange={(event) => setTitle(event.target.value)} placeholder='วันสำคัญของเรา…' /><input data-no-drag aria-label='วันที่' type='date' value={date} onChange={(event) => setDate(event.target.value)} /><button data-no-drag type='submit' aria-label='เพิ่มวันสำคัญ'><Plus size={17} /></button></form>
-    <div className='calendar-events'>{events.length ? events.map((event) => <article key={event.id}><time dateTime={event.date}>{new Date(`${event.date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</time><strong>{event.title}</strong><button data-no-drag type='button' aria-label={`ลบ ${event.title}`} onClick={() => save({ ...calendar, events: calendar.events.filter((row) => row.id !== event.id) })}><Trash2 size={14} /></button></article>) : <p>ใส่วันเดต วันครบรอบ หรือเรื่องเล็ก ๆ ที่อยากจำด้วยกัน ✦</p>}</div>
+    <header><span><CalendarDays size={19} /> {t("Our little calendar")}</span><b><Heart size={14} fill='currentColor' /> {daysTogether(calendar.togetherSince)} {t("days together")}</b></header>
+    <label className='calendar-since'>{t("Together since")} <input data-no-drag type='date' value={calendar.togetherSince} onChange={(event) => save({ ...calendar, togetherSince: event.target.value })} /></label>
+    <form className='calendar-add-event' onSubmit={addEvent}><input data-no-drag aria-label={t("ชื่อวันสำคัญ")} value={title} maxLength={100} onChange={(event) => setTitle(event.target.value)} placeholder={t("วันสำคัญของเรา…")} /><input data-no-drag aria-label={t("วันที่")} type='date' value={date} onChange={(event) => setDate(event.target.value)} /><button data-no-drag type='submit' aria-label={t("เพิ่มวันสำคัญ")}><Plus size={17} /></button></form>
+    <div className='calendar-events'>{events.length ? events.map((event) => <article key={event.id}><time dateTime={event.date}>{new Date(`${event.date}T00:00:00`).toLocaleDateString(getLocale(), { month: 'short', day: 'numeric', year: 'numeric' })}</time><strong>{event.title}</strong><button data-no-drag type='button' aria-label={t("ลบ {value0}", { value0: event.title })} onClick={() => save({ ...calendar, events: calendar.events.filter((row) => row.id !== event.id) })}><Trash2 size={14} /></button></article>) : <p>{t("ใส่วันเดต วันครบรอบ หรือเรื่องเล็ก ๆ ที่อยากจำด้วยกัน ✦")}</p>}</div>
   </section>;
 }

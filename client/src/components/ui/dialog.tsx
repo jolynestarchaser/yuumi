@@ -1,3 +1,4 @@
+import { translate as t } from '../../lib/i18n.js';
 import type * as React from 'react';
 import { forwardRef } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
@@ -19,7 +20,7 @@ export const DialogContent = forwardRef<React.ElementRef<typeof DialogPrimitive.
     <DialogOverlay />
     <DialogPrimitive.Content ref={ref} className={cn('fixed left-1/2 top-1/2 z-[1001] grid w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-[var(--radius-glass)] border border-white/20 bg-[#0b173d]/90 p-6 text-ink shadow-2xl shadow-black/40 backdrop-blur-2xl outline-none', className)} {...props}>
       {children}
-      {showClose && <DialogPrimitive.Close className='absolute right-4 top-4 rounded-full p-2 text-ink/60 transition hover:bg-white/10 hover:text-ink focus:outline-none focus:ring-2 focus:ring-royal/60'><X className='size-4' /><span className='sr-only'>Close</span></DialogPrimitive.Close>}
+      {showClose && <DialogPrimitive.Close className='absolute right-4 top-4 rounded-full p-2 text-ink/60 transition hover:bg-white/10 hover:text-ink focus:outline-none focus:ring-2 focus:ring-royal/60'><X className='size-4' /><span className='sr-only'>{t("Close")}</span></DialogPrimitive.Close>}
     </DialogPrimitive.Content>
   </DialogPortal>
 ));

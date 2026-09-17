@@ -66,8 +66,16 @@ export interface ApiFailure { success: false; error: { code: string; message: st
 export interface RequestError { response?: { data?: { error?: { message?: string } } }; code?: string; message?: string }
 
 export type CompanionForm = 'pet' | 'child' | 'creature';
+export type CompanionSpecies = 'spirit' | 'bunny' | 'cat' | 'fox' | 'dragon' | 'robot' | 'child' | 'custom';
+export type CompanionVoicePreset = 'natural' | 'spark' | 'fairy' | 'dragon' | 'robot' | 'custom';
+export type CompanionFace = 'gentle' | 'happy' | 'sleepy' | 'mischievous' | 'starry';
+export type CompanionTheme = 'lavender' | 'forest' | 'ocean' | 'sunset' | 'starlight' | 'candy' | 'custom';
+export interface CompanionVoice { enabled: boolean; language: 'th-TH' | 'en-US'; voiceURI: string; rate: number; pitch: number; preset?: CompanionVoicePreset }
 export interface CompanionAppearance {
   visualStyle: 'soft' | 'pixel'; animated: boolean; usePortrait: boolean;
+  species?: CompanionSpecies; bodyColor?: string; accentColor?: string; eyeColor?: string; voice?: CompanionVoice;
+  customDescription?: string; face?: CompanionFace; gender?: 'unspecified' | 'female' | 'male' | 'nonbinary';
+  theme?: CompanionTheme; silhouette?: 'round' | 'bean' | 'fluffy';
 }
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
@@ -75,6 +83,7 @@ export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
 export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
+export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
 export interface CompanionState {
   name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
   bornAt: Timestamp | null; updatedAt: Timestamp;
@@ -83,6 +92,7 @@ export interface CompanionState {
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
   chatColor: string;
   appearance?: CompanionAppearance;
+  evolutions?: CompanionEvolution[];
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -93,7 +103,7 @@ export interface StoredCompanion extends CompanionState {
 export interface PublicCompanion extends CompanionState { level: number; stage: string; wish: string }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
-export interface BrainReply { reply: string; mood: CompanionMood; thought: string }
+export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }
 export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance?: CompanionAppearance }
 export type CompanionAction =
   | ({ action: 'adopt' } & CompanionSetup)
@@ -101,5 +111,6 @@ export type CompanionAction =
   | { action: 'chat'; text: string }
   | { action: 'chatColor'; color: string }
   | { action: 'appearance'; appearance: CompanionAppearance }
+  | { action: 'customize'; name: string; form: CompanionForm; seed: string; appearance: CompanionAppearance; expectedRevision: number }
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string };

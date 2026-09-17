@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useEffect, useRef, useState } from 'react';
 import { useDesktopStore } from '../store/desktopStore.js';
 import HistoryDialog from './HistoryDialog.js';
@@ -27,6 +28,7 @@ function nearStroke(stroke, point) {
 }
 
 export default function InkLayer({ canvasRef }) {
+  useI18n();
   const tool = useDesktopStore((state) => state.tool);
   const pen = useDesktopStore((state) => state.penSettings);
   const strokes = useDesktopStore((state) => state.strokes);
@@ -211,7 +213,7 @@ export default function InkLayer({ canvasRef }) {
     if (stroke.points.length > 1) commit(stroke);
   }
 
-  return <div className={`ink-layer ${tool !== 'select' ? 'active' : ''}`} aria-label='Desktop drawing surface' onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
+  return <div className={`ink-layer ${tool !== 'select' ? 'active' : ''}`} aria-label={t("Desktop drawing surface")} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
     <svg viewBox={`0 0 ${surface.width} ${surface.height}`} preserveAspectRatio='none' aria-hidden='true'>
       {strokes.map((stroke) => <g key={stroke._id} transform={strokeTransform(stroke).value}><path d={path(stroke.points)} stroke={stroke.color} strokeWidth={stroke.width} strokeOpacity={stroke.opacity || 1} vectorEffect='non-scaling-stroke' fill='none' strokeLinecap='round' strokeLinejoin='round' /></g>)}
       {Object.entries(remoteInk).map(([id, stroke]) => <g key={id} transform={strokeTransform(stroke).value}><path d={path(stroke.points)} stroke={stroke.color} strokeWidth={stroke.width} strokeOpacity={stroke.opacity || 1} vectorEffect='non-scaling-stroke' fill='none' strokeLinecap='round' strokeLinejoin='round' /></g>)}
@@ -222,10 +224,10 @@ export default function InkLayer({ canvasRef }) {
         const isMoving = movingText?.id === text._id;
         const x = isMoving ? movingText.x ?? movingText.origin.x : text.x;
         const y = isMoving ? movingText.y ?? movingText.origin.y : text.y;
-        return <span key={text._id} className={`desktop-text-wrap ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ left: `${(x / WIDTH) * 100}%`, top: `${(y / HEIGHT) * 100}%` }}><p className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => startTextMove(event, text)} onPointerMove={moveText} onPointerUp={endTextMove} onPointerCancel={endTextMove} title='Drag to move · Double-click to edit'>{text.text}</p>{selectedTextId === text._id && <button className='text-history-button' data-no-drag onClick={(event) => { event.stopPropagation(); setHistoryText(text); }}>↺</button>}</span>;
+        return <span key={text._id} className={`desktop-text-wrap ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ left: `${(x / WIDTH) * 100}%`, top: `${(y / HEIGHT) * 100}%` }}><p className={`desktop-text ${selectedTextId === text._id ? 'selected' : ''} ${isMoving ? 'moving' : ''}`} style={{ color: text.color, fontSize: `${text.size}px` }} onClick={(event) => { event.stopPropagation(); setSelectedTextId(text._id); }} onDoubleClick={(event) => editText(event, text)} onPointerDown={(event) => startTextMove(event, text)} onPointerMove={moveText} onPointerUp={endTextMove} onPointerCancel={endTextMove} title={t("Drag to move · Double-click to edit")}>{text.text}</p>{selectedTextId === text._id && <button className='text-history-button' data-no-drag onClick={(event) => { event.stopPropagation(); setHistoryText(text); }}>↺</button>}</span>;
       })}
       {draftText && <form className='desktop-text-editor' style={{ left: `${(draftText.x / WIDTH) * 100}%`, top: `${(draftText.y / HEIGHT) * 100}%`, color: draftText.color || pen.color, fontSize: `${draftText.size || Math.max(16, pen.width * 3)}px` }} onSubmit={(event) => { event.preventDefault(); saveText(); }}>
-          <textarea ref={textInput} aria-label='Desktop text' value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder='Type here...' rows={1} />
+          <textarea ref={textInput} aria-label={t("Desktop text")} value={draftText.value} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => setDraftText((value) => ({ ...value, value: event.target.value }))} onKeyDown={(event) => { if (event.key === 'Escape') setDraftText(null); if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); saveText(); } }} placeholder={t("Type here...")} rows={1} />
       </form>}
     </div>{historyText && <HistoryDialog entityType='desktop-text' entity={historyText} onClose={() => setHistoryText(null)} />}
   </div>;

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import Companion from '../models/Companion.js';
+import { evolveCompanion } from '../services/companionEvolution.js';
 import { ACTIONS, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup, validateAppearance } from '../services/companionState.js';
 import { chatWithCompanion, companionCapabilities, generatePortrait, removePortrait } from '../services/companionBrain.js';
 import type { StoredCompanion, CompanionBudget, CompanionPortrait } from '../../../shared/contracts.js';
@@ -28,7 +29,7 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
   if (!state) throw fail(409, 'Your companion is busy with another moment. Please try again shortly.');
   try {
     if (state.recentOperations?.includes(operationId)) return state;
-    const changed = await change(state, token);
+    const changed = evolveCompanion(await change(state, token), state.xp);
     const { _id, __v, lockToken, lockedUntil, budget, ...fields } = changed;
     const saved = await Companion.findOneAndUpdate({ _id: COMPANION_KEY, lockToken: token }, {
       $set: { ...fields, updatedAt: new Date(), revision: state.revision + 1, recentOperations: [...(state.recentOperations || []), operationId].slice(-60) }
@@ -63,7 +64,8 @@ export const interactWithCompanion = wrap(async (req, res) => {
   const { action, text, operationId, memoryId, expectedRevision } = req.body || {};
   const actor = req.desktop.profile;
   if (typeof operationId !== 'string' || !/^[a-zA-Z0-9-]{10,80}$/.test(operationId)) throw fail(400, 'A valid operation ID is required.');
-  if (!['adopt', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (!['adopt', 'customize', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (action === 'customize' && (!validateSetup({ ...req.body, temperament: 'curious' }) || !validateAppearance(req.body.appearance))) throw fail(400, 'Choose a valid name, description, form, and appearance.');
   if (action === 'appearance' && !validateAppearance(req.body.appearance)) throw fail(400, 'Choose soft or pixel art and valid animation settings.');
   if (action === 'adopt' && !validateSetup(req.body)) throw fail(400, 'Choose a name (up to 32 characters), form, and description (up to 500 characters).');
   if (action === 'inspiration' && (typeof text !== 'string' || text.length > 300)) throw fail(400, 'Your inspiration can be up to 300 characters.');
@@ -83,6 +85,10 @@ export const interactWithCompanion = wrap(async (req, res) => {
         return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), appearance: req.body.appearance || next.appearance, bornAt: new Date() };
       }
       if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
+      if (action === 'customize') {
+        if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
+        return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), appearance: req.body.appearance };
+      }
       if (action === 'appearance') return { ...next, appearance: req.body.appearance };
       if (action === 'chatColor') return { ...next, chatColor: req.body.color };
       if (action === 'inspiration') {
@@ -103,7 +109,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
         const id = randomUUID();
         next = remember(next, actor, 'conversation', text.trim(), new Date(), id);
         return { ...next, mood: reply.mood, thought: reply.thought, xp: next.xp + 4,
-          traits: { ...next.traits, curiosity: Math.min(100, next.traits.curiosity + 1) },
+          traits: { ...next.traits, [reply.growth || 'curiosity']: Math.min(100, next.traits[reply.growth || 'curiosity'] + 1) },
           turns: [...state.turns, { id, actor, text: text.trim(), at: new Date() }, { id, actor: 'companion', text: reply.reply, at: new Date() }].slice(-60) };
       }
       await reserveGeneration(state, token, 'portraits');

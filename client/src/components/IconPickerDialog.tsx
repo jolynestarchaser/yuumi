@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useMemo, useRef, useState } from 'react';
 import { ImagePlus, Search } from 'lucide-react';
 import GlassDialog from './GlassDialog.js';
@@ -10,6 +11,7 @@ const colors = ['#b6ff00', '#2453ff', '#f5f7ff', '#06113e', '#ff5c8a', '#ff665c'
 const backgrounds = ['#17347a', '#11245e', '#2453ff', '#5d2bc5', '#145c58', '#782d52', '#2c3658', '#f5f7ff'];
 
 export default function IconPickerDialog({ item, onSave, onClose }) {
+  useI18n();
   const upload = useDesktopStore((state) => state.uploadSettingAsset);
   const notify = useDesktopStore((state) => state.pushToast);
   const input = useRef(null);
@@ -53,19 +55,19 @@ export default function IconPickerDialog({ item, onSave, onClose }) {
   }
 
   const customThumbnail = choice.type === 'image' && choice.value;
-  return <GlassDialog title='Icon & thumbnail' eyebrow='Make it recognizable' className='icon-dialog' onClose={onClose} actions={<><Button variant='secondary' disabled={busy} onClick={() => save({ ...choice, type: 'default', value: '' })}>Use original</Button><Button variant='neon' disabled={busy} onClick={() => save()}>{busy ? 'Saving...' : 'Apply'}</Button></>}>
+  return <GlassDialog title={t("Icon & thumbnail")} eyebrow={t("Make it recognizable")} className='icon-dialog' onClose={onClose} actions={<><Button variant='secondary' disabled={busy} onClick={() => save({ ...choice, type: 'default', value: '' })}>{t("Use original")}</Button><Button variant='neon' disabled={busy} onClick={() => save()}>{busy ? t("Saving...") : t("Apply")}</Button></>}>
     <div className='icon-preview' style={{ '--preview-background': choice.background, '--preview-color': choice.color }}>
-      {customThumbnail ? <img src={choice.value} alt='Selected thumbnail preview' /> : choice.type === 'emoji' ? <span>{choice.value}</span> : <span>{choice.type === 'lucide' ? 'Icon selected' : 'Original icon'}</span>}
+      {customThumbnail ? <img src={choice.value} alt={t("Selected thumbnail preview")} /> : choice.type === 'emoji' ? <span>{choice.value}</span> : <span>{choice.type === 'lucide' ? t("Icon selected") : t("Original icon")}</span>}
     </div>
-    <div className='segmented-control'><button type='button' className={tab === 'icons' ? 'active' : ''} onClick={() => setTab('icons')}>Icons</button><button type='button' className={tab === 'emoji' ? 'active' : ''} onClick={() => setTab('emoji')}>Emoji</button><button type='button' onClick={() => input.current?.click()}><ImagePlus size={15} /> Thumbnail</button></div>
+    <div className='segmented-control'><button type='button' className={tab === 'icons' ? 'active' : ''} onClick={() => setTab('icons')}>{t("Icons")}</button><button type='button' className={tab === 'emoji' ? 'active' : ''} onClick={() => setTab('emoji')}>{t("Emoji")}</button><button type='button' onClick={() => input.current?.click()}><ImagePlus size={15} /> {t("Thumbnail")}</button></div>
     <input ref={input} hidden type='file' accept='image/jpeg,image/png,image/webp' onChange={imageUpload} />
-    {tab === 'icons' && <label className='search-field'><Search size={16} /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder='Search icons' /></label>}
-    <div className='choice-grid'>{tab === 'icons' ? icons.map(({ key, label, Icon }) => <button type='button' title={label} aria-label={label} className={choice.type === 'lucide' && choice.value === key ? 'active' : ''} key={key} onClick={() => setChoice({ ...choice, type: 'lucide', value: key })}><Icon /></button>) : emojiCatalog.map((emoji) => <button type='button' aria-label={`Use ${emoji}`} className={choice.type === 'emoji' && choice.value === emoji ? 'active' : ''} key={emoji} onClick={() => setChoice({ ...choice, type: 'emoji', value: emoji })}>{emoji}</button>)}</div>
-    {busy && <p className='dialog-copy'>Saving your change...</p>}
-    {error && <p className='form-error'>{error}</p>}
-    <p className='setting-label'>Icon color</p>
-    <div className='color-row'>{colors.map((color) => <button type='button' key={color} aria-label={`Icon color ${color}`} className={choice.color === color ? 'active' : ''} style={{ '--swatch': color }} onClick={() => setChoice({ ...choice, color })} />)}</div>
-    <p className='setting-label'>Glass background</p>
-    <div className='color-row'>{backgrounds.map((background) => <button type='button' key={background} aria-label={`Background ${background}`} className={choice.background === background ? 'active' : ''} style={{ '--swatch': background }} onClick={() => setChoice({ ...choice, background })} />)}</div>
+    {tab === 'icons' && <label className='search-field'><Search size={16} /><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("Search icons")} /></label>}
+    <div className='choice-grid'>{tab === 'icons' ? icons.map(({ key, label, Icon }) => <button type='button' title={t(label)} aria-label={t(label)} className={choice.type === 'lucide' && choice.value === key ? 'active' : ''} key={key} onClick={() => setChoice({ ...choice, type: 'lucide', value: key })}><Icon /></button>) : emojiCatalog.map((emoji) => <button type='button' aria-label={t("Use {value0}", { value0: emoji })} className={choice.type === 'emoji' && choice.value === emoji ? 'active' : ''} key={emoji} onClick={() => setChoice({ ...choice, type: 'emoji', value: emoji })}>{emoji}</button>)}</div>
+    {busy && <p className='dialog-copy'>{t("Saving your change...")}</p>}
+    {error && <p className='form-error'>{t(error)}</p>}
+    <p className='setting-label'>{t("Icon color")}</p>
+    <div className='color-row'>{colors.map((color) => <button type='button' key={color} aria-label={t("Icon color {value0}", { value0: color })} className={choice.color === color ? 'active' : ''} style={{ '--swatch': color }} onClick={() => setChoice({ ...choice, color })} />)}</div>
+    <p className='setting-label'>{t("Glass background")}</p>
+    <div className='color-row'>{backgrounds.map((background) => <button type='button' key={background} aria-label={t("Background {value0}", { value0: background })} className={choice.background === background ? 'active' : ''} style={{ '--swatch': background }} onClick={() => setChoice({ ...choice, background })} />)}</div>
   </GlassDialog>;
 }

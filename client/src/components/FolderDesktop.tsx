@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DndContext, MouseSensor, TouchSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
 import { ArrowDownAZ, Shapes } from 'lucide-react';
@@ -5,6 +6,7 @@ import DesktopItem from './DesktopItem.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 export default function FolderDesktop({ folder }) {
+  useI18n();
   const items = useDesktopStore((state) => state.items);
   const settings = useDesktopStore((state) => state.settings);
   const fetchFolderItems = useDesktopStore((state) => state.fetchFolderItems);
@@ -49,10 +51,10 @@ export default function FolderDesktop({ folder }) {
   }
 
   return <section className='folder-desktop'>
-    <div className='folder-toolbar' data-no-drag><span>{children.length} item{children.length === 1 ? '' : 's'}</span><button onClick={() => arrange('name')}><ArrowDownAZ size={14} /> Arrange by name</button><button onClick={() => arrange('type')}><Shapes size={14} /> Arrange by type</button></div>
+    <div className='folder-toolbar' data-no-drag><span>{children.length} {t("item")}{children.length === 1 ? '' : t("s")}</span><button onClick={() => arrange('name')}><ArrowDownAZ size={14} /> {t("Arrange by name")}</button><button onClick={() => arrange('type')}><Shapes size={14} /> {t("Arrange by type")}</button></div>
     <DndContext sensors={sensors} collisionDetection={pointerWithin} onDragStart={dragStart} onDragMove={dragMove} onDragEnd={dragEnd}>
       <div ref={canvas} className='folder-desktop-canvas' onClick={() => setSelectedId(null)} onContextMenu={(event) => { event.preventDefault(); setContextMenu({ x: event.clientX, y: event.clientY, item: null, parentId: folder._id }); }}>
-        {!children.length && <p className='folder-empty'>Drop items here or create something new.</p>}
+        {!children.length && <p className='folder-empty'>{t("Drop items here or create something new.")}</p>}
         {children.map((item) => <DesktopItem key={item._id} item={item} selected={selectedId === item._id} iconTheme={settings.iconTheme} onSelect={(value) => setSelectedId(value._id)} onOpen={open} onAudio={open} onContext={(event, value) => setContextMenu({ x: event.clientX, y: event.clientY, item: value, parentId: folder._id })} />)}
       </div>
     </DndContext>

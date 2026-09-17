@@ -1,3 +1,4 @@
+import { useI18n, getLocale, translate as t } from '../lib/i18n.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BellRing, Heart, ImagePlus, Languages, Mail, Music2, Paperclip, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
@@ -45,12 +46,14 @@ function readSoundPreference() {
 }
 
 function MessageMark({ icon, emoji, accentColor, size = 22, className = '' }: { icon: string; emoji?: string; accentColor: string; size?: number; className?: string }) {
+  useI18n();
   const Icon = iconComponents[icon];
   if (!Icon) return <span className={`legacy-message-emoji ${className}`}>{emoji || '💌'}</span>;
   return <Icon className={`message-mark ${className}`} size={size} strokeWidth={2.15} fill={icon === 'heart' ? 'currentColor' : 'none'} style={{ color: accentColor || '#ff8fa5' }} aria-hidden='true' />;
 }
 
 function EffectOrbit({ animation, emoji, accentColor }) {
+  useI18n();
   const effect = resolveLetterEffect(animation, emoji);
   if (!effect.glyphs.length) return null;
   return <div className={`letter-orbit ${effect.name}`} style={{ '--letter-accent': accentColor || '#ff8fa5' }} aria-hidden='true'>
@@ -59,13 +62,15 @@ function EffectOrbit({ animation, emoji, accentColor }) {
 }
 
 function MessageAttachment({ attachment, compact = false }) {
+  useI18n();
   if (!attachment) return null;
-  if (attachment.kind === 'spotify') return <section className={`message-attachment spotify ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || 'Spotify music'}</span></div><iframe title={attachment.name || 'Spotify player'} src={attachment.embedUrl} loading='lazy' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' /></section>;
-  if (attachment.kind === 'image') return <figure className={`message-attachment image ${compact ? 'compact' : ''}`}><img src={attachment.secureUrl} alt={attachment.name || 'Attached image'} /></figure>;
-  return <section className={`message-attachment audio ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || 'Attached music'}</span></div><audio controls preload='metadata' src={attachment.secureUrl}>Your browser cannot play this audio file.</audio></section>;
+  if (attachment.kind === 'spotify') return <section className={`message-attachment spotify ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || t("Spotify music")}</span></div><iframe title={attachment.name || t("Spotify player")} src={attachment.embedUrl} loading='lazy' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' /></section>;
+  if (attachment.kind === 'image') return <figure className={`message-attachment image ${compact ? 'compact' : ''}`}><img src={attachment.secureUrl} alt={attachment.name || t("Attached image")} /></figure>;
+  return <section className={`message-attachment audio ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || t("Attached music")}</span></div><audio controls preload='metadata' src={attachment.secureUrl}>{t("Your browser cannot play this audio file.")}</audio></section>;
 }
 
 function CelebrationLayer({ message, visible }) {
+  useI18n();
   const particles = useMemo(() => createCelebrationParticles({
     effect: message?.animation,
     emoji: message?.emoji,
@@ -85,6 +90,7 @@ function CelebrationLayer({ message, visible }) {
 }
 
 export default function MessageCenter({ suspended = false }) {
+  useI18n();
   const profile = useAuthStore((state) => state.profile);
   const messages = useDesktopStore((state) => state.messages);
   const unread = useDesktopStore((state) => state.unreadMessages);
@@ -205,7 +211,7 @@ export default function MessageCenter({ suspended = false }) {
       setAttachmentFile(null);
       setSpotifyUrl('');
       setCompose(false);
-      pushToast(`ส่งถึง ${profileName(recipientFor(profile))} แล้ว ✦`);
+      pushToast(t('Sent to {name} ✦', { name: profileName(recipientFor(profile)) }));
       playLetterChime({ enabled: soundEnabled }).catch(() => {});
     } catch (error) {
       setFormError(error.response?.data?.error?.message ?? 'ส่งข้อความไม่สำเร็จ กรุณาลองอีกครั้ง');
@@ -221,80 +227,79 @@ export default function MessageCenter({ suspended = false }) {
 
   const effect = resolveLetterEffect(form.animation, form.emoji);
   const mailbox = open ? <GlassDialog
-    title={<><Mail size={20} /> Letters & alerts</>}
-    eyebrow={`${profileName(profile)}'s mailbox · ${unread} unread`}
+    title={<><Mail size={20} /> {t("Letters & alerts")}</>}
+    eyebrow={t("{value0}'s mailbox · {value1} unread", { value0: profileName(profile), value1: unread })}
     className='message-dialog'
     onClose={() => { setOpen(false); setCompose(false); }}
   >
     <div className='message-commandbar'>
       <button type='button' className='sound-toggle' onClick={toggleSound} aria-pressed={soundEnabled}>
-        {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
-        เสียง {soundEnabled ? 'เปิด' : 'ปิด'}
+        {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />} {t("เสียง")} {soundEnabled ? t("เปิด") : t("ปิด")}
       </button>
       <button type='button' className='primary compact-primary' onClick={() => { setSelected(null); setCompose(true); }}>
-        <Heart size={15} /> เขียนถึง {profileName(recipientFor(profile))}
+        <Heart size={15} /> {t("เขียนถึง")} {profileName(recipientFor(profile))}
       </button>
     </div>
 
     {compose ? <form className='message-compose' onSubmit={submit}>
-      <div className='message-kind-picker' aria-label='Message type'>
-        <button type='button' className={form.kind === 'letter' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'letter' }))}><Mail size={15} /> จดหมาย</button>
-        <button type='button' className={form.kind === 'alert' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'alert' }))}><BellRing size={15} /> ข้อความด่วน</button>
+      <div className='message-kind-picker' aria-label={t("Message type")}>
+        <button type='button' className={form.kind === 'letter' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'letter' }))}><Mail size={15} /> {t("จดหมาย")}</button>
+        <button type='button' className={form.kind === 'alert' ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, kind: 'alert' }))}><BellRing size={15} /> {t("ข้อความด่วน")}</button>
       </div>
-      <Input aria-label='หัวข้อจดหมาย' placeholder='หัวข้อจดหมาย' maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
-      <Textarea aria-label='ข้อความ' placeholder='เขียนข้อความถึงอีกคน…' maxLength={5000} value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
-      <div className='translation-actions' aria-label='Translate message'><span><Languages size={14} /> แปลข้อความ</span><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('th')}>เป็นไทย</button><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('en')}>To English</button></div>
+      <Input aria-label={t("หัวข้อจดหมาย")} placeholder={t("หัวข้อจดหมาย")} maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
+      <Textarea aria-label={t("ข้อความ")} placeholder={t("เขียนข้อความถึงอีกคน…")} maxLength={5000} value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
+      <div className='translation-actions' aria-label={t("Translate message")}><span><Languages size={14} /> {t("แปลข้อความ")}</span><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('th')}>{t("เป็นไทย")}</button><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('en')}>{t("To English")}</button></div>
       <div className='message-attachment-picker'>
-        <label className='attachment-button'><Paperclip size={15} /> แนบรูป GIF หรือเพลง<input aria-label='แนบรูป GIF หรือเพลง' type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); } event.target.value = ''; }} /></label>
-        <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label='ลิงก์ Spotify' type='url' placeholder='วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)' value={spotifyUrl} onChange={(event) => { setSpotifyUrl(event.target.value); if (event.target.value) setAttachmentFile(null); }} /></label>
-        {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label='ลบไฟล์แนบ' onClick={() => setAttachmentFile(null)}><X size={14} /></button></div>}
-        {spotifyUrl && <div className='attachment-file'><span><Music2 size={15} />Spotify link attached</span><button type='button' aria-label='ลบลิงก์ Spotify' onClick={() => setSpotifyUrl('')}><X size={14} /></button></div>}
+        <label className='attachment-button'><Paperclip size={15} /> {t("แนบรูป GIF หรือเพลง")}<input aria-label={t("แนบรูป GIF หรือเพลง")} type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); } event.target.value = ''; }} /></label>
+        <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label={t("ลิงก์ Spotify")} type='url' placeholder={t("วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)")} value={spotifyUrl} onChange={(event) => { setSpotifyUrl(event.target.value); if (event.target.value) setAttachmentFile(null); }} /></label>
+        {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => setAttachmentFile(null)}><X size={14} /></button></div>}
+        {spotifyUrl && <div className='attachment-file'><span><Music2 size={15} />{t("Spotify link attached")}</span><button type='button' aria-label={t("ลบลิงก์ Spotify")} onClick={() => setSpotifyUrl('')}><X size={14} /></button></div>}
       </div>
-      <div className='message-symbol-heading'><span>สัญลักษณ์ประจำจดหมาย</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> สีที่เลือก</strong></div>
-      <div className='message-icon-picker' aria-label='เลือกไอคอนจดหมาย'>
-        {messageIconOptions.map(({ key, label }) => <button type='button' key={key} className={form.icon === key ? 'active' : ''} style={{ '--message-accent': form.accentColor }} title={label} aria-label={label} onClick={() => setForm((value) => ({ ...value, icon: key }))}><MessageMark icon={key} accentColor={form.accentColor} size={20} /></button>)}
+      <div className='message-symbol-heading'><span>{t("สัญลักษณ์ประจำจดหมาย")}</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> {t("สีที่เลือก")}</strong></div>
+      <div className='message-icon-picker' aria-label={t("เลือกไอคอนจดหมาย")}>
+        {messageIconOptions.map(({ key, label }) => <button type='button' key={key} className={form.icon === key ? 'active' : ''} style={{ '--message-accent': form.accentColor }} title={t(label)} aria-label={t(label)} onClick={() => setForm((value) => ({ ...value, icon: key }))}><MessageMark icon={key} accentColor={form.accentColor} size={20} /></button>)}
       </div>
-      <label className='accent-color-field'>สี icon <span><input aria-label='เลือกสี icon' type='color' value={form.accentColor} onChange={(event) => setForm((value) => ({ ...value, accentColor: event.target.value }))} /><output>{form.accentColor}</output></span></label>
-      <div className='effect-heading'><span>บรรยากาศตอนเปิด</span><strong><MessageMark icon={effectIconNames[form.animation]} accentColor={form.accentColor} size={17} /> {effect.label}</strong></div>
+      <label className='accent-color-field'>{t("สี icon")} <span><input aria-label={t("เลือกสี icon")} type='color' value={form.accentColor} onChange={(event) => setForm((value) => ({ ...value, accentColor: event.target.value }))} /><output>{form.accentColor}</output></span></label>
+      <div className='effect-heading'><span>{t("บรรยากาศตอนเปิด")}</span><strong><MessageMark icon={effectIconNames[form.animation]} accentColor={form.accentColor} size={17} /> {t(effect.label)}</strong></div>
       <div className='effect-picker'>
         {Object.entries(LETTER_EFFECTS).map(([name, option]) => <button type='button' key={name} className={form.animation === name ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, animation: name as MessageAnimation }))}>
-          <span><MessageMark icon={effectIconNames[name]} accentColor={form.accentColor} size={20} /></span><small>{option.label}</small>
+          <span><MessageMark icon={effectIconNames[name]} accentColor={form.accentColor} size={20} /></span><small>{t(option.label)}</small>
         </button>)}
       </div>
-      {(formError || translationError) && <p className='form-error' role='alert'>{formError || translationError}</p>}
-      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); }}>ยกเลิก</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</Button></div>
+      {(formError || translationError) && <p className='form-error' role='alert'>{t(formError || translationError)}</p>}
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
     </form> : <div className='mailbox-layout'>
-      <div className='message-list' aria-label='Inbox'>
+      <div className='message-list' aria-label={t("Inbox")}>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>
           <span className='message-emoji'><MessageMark {...message} /></span>
-          <span className='message-row-copy'><strong>{message.subject || 'A special message'} {message.attachment && <Paperclip className='message-row-attachment' size={12} />}</strong><small>จาก {profileName(message.sender)} · {new Date(message.createdAt).toLocaleString()}</small><span>{message.body || (message.attachment?.kind === 'spotify' ? 'เพลงจาก Spotify ที่แนบมา' : message.attachment?.kind === 'audio' ? 'เพลงที่แนบมา' : 'รูปที่แนบมา')}</span></span>
-        </button>) : <p className='empty-mailbox'><Sparkles size={22} /> ยังไม่มีข้อความ<br /><small>ลองเขียนฉบับแรกถึง {profileName(recipientFor(profile))}</small></p>}
+          <span className='message-row-copy'><strong>{message.subject || t("A special message")} {message.attachment && <Paperclip className='message-row-attachment' size={12} />}</strong><small>{t("จาก")} {profileName(message.sender)} · {new Date(message.createdAt).toLocaleString(getLocale())}</small><span>{message.body || (message.attachment?.kind === 'spotify' ? t("เพลงจาก Spotify ที่แนบมา") : message.attachment?.kind === 'audio' ? t("เพลงที่แนบมา") : t("รูปที่แนบมา"))}</span></span>
+        </button>) : <p className='empty-mailbox'><Sparkles size={22} /> {t("ยังไม่มีข้อความ")}<br /><small>{t("ลองเขียนฉบับแรกถึง")} {profileName(recipientFor(profile))}</small></p>}
       </div>
       <article className={`message-detail ${selected ? 'has-message' : ''}`}>
-        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} accentColor={selected.accentColor} /><p className='eyebrow'>{selected.kind === 'alert' ? 'Special alert' : `From ${profileName(selected.sender)}`}</p><div className='detail-emoji'><MessageMark {...selected} size={31} /></div><h3>{selected.subject || 'A special message'}</h3>{selected.body && <p>{selected.body}</p>}<MessageAttachment attachment={selected.attachment} /></> : <><Mail size={30} /><strong>เลือกจดหมายเพื่อเปิดอ่าน</strong><small>ข้อความใหม่จะมีขอบสี Neon</small></>}
+        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} accentColor={selected.accentColor} /><p className='eyebrow'>{selected.kind === 'alert' ? t("Special alert") : t("From {value0}", { value0: profileName(selected.sender) })}</p><div className='detail-emoji'><MessageMark {...selected} size={31} /></div><h3>{selected.subject || t("A special message")}</h3>{selected.body && <p>{selected.body}</p>}<MessageAttachment attachment={selected.attachment} /></> : <><Mail size={30} /><strong>{t("เลือกจดหมายเพื่อเปิดอ่าน")}</strong><small>{t("ข้อความใหม่จะมีขอบสี Neon")}</small></>}
       </article>
     </div>}
   </GlassDialog> : null;
 
   const incoming = nextUnread && !open ? createPortal(<>
     <CelebrationLayer message={nextUnread} visible={celebrating} />
-    <button type='button' className='incoming-letter-backdrop' onClick={dismissIncoming} aria-label='ไว้เปิดทีหลัง' />
-    <motion.aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={`ข้อความจาก ${profileName(nextUnread.sender)}`} initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.86, x: '-50%', y: '-46%' }} animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }} transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 28 }}>
-      <div className='incoming-windowbar' aria-hidden='true'><span><i /><i /><i /></span><b>Yuu & Mi message</b></div>
+    <button type='button' className='incoming-letter-backdrop' onClick={dismissIncoming} aria-label={t("ไว้เปิดทีหลัง")} />
+    <motion.aside className={`incoming-letter glass-dialog kind-${nextUnread.kind}`} style={{ '--incoming-accent': nextUnread.accentColor || '#ff8fa5' }} role='alertdialog' aria-modal='true' aria-label={t("ข้อความจาก {value0}", { value0: profileName(nextUnread.sender) })} initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.86, x: '-50%', y: '-46%' }} animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }} transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 28 }}>
+      <div className='incoming-windowbar' aria-hidden='true'><span><i /><i /><i /></span><b>{t("Yuu & Mi message")}</b></div>
       <EffectOrbit animation={nextUnread.animation} emoji={nextUnread.emoji} accentColor={nextUnread.accentColor} />
       <div className='incoming-letter-heading'>
         <span className='incoming-envelope'><MessageMark {...nextUnread} size={46} /></span>
-        <div><p className='eyebrow'>{nextUnread.kind === 'alert' ? 'ข้อความพิเศษมาถึง' : 'มีจดหมายมาถึง'}</p><small>จาก {profileName(nextUnread.sender)}</small></div>
+        <div><p className='eyebrow'>{nextUnread.kind === 'alert' ? t("ข้อความพิเศษมาถึง") : t("มีจดหมายมาถึง")}</p><small>{t("จาก")} {profileName(nextUnread.sender)}</small></div>
       </div>
-      <h3>{nextUnread.subject || 'A little note for you'}</h3>
+      <h3>{nextUnread.subject || t("A little note for you")}</h3>
       <p className='incoming-copy'>{nextUnread.body}</p>
-      {nextUnread.attachment && <div className='incoming-attachment'><Paperclip size={13} /> {nextUnread.attachment.kind === 'spotify' ? 'มีเพลงจาก Spotify แนบมา' : nextUnread.attachment.kind === 'audio' ? 'มีเพลงแนบมา' : 'มีรูป/GIF แนบมา'}</div>}
-      <div className='incoming-actions'><button type='button' onClick={dismissIncoming}>ไว้ทีหลัง</button><button type='button' className='primary' onClick={openIncoming}>เปิดอ่าน <Sparkles size={14} /></button></div>
+      {nextUnread.attachment && <div className='incoming-attachment'><Paperclip size={13} /> {nextUnread.attachment.kind === 'spotify' ? t("มีเพลงจาก Spotify แนบมา") : nextUnread.attachment.kind === 'audio' ? t("มีเพลงแนบมา") : t("มีรูป/GIF แนบมา")}</div>}
+      <div className='incoming-actions'><button type='button' onClick={dismissIncoming}>{t("ไว้ทีหลัง")}</button><button type='button' className='primary' onClick={openIncoming}>{t("เปิดอ่าน")} <Sparkles size={14} /></button></div>
     </motion.aside>
   </>, document.body) : null;
 
   return <>
-    <button className='message-button' title='Letters and alerts' aria-label={`Letters and alerts, ${unread} unread`} onClick={() => { setOpen((value) => !value); setCompose(false); setSelected(null); }}><Mail size={15} />{unread > 0 && <b>{unread}</b>}</button>
+    <button className='message-button' title={t("Letters and alerts")} aria-label={t("Letters and alerts, {value0} unread", { value0: unread })} onClick={() => { setOpen((value) => !value); setCompose(false); setSelected(null); }}><Mail size={15} />{unread > 0 && <b>{unread}</b>}</button>
     {mailbox}
     {incoming}
   </>;

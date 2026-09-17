@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DndContext, MouseSensor, TouchSensor, pointerWithin, rectIntersection, useSensor, useSensors } from '@dnd-kit/core';
 import DesktopItem from './DesktopItem.js';
@@ -6,6 +7,7 @@ import TrashBin from './TrashBin.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudio, trashCount, onTrashOpen }) {
+  useI18n();
   const items = useDesktopStore((state) => state.items);
   const selectedId = useDesktopStore((state) => state.selectedId);
   const selectedIds = useDesktopStore((state) => state.selectedIds);
@@ -141,7 +143,7 @@ export default function DesktopCanvas({ settings, onUrlDrop, onFilesDrop, onAudi
     <main ref={canvas} style={style} className={`desktop-canvas wallpaper-${wallpaper.value || 'neon'} wallpaper-${wallpaper.type || 'preset'}`} onDragOver={(event) => event.preventDefault()} onDrop={nativeDrop} onPointerDown={startMarquee} onPointerMove={moveMarquee} onPointerUp={endMarquee} onPointerCancel={endMarquee} onClick={() => { if (marqueeMoved.current) { marqueeMoved.current = false; return; } if (tool === 'select') { select(null); context(null); } }} onContextMenu={(event) => { if (tool !== 'select') return; event.preventDefault(); context({ x: event.clientX, y: event.clientY, item: null, parentId: null }); }}>
       <div className='wallpaper-orbit' />
       <InkLayer canvasRef={canvas} />
-      <div className='desktop-label'>Yuu & Mi <span>one shared desktop</span></div>
+      <div className='desktop-label'>{t("Yuu & Mi")} <span>{t("one shared desktop")}</span></div>
       {marquee && <i className='desktop-marquee' style={{ left: Math.min(marquee.start.x, marquee.end.x), top: Math.min(marquee.start.y, marquee.end.y), width: Math.abs(marquee.end.x - marquee.start.x), height: Math.abs(marquee.end.y - marquee.start.y) }} />}
       {rootItems.map((item) => <DesktopItem key={item._id} item={item} selected={selectedIds.includes(item._id) || selectedId === item._id} iconTheme={settings.iconTheme} onSelect={(value, event) => { if (event.metaKey || event.ctrlKey) toggleSelected(value._id); else select(value._id); }} onOpen={openWindow} onAudio={onAudio} onContext={(event, value) => context({ x: event.clientX, y: event.clientY, item: value, parentId: value.parentId })} />)}
     </main>

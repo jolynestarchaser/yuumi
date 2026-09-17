@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from './lib/i18n.js';
 import { useEffect, useRef, useState } from 'react';
 import { AudioLines, CalendarDays, File, FileImage, Folder, FolderPlus, Link2, Music2, NotebookPen, PawPrint, StickyNote, Upload, Video } from 'lucide-react';
 import { useAuthStore } from './store/authStore.js';
@@ -15,6 +16,7 @@ import CustomCursor from './components/CustomCursor.js';
 import TrashDialog from './components/TrashDialog.js';
 import MessageCenter from './components/MessageCenter.js';
 import CompanionWidget from './components/companion/CompanionWidget.js';
+import CompanionRoamer from './components/companion/CompanionRoamer.js';
 import WhatsNewDialog from './components/WhatsNewDialog.js';
 import { acknowledgeRelease, hasUnseenRelease } from './lib/releases.js';
 import { Button } from './components/ui/button.js';
@@ -22,6 +24,7 @@ import { Button } from './components/ui/button.js';
 const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File, calendar: CalendarDays };
 
 function MinimizedWindowButton({ item, window, onRestore }) {
+  useI18n();
   const appearance = item?.appearance || {};
   const thumbnail = appearance.iconType === 'image'
     ? appearance.iconValue
@@ -33,13 +36,14 @@ function MinimizedWindowButton({ item, window, onRestore }) {
           ? item.metadata?.previewImage
           : null;
   const Icon = minimizedIcons[item?.type] || File;
-  return <Button variant='ghost' className='dock-window-item' title={`Restore ${item?.name || 'window'}`} onClick={() => onRestore(window)}>
+  return <Button variant='ghost' className='dock-window-item' title={t("Restore {value0}", { value0: item?.name || 'window' })} onClick={() => onRestore(window)}>
     <span className='dock-window-visual'>{thumbnail ? <img src={thumbnail} alt='' /> : appearance.iconType === 'emoji' ? appearance.iconValue : <Icon />}</span>
-    <span>{item?.name || 'Restore'}</span>
+    <span>{item?.name || t("Restore")}</span>
   </Button>;
 }
 
 function DesktopPage() {
+  useI18n();
   const s = useDesktopStore();
   const logout = useAuthStore((state) => state.logout);
   const profile = useAuthStore((state) => state.profile);
@@ -48,6 +52,7 @@ function DesktopPage() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [trashOpen, setTrashOpen] = useState(false);
   const [companionOpen, setCompanionOpen] = useState(false);
+  const [companionRoaming, setCompanionRoaming] = useState(false);
   const [updatesOpen, setUpdatesOpen] = useState(() => hasUnseenRelease(profile));
   const [uploads, setUploads] = useState([]);
   const [spotify, setSpotify] = useState({ configured: false, connected: false });
@@ -131,27 +136,28 @@ function DesktopPage() {
   return <div className={`app-shell ${s.settings.cursor?.enabled ? 'has-custom-cursor' : ''}`}>
     <header className='topbar'>
       <div className='window-controls' aria-hidden='true'><i /><i /><i /></div>
-      <div className='brand'><span className='brand-mark'>✦</span><strong>Yuu & Mi</strong><span>{s.connected ? 'live shared desktop' : 'reconnecting...'}</span><span className={`active-profile ${profile}`}>{profile === 'joe' ? 'Joe' : 'Focus'}</span></div>
-      <div className='topbar-actions'><Button variant='ghost' onClick={() => s.arrangeItems('name')}>Clean up</Button><Button variant='ghost' className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>Snap</Button><MessageCenter suspended={updatesOpen || companionOpen} /><Button variant='ghost' onClick={() => setUpdatesOpen(true)} aria-label="What's new">What’s new</Button><Button variant='ghost' disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? 'Spotify ✓' : 'Connect Spotify'}</Button><Button variant='ghost' onClick={() => setAppearanceOpen(true)}>Customize</Button><Button variant='ghost' onClick={logout}>Lock</Button></div>
+      <div className='brand'><span className='brand-mark'>✦</span><strong>{t("Yuu & Mi")}</strong><span>{s.connected ? t("live shared desktop") : t("reconnecting...")}</span><span className={`active-profile ${profile}`}>{profile === 'joe' ? t("Joe") : t("Focus")}</span></div>
+      <div className='topbar-actions'><Button variant='ghost' onClick={() => s.arrangeItems('name')}>{t("Clean up")}</Button><Button variant='ghost' className={s.settings.snapToGrid ? 'active-control' : ''} onClick={() => s.saveSettings({ snapToGrid: !s.settings.snapToGrid })}>{t("Snap")}</Button><MessageCenter suspended={updatesOpen || companionOpen} /><Button variant='ghost' onClick={() => setUpdatesOpen(true)} aria-label={t("What's new")}>{t("What’s new")}</Button><Button variant='ghost' disabled={!spotify.configured} className={spotify.connected ? 'active-control' : ''} onClick={() => { if (!spotify.connected) globalThis.location.assign(`${apiOrigin}/api/spotify/login`); }}>{spotify.connected ? t("Spotify ✓") : t("Connect Spotify")}</Button><Button variant='ghost' onClick={() => setAppearanceOpen(true)}>{t("Customize")}</Button><Button variant='ghost' onClick={logout}>{t("Lock")}</Button></div>
     </header>
     <DesktopCanvas settings={s.settings} onUrlDrop={(url, position) => addLink(url, position).catch(() => {})} onFilesDrop={uploadFiles} onAudio={(item) => s.openWindow(item)} trashCount={s.trashItems.length} onTrashOpen={() => setTrashOpen(true)} />
     <WindowManager />
     <PenToolbar />
-    <nav className='dock' aria-label='Desktop actions'>
-      <Button variant='ghost' onClick={() => s.createItem({ name: 'New Folder', type: 'folder', parentId: null, position: { x: 80, y: 100 } })}><FolderPlus /><span>Folder</span></Button>
-      <Button variant='ghost' onClick={newNote}><NotebookPen /><span>Note</span></Button>
-      <Button variant='ghost' onClick={newCalendar}><CalendarDays /><span>Calendar</span></Button>
-      <Button variant='ghost' onClick={() => setCompanionOpen(true)}><PawPrint /><span>Companion</span></Button>
-      <Button variant='ghost' onClick={() => setLinkOpen(true)}><Link2 /><span>Add URL</span></Button>
-      <Button variant='ghost' onClick={() => fileInput.current.click()}><Upload /><span>Upload</span></Button>
+    <nav className='dock' aria-label={t("Desktop actions")}>
+      <Button variant='ghost' onClick={() => s.createItem({ name: 'New Folder', type: 'folder', parentId: null, position: { x: 80, y: 100 } })}><FolderPlus /><span>{t("Folder")}</span></Button>
+      <Button variant='ghost' onClick={newNote}><NotebookPen /><span>{t("Note")}</span></Button>
+      <Button variant='ghost' onClick={newCalendar}><CalendarDays /><span>{t("Calendar")}</span></Button>
+      <Button variant='ghost' onClick={() => setCompanionOpen(true)}><PawPrint /><span>{t("Companion")}</span></Button>
+      <Button variant='ghost' onClick={() => setLinkOpen(true)}><Link2 /><span>{t("Add URL")}</span></Button>
+      <Button variant='ghost' onClick={() => fileInput.current.click()}><Upload /><span>{t("Upload")}</span></Button>
       {s.windows.filter((window) => window.minimized).map((window) => <MinimizedWindowButton key={window.itemId} window={window} item={s.items.find((row) => row._id === window.itemId)} onRestore={(value) => s.updateWindow(value, { minimized: false })} />)}
       <input ref={fileInput} hidden type='file' multiple onChange={(event) => uploadFiles([...event.target.files])} />
     </nav>
-    {uploads.length > 0 && <aside className='upload-queue'>{uploads.map((upload) => <p key={upload.task}>{upload.name}<span>{upload.status}</span></p>)}</aside>}
+    {uploads.length > 0 && <aside className='upload-queue'>{uploads.map((upload) => <p key={upload.task}>{upload.name}<span>{t(upload.status)}</span></p>)}</aside>}
     {linkOpen && <AddLinkDialog onAdd={addLink} onClose={() => setLinkOpen(false)} />}
     {appearanceOpen && <AppearancePanel settings={s.settings} onSave={s.saveSettings} onUpload={s.uploadSettingAsset} onClose={() => setAppearanceOpen(false)} />}
     {trashOpen && <TrashDialog onClose={() => setTrashOpen(false)} />}
-    {companionOpen && <CompanionWidget key={profile} onClose={() => setCompanionOpen(false)} />}
+    {companionOpen && <CompanionWidget key={profile} onClose={() => setCompanionOpen(false)} onGoOut={() => { setCompanionRoaming(true); setCompanionOpen(false); }} />}
+    {companionRoaming && !companionOpen && !updatesOpen && !linkOpen && !appearanceOpen && !trashOpen && <CompanionRoamer key={profile} onOpen={() => setCompanionOpen(true)} onHome={() => setCompanionRoaming(false)} />}
     {updatesOpen && <WhatsNewDialog onClose={dismissUpdates} onMeetCompanion={() => { dismissUpdates(); setCompanionOpen(true); }} />}
     <ContextMenu onAddLink={() => setLinkOpen(true)} />
     <ToastRegion />
@@ -160,6 +166,8 @@ function DesktopPage() {
 }
 
 export default function App() {
+  const { language } = useI18n();
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
   const unlocked = useAuthStore((state) => state.unlocked);
   const profile = useAuthStore((state) => state.profile);
   const restoreSession = useAuthStore((state) => state.restoreSession);

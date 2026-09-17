@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Download, History, Maximize2, Minimize2, Pause, Play, X } from 'lucide-react';
 import { useDesktopStore } from '../store/desktopStore.js';
@@ -6,6 +7,7 @@ import HistoryDialog from './HistoryDialog.js';
 import RelationshipCalendar from './RelationshipCalendar.js';
 
 function NoteWindow({ item, onRegisterClose }) {
+  useI18n();
   const update = useDesktopStore((state) => state.updateItem);
   const pushToast = useDesktopStore((state) => state.pushToast);
   const [name, setName] = useState(item.name);
@@ -45,27 +47,30 @@ function NoteWindow({ item, onRegisterClose }) {
     return () => onRegisterClose?.(null);
   }, [onRegisterClose, save]);
 
-  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; }} onBlur={() => { if (!nameRef.current.trim()) { setName(item.name); nameRef.current = item.name; } }} placeholder='Note title' /><button data-no-drag type='button' disabled={saving} onClick={() => { void save({ announce: true }).catch(() => {}); }}>{saving ? 'Saving…' : 'Save'}</button><button data-no-drag type='button' onClick={() => setHistoryOpen(true)}><History size={14} /> History</button></div><textarea data-no-drag value={content} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; }} placeholder='Write something...' /><small>Save anytime, or close the window to save · revision {item.contentRevision || 0}</small></section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
+  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; }} onBlur={() => { if (!nameRef.current.trim()) { setName(item.name); nameRef.current = item.name; } }} placeholder={t("Note title")} /><button data-no-drag type='button' disabled={saving} onClick={() => { void save({ announce: true }).catch(() => {}); }}>{saving ? t("Saving…") : t("Save")}</button><button data-no-drag type='button' onClick={() => setHistoryOpen(true)}><History size={14} /> {t("History")}</button></div><textarea data-no-drag value={content} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; }} placeholder={t("Write something...")} /><small>{t("Save anytime, or close the window to save · revision")} {item.contentRevision || 0}</small></section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
 }
 
 function WindowContent({ item, onRegisterClose }) {
+  useI18n();
   if (item.type === 'note') return <NoteWindow item={item} onRegisterClose={onRegisterClose} />;
   if (item.type === 'calendar') return <RelationshipCalendar item={item} />;
   if (item.type === 'image') return <img className='window-media' src={item.asset?.secureUrl} alt={item.name} />;
   if (item.type === 'video') return <video className='window-media' src={item.asset?.secureUrl} poster={item.asset?.thumbnailUrl} controls data-no-drag />;
   if (item.type === 'audio') return <section className='audio-window'><div className='album-disc'><Play fill='currentColor' /></div><h2>{item.name}</h2><audio src={item.asset?.secureUrl} controls data-no-drag /></section>;
-  if (item.type === 'link' && item.metadata?.provider === 'youtube') return <section className='youtube-window'><iframe data-no-drag src={item.metadata.embedUrl} title={item.name} allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowFullScreen /><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>Open on YouTube</a></section>;
-  if (item.type === 'link' && item.metadata?.provider === 'spotify') return <section className='spotify-mini-player'><iframe data-no-drag src={item.metadata.embedUrl} title={item.name} allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' loading='lazy' /><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>Open in Spotify</a></section>;
-  if (item.type === 'link') return <section className='link-preview'><img src={item.metadata?.previewImage} alt='' /><p>{item.metadata?.siteName}</p><h2>{item.metadata?.title || item.name}</h2><p>{item.metadata?.description}</p><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>Open website</a></section>;
-  if (item.type === 'file') return <section className='file-window'><Download size={42} /><h2>{item.name}</h2><p>{item.asset?.mimeType || 'File'} · {Math.ceil((item.asset?.bytes || 0) / 1024)} KB</p><a data-no-drag href={item.asset?.secureUrl} target='_blank' rel='noreferrer' download>Download file</a></section>;
+  if (item.type === 'link' && item.metadata?.provider === 'youtube') return <section className='youtube-window'><iframe data-no-drag src={item.metadata.embedUrl} title={item.name} allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowFullScreen /><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>{t("Open on YouTube")}</a></section>;
+  if (item.type === 'link' && item.metadata?.provider === 'spotify') return <section className='spotify-mini-player'><iframe data-no-drag src={item.metadata.embedUrl} title={item.name} allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' loading='lazy' /><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>{t("Open in Spotify")}</a></section>;
+  if (item.type === 'link') return <section className='link-preview'><img src={item.metadata?.previewImage} alt='' /><p>{item.metadata?.siteName}</p><h2>{item.metadata?.title || item.name}</h2><p>{item.metadata?.description}</p><a data-no-drag href={item.url} target='_blank' rel='noreferrer'>{t("Open website")}</a></section>;
+  if (item.type === 'file') return <section className='file-window'><Download size={42} /><h2>{item.name}</h2><p>{item.asset?.mimeType || t("File")} · {Math.ceil((item.asset?.bytes || 0) / 1024)} {t("KB")}</p><a data-no-drag href={item.asset?.secureUrl} target='_blank' rel='noreferrer' download>{t("Download file")}</a></section>;
   return <FolderContent item={item} />;
 }
 
 function FolderContent({ item }) {
+  useI18n();
   return <FolderDesktop folder={item} />;
 }
 
 function DesktopWindow({ window, item }) {
+  useI18n();
   const update = useDesktopStore((s) => s.updateWindow); const preview = useDesktopStore((s) => s.previewWindow); const close = useDesktopStore((s) => s.closeWindow); const [bounds, setBounds] = useState(window.bounds); const drag = useRef<{ x: number; y: number; startBounds: import("../../../shared/contracts.js").Bounds; resize: boolean; active: boolean } | null>(null);
   const saveBeforeClose = useRef(null);
   useEffect(() => setBounds(window.bounds), [window.bounds]);
@@ -87,6 +92,7 @@ function DesktopWindow({ window, item }) {
 }
 
 export default function WindowManager() {
+  useI18n();
   const windows = useDesktopStore((s) => s.windows); const items = useDesktopStore((s) => s.items); const visible = useMemo(() => windows.filter((window) => !window.minimized).map((window) => ({ window, item: items.find((item) => item._id === window.itemId) })).filter((row) => row.item), [windows, items]);
   return <>{visible.map(({ window, item }) => <DesktopWindow key={window.itemId} window={window} item={item} />)}</>;
 }

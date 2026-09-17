@@ -74,9 +74,26 @@ export function validateSetup(body: Partial<CompanionSetup>) {
 export function validateAppearance(value: unknown): value is import('../../../shared/contracts.js').CompanionAppearance {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const appearance = value as Record<string, unknown>;
-  return ['soft', 'pixel'].includes(appearance.visualStyle as string)
+  const color = (entry) => entry === undefined || (typeof entry === 'string' && /^#[0-9a-fA-F]{6}$/.test(entry));
+  const voice = appearance.voice as Record<string, unknown> | undefined;
+  const validVoice = voice === undefined || (voice && typeof voice === 'object' && !Array.isArray(voice)
+    && typeof voice.enabled === 'boolean' && ['th-TH', 'en-US'].includes(voice.language as string)
+    && typeof voice.voiceURI === 'string' && voice.voiceURI.length <= 300
+    && typeof voice.rate === 'number' && voice.rate >= .5 && voice.rate <= 1.5
+    && typeof voice.pitch === 'number' && voice.pitch >= .5 && voice.pitch <= 2
+    && (voice.preset === undefined || ['natural', 'spark', 'fairy', 'dragon', 'robot', 'custom'].includes(voice.preset as string))
+    && Object.keys(voice).every((key) => ['enabled', 'language', 'voiceURI', 'rate', 'pitch', 'preset'].includes(key)));
+  return Boolean(['soft', 'pixel'].includes(appearance.visualStyle as string)
     && typeof appearance.animated === 'boolean' && typeof appearance.usePortrait === 'boolean'
-    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait'].includes(key));
+    && (appearance.species === undefined || ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'].includes(appearance.species as string))
+    && color(appearance.bodyColor) && color(appearance.accentColor) && color(appearance.eyeColor) && validVoice
+    && (appearance.customDescription === undefined || (typeof appearance.customDescription === 'string' && appearance.customDescription.length <= 500))
+    && (appearance.species !== 'custom' || (typeof appearance.customDescription === 'string' && appearance.customDescription.trim().length > 0))
+    && (appearance.face === undefined || ['gentle', 'happy', 'sleepy', 'mischievous', 'starry'].includes(appearance.face as string))
+    && (appearance.gender === undefined || ['unspecified', 'female', 'male', 'nonbinary'].includes(appearance.gender as string))
+    && (appearance.theme === undefined || ['lavender', 'forest', 'ocean', 'sunset', 'starlight', 'candy', 'custom'].includes(appearance.theme as string))
+    && (appearance.silhouette === undefined || ['round', 'bean', 'fluffy'].includes(appearance.silhouette as string))
+    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait', 'species', 'bodyColor', 'accentColor', 'eyeColor', 'voice', 'customDescription', 'face', 'gender', 'theme', 'silhouette'].includes(key)));
 }
 
 export function startingTraits(temperament: Temperament) {

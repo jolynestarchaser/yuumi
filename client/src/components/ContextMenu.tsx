@@ -1,3 +1,4 @@
+import { useI18n, translate as t } from '../lib/i18n.js';
 import { useState } from 'react';
 import GlassDialog from './GlassDialog.js';
 import ConfirmDialog from './ConfirmDialog.js';
@@ -8,6 +9,7 @@ import { Input } from './ui/input.js';
 import { useDesktopStore } from '../store/desktopStore.js';
 
 export default function ContextMenu({ onAddLink }) {
+  useI18n();
   const menu = useDesktopStore((state) => state.contextMenu);
   const clear = useDesktopStore((state) => state.setContextMenu);
   const create = useDesktopStore((state) => state.createItem);
@@ -39,28 +41,28 @@ export default function ContextMenu({ onAddLink }) {
   return <>
     {menu && <menu className='context-menu' style={{ position: 'fixed', left: menu.x, top: menu.y }}>
       {item ? <>
-        <button onClick={() => { if (item.secret) { useDesktopStore.getState().pushToast('Double-click the secret item to reveal it first.'); } else open(item); clear(null); }}>{item.secret ? 'Reveal item first' : 'Open'}</button>
-        {item.type === 'folder' && <><button onClick={newFolder}>New folder inside</button><button onClick={newNote}>New note inside</button></>}
-        <button onClick={() => beginAction('rename')}>Rename</button>
-        <button onClick={() => beginAction('icon')}>Change icon / thumbnail</button>
-        <button onClick={async () => { await update(item._id, { secret: !item.secret }); clear(null); }}>{item.secret ? 'Show item' : 'Make secret'}</button>
-        {item.type === 'image' && <button onClick={() => beginAction('sprite')}>Animate sprite sheet</button>}
-        {item.parentId && <button onClick={() => { move(item._id, null, { x: 60, y: 60 }); clear(null); }}>Move to desktop</button>}
-        <button className='danger' onClick={() => beginAction('delete')}>Move to Trash</button>
+        <button onClick={() => { if (item.secret) { useDesktopStore.getState().pushToast('Double-click the secret item to reveal it first.'); } else open(item); clear(null); }}>{item.secret ? t("Reveal item first") : t("Open")}</button>
+        {item.type === 'folder' && <><button onClick={newFolder}>{t("New folder inside")}</button><button onClick={newNote}>{t("New note inside")}</button></>}
+        <button onClick={() => beginAction('rename')}>{t("Rename")}</button>
+        <button onClick={() => beginAction('icon')}>{t("Change icon / thumbnail")}</button>
+        <button onClick={async () => { await update(item._id, { secret: !item.secret }); clear(null); }}>{item.secret ? t("Show item") : t("Make secret")}</button>
+        {item.type === 'image' && <button onClick={() => beginAction('sprite')}>{t("Animate sprite sheet")}</button>}
+        {item.parentId && <button onClick={() => { move(item._id, null, { x: 60, y: 60 }); clear(null); }}>{t("Move to desktop")}</button>}
+        <button className='danger' onClick={() => beginAction('delete')}>{t("Move to Trash")}</button>
       </> : <>
-        <button onClick={newFolder}>New folder</button>
-        <button onClick={newNote}>New note</button>
-        <button onClick={() => { onAddLink(); clear(null); }}>Add URL</button>
+        <button onClick={newFolder}>{t("New folder")}</button>
+        <button onClick={newNote}>{t("New note")}</button>
+        <button onClick={() => { onAddLink(); clear(null); }}>{t("Add URL")}</button>
       </>}
     </menu>}
-    {action?.type === 'rename' && <GlassDialog title='Rename item' eyebrow='Desktop item' onClose={() => setAction(null)}>
+    {action?.type === 'rename' && <GlassDialog title={t("Rename item")} eyebrow={t("Desktop item")} onClose={() => setAction(null)}>
       <form className='dialog-form' onSubmit={async (event) => { event.preventDefault(); if (name.trim()) await update(action.item._id, { name: name.trim() }); setAction(null); }}>
-        <label>Name<Input value={name} onChange={(event) => setName(event.target.value)} maxLength={160} /></label>
-        <div className='dialog-actions'><Button variant='secondary' onClick={() => setAction(null)}>Cancel</Button><Button variant='neon' type='submit'>Save name</Button></div>
+        <label>{t("Name")}<Input value={name} onChange={(event) => setName(event.target.value)} maxLength={160} /></label>
+        <div className='dialog-actions'><Button variant='secondary' onClick={() => setAction(null)}>{t("Cancel")}</Button><Button variant='neon' type='submit'>{t("Save name")}</Button></div>
       </form>
     </GlassDialog>}
     {action?.type === 'icon' && <IconPickerDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}
     {action?.type === 'sprite' && <SpriteDialog item={action.item} onSave={(appearance) => update(action.item._id, { appearance })} onClose={() => setAction(null)} />}
-    {action?.type === 'delete' && <ConfirmDialog title='Move item to Trash?' confirmLabel='Move to Trash' message={`${action.item.name} can be restored from Trash later.`} onClose={() => setAction(null)} onConfirm={async () => { await remove(action.item._id); setAction(null); }} />}
+    {action?.type === 'delete' && <ConfirmDialog title={t("Move item to Trash?")} confirmLabel={t("Move to Trash")} message={t("{value0} can be restored from Trash later.", { value0: action.item.name })} onClose={() => setAction(null)} onConfirm={async () => { await remove(action.item._id); setAction(null); }} />}
   </>;
 }
