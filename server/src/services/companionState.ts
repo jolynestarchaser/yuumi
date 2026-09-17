@@ -14,6 +14,7 @@ export function initialCompanion(): StoredCompanion {
     needs: { fullness: 75, energy: 80, joy: 75 },
     traits: { curiosity: 50, affection: 50, playfulness: 50 }, bonds: { joe: 0, focus: 0 },
     xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.', chatColor: '#cdb2ea',
+    appearance: { visualStyle: 'soft', animated: true, usePortrait: true },
     memories: [], turns: [], portrait: null, revision: 0
   };
 }
@@ -22,6 +23,7 @@ export function settledState(state: StoredCompanion, now = new Date()): StoredCo
   const hours = clamp((now.getTime() - new Date(state.updatedAt).getTime()) / 3_600_000, 0, 48);
   return {
     ...state,
+    appearance: state.appearance || { visualStyle: state.portrait?.url ? 'pixel' : 'soft', animated: true, usePortrait: true },
     needs: {
       fullness: Math.round(clamp(state.needs.fullness - hours * 2, 20)),
       energy: Math.round(clamp(state.needs.energy + hours * 3, 20)),
@@ -65,7 +67,16 @@ export function forgetMemory(state: StoredCompanion, id: string): StoredCompanio
 export function validateSetup(body: Partial<CompanionSetup>) {
   const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.trim().length <= max;
   return body && text(body.name, 32) && ['pet', 'child', 'creature'].includes(body.form) && text(body.seed, 500)
-    && ['curious', 'gentle', 'playful'].includes(body.temperament);
+    && ['curious', 'gentle', 'playful'].includes(body.temperament)
+    && (body.appearance === undefined || validateAppearance(body.appearance));
+}
+
+export function validateAppearance(value: unknown): value is import('../../../shared/contracts.js').CompanionAppearance {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const appearance = value as Record<string, unknown>;
+  return ['soft', 'pixel'].includes(appearance.visualStyle as string)
+    && typeof appearance.animated === 'boolean' && typeof appearance.usePortrait === 'boolean'
+    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait'].includes(key));
 }
 
 export function startingTraits(temperament: Temperament) {

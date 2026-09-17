@@ -24,6 +24,14 @@ const schema = new mongoose.Schema<StoredCompanion>({
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
   thought: { type: String, maxlength: 300, default: defaults.thought },
   chatColor: { type: String, match: /^#[0-9a-fA-F]{6}$/, default: defaults.chatColor },
+  appearance: {
+    type: new mongoose.Schema({
+      visualStyle: { type: String, enum: ['soft', 'pixel'], required: true },
+      animated: { type: Boolean, required: true },
+      usePortrait: { type: Boolean, required: true }
+    }, { _id: false }),
+    default: undefined
+  },
   memories: { type: [memorySchema], default: [], validate: (rows) => rows.length <= 80 },
   turns: { type: [turnSchema], default: [], validate: (rows) => rows.length <= 60 },
   portrait: { url: String, publicId: String, createdAt: Date },

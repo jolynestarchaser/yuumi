@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/authStore.js';
 import useCompanion from '../../hooks/useCompanion.js';
 import CompanionAvatar from './CompanionAvatar.js';
 import CompanionJournal from './CompanionJournal.js';
+import CompanionAppearancePicker, { defaultAppearance } from './CompanionAppearancePicker.js';
 import './companion.css';
 import type { CompanionPanelProps } from './types.js';
 import type { CareAction, CompanionForm, Temperament } from '../../../../shared/contracts.js';
@@ -20,9 +21,11 @@ function HatchCompanion({ busy, act }: Pick<CompanionPanelProps, 'busy' | 'act'>
   const [seed, setSeed] = useState(seeds.creature);
   const [temperament, setTemperament] = useState<Temperament>('curious');
   const [step, setStep] = useState(0);
-  return <form className='companion-hatch' onSubmit={(event) => { event.preventDefault(); if (step < 2) setStep(step + 1); else act('adopt', { name, form, seed, temperament }); }}>
+  const [appearance, setAppearance] = useState(defaultAppearance);
+  return <form className='companion-hatch' onSubmit={(event) => { event.preventDefault(); if (step < 2) setStep(step + 1); else act('adopt', { name, form, seed, temperament, appearance }); }}>
     <ol className='companion-creation-steps' aria-label='Character creation'>{['Imagine', 'Personality', 'Welcome'].map((label, index) => <li key={label} aria-current={step === index ? 'step' : undefined}><b>{index + 1}</b>{label}</li>)}</ol>
-    <CompanionAvatar companion={{ name, form, mood: 'curious' }} />
+    <CompanionAvatar companion={{ name, form, mood: 'curious', appearance }} />
+    <CompanionAppearancePicker value={appearance} onChange={setAppearance} disabled={Boolean(busy)} />
     <span className='companion-kicker'>A LITTLE LIFE, RAISED BY TWO</span>
     <h3>{step === 0 ? <>Imagine someone<br />that’s ours.</> : step === 1 ? 'A spark of personality.' : `Hello, ${name}.`}</h3>
     {step === 0 && <>
@@ -30,7 +33,7 @@ function HatchCompanion({ busy, act }: Pick<CompanionPanelProps, 'busy' | 'act'>
     <label>Their name<input required maxLength={32} value={name} onChange={(event) => setName(event.target.value)} /></label>
     <div className='companion-form-picker' aria-label='Companion form'>{([['pet', 'Magical pet'], ['child', 'Storybook child'], ['creature', 'Little creature']] as const).map(([key, label]) => <button type='button' key={key} aria-pressed={form === key} onClick={() => { setForm(key); setSeed(seeds[key]); }}>{label}</button>)}</div>
     <label>Species, colors, and special features<textarea required maxLength={500} placeholder='A tiny teal dragon with peach wings, star freckles, and a leaf hat…' value={seed} onChange={(event) => setSeed(event.target.value)} /></label>
-    <p className='companion-pixel-label'>256 × 256 pixel art · Their first portrait starts with your imagination</p>
+    <p className='companion-pixel-label'>Soft or 256 × 256 pixel art · Switch anytime</p>
     </>}
     {step === 1 && <><p>A starting point, not a fixed personality. They will grow through the way Joe and Focus care for and talk to them.</p><div className='companion-temperaments'>{([['curious', 'Curious explorer', 'Asks questions, collects odd little treasures.'], ['gentle', 'Gentle daydreamer', 'Loves quiet company and cozy stories.'], ['playful', 'Playful mischief', 'Invents games and sees magic in small things.']] as const).map(([key, label, hint]) => <button key={key} type='button' aria-pressed={temperament === key} onClick={() => setTemperament(key)}><strong>{label}</strong><span>{hint}</span></button>)}</div></>}
     {step === 2 && <><p>Your shared {form}, starting {temperament}. Both of you will help them become someone a little different.</p><div className='companion-character-summary'><b>Our character</b><p>{seed}</p><small>The creature above is a starter illustration. Generate your custom pixel-art portrait after hatching.</small></div></>}
@@ -71,7 +74,7 @@ function CompanionPersonality({ companion, capabilities, profile, busy, act }: C
       <button type='submit' className='companion-secondary' disabled={Boolean(busy)}>Save my inspiration</button>
     </form>
     <div className='companion-inspirations'>{['joe', 'focus'].map((actor) => <p key={actor}><b>{actor === 'joe' ? 'Joe' : 'Focus'}</b>{companion.inspirations[actor] || 'A blank page, waiting for a little inspiration.'}</p>)}</div>
-    <div className='companion-portrait-action'><ImagePlus size={21} /><div><h4>Picture who they’re becoming</h4><p>A 256 × 256 pixel-art portrait inspired by their character, traits, and both of you.</p></div></div>
+    <div className='companion-portrait-action'><ImagePlus size={21} /><div><h4>Picture who they’re becoming</h4><p>A 256 × 256 pixel-art portrait inspired by their character, traits, and both of you. Choose Pixel art and enable the saved portrait to display it. Portraits gently move as a whole; starter characters also blink.</p></div></div>
     <button className='companion-primary' type='button' disabled={Boolean(busy) || !capabilities.portraits} onClick={() => act('portrait')}><ImagePlus size={16} />{busy === 'portrait' ? 'Imagining a portrait…' : companion.portrait?.url ? 'Generate a new portrait' : 'Generate their portrait'}</button>
     <small>Uses your Gemini image allowance. Up to 5 shared portrait requests per day. {capabilities.portraits ? 'Your current portrait stays until a new one is saved.' : 'Gemini and image storage must be connected first.'}</small>
     <p className='companion-simulation-note'>A fictional companion with simulated moods and preferences. They rest safely while you’re away. Care never requires a subscription or daily streak.</p>
@@ -88,6 +91,7 @@ export default function CompanionWidget({ onClose }: { onClose: () => void }) {
       <section className='companion-home' aria-label={`${companion.name}'s home`}>
         <div className='companion-home-top'><span className='companion-kicker'>OUR LITTLE WORLD</span><span className='companion-mood'>{companion.mood}</span></div>
         <CompanionAvatar companion={companion} />
+        <CompanionAppearancePicker value={companion.appearance || { ...defaultAppearance, visualStyle: companion.portrait?.url ? 'pixel' : 'soft' }} hasPortrait={Boolean(companion.portrait?.url)} disabled={Boolean(busy)} onChange={(appearance) => { void act('appearance', { appearance }); }} />
         <h3>{companion.name}</h3><p className='companion-stage'>{companion.stage} · Level {companion.level}</p>
         <div className='companion-thought'><span>ON MY MIND</span><p>{companion.thought}</p></div>
         <div className='companion-needs'>{Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{need}<b>{value}</b></span><progress value={value} max={100} /></label>)}</div>

@@ -25,6 +25,23 @@ and personality/inspiration controls. Both people can care for the same characte
   exact sprite consistency is not guaranteed. The starter illustration is not a preview
   of the custom portrait. No image binaries are persisted in MongoDB.
 
+## Switchable appearance
+
+- During creation and in the companion home, choose Soft or Pixel art and toggle animation.
+- Save `appearance: { visualStyle, animated, usePortrait }` with adoption or the authenticated
+  `appearance` action. Both profiles see the setting through the existing snapshot polling.
+- Existing companions without this field keep their previous look: pixel if they have a
+  portrait, soft otherwise. Switching does not delete or regenerate their saved portrait.
+- Soft uses the original rounded character; pixel uses a crisp 32-cell starter on a
+  256 × 256 canvas. Both starters blink, rest with closed eyes, and move with their mood.
+- Pixel mode can display the saved Gemini portrait or the starter sprite. A generated
+  portrait moves as one image; it is not a generated animated sprite sheet. Broken images
+  fall back to the pixel starter. Neither switching nor animation makes paid AI calls.
+- The animation toggle and the browser's reduced-motion preference stop all avatar motion.
+
+Manual checks: switch styles during creation; hatch and refresh; switch back with a saved
+portrait; pause motion; test reduced motion, mobile layout, and both profile snapshots.
+
 ## Server configuration
 
 Set only on the backend (Railway service variables or an uncommitted `server/.env`):

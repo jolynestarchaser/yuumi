@@ -52,6 +52,15 @@ test('public state omits leases, retry IDs, and usage metadata', () => {
   for (const key of ['lockToken', 'budget', 'lastCare', 'recentOperations', 'lockedUntil']) assert.equal(key in output, false);
 });
 
+test('legacy companions retain their portrait choice when appearance settings are absent', () => {
+  const legacy = initialCompanion();
+  delete legacy.appearance;
+  assert.equal(publicCompanion(legacy).appearance.visualStyle, 'soft');
+  legacy.portrait = { url: 'https://example.test/pixel.png', publicId: 'original', createdAt: new Date() };
+  assert.deepEqual(publicCompanion(legacy).appearance, { visualStyle: 'pixel', animated: true, usePortrait: true });
+  assert.equal(legacy.appearance, undefined);
+});
+
 test('AI requests are capped per shared day, cooldowns apply, and a new day resets usage', () => {
   const now = new Date('2026-09-17T10:00:00Z');
   assert.throws(() => nextBudget({ day: '2026-09-17', chats: 60 }, 'chats', now), /allowance/);
@@ -114,6 +123,21 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
   };
   const adopt = await request('joe', 'adopt', { name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'curious' });
   assert.equal(adopt.code, 200);
+  stored.portrait = { url: 'https://example.test/pixel.png', publicId: 'keep-me', createdAt: new Date() };
+  const beforeAppearance = clone(stored);
+  const appearance = { visualStyle: 'pixel', animated: false, usePortrait: false };
+  const changedLook = await request('focus', 'appearance', { appearance });
+  assert.equal(changedLook.code, 200);
+  assert.deepEqual(changedLook.body.data.companion.appearance, appearance);
+  assert.deepEqual(stored.portrait, beforeAppearance.portrait);
+  assert.deepEqual(stored.memories, beforeAppearance.memories);
+  assert.equal(stored.budget, undefined);
+  const afterAppearance = clone(stored);
+  for (const invalid of [{ ...appearance, visualStyle: 'html' }, { ...appearance, animated: 'false' }, { ...appearance, url: 'https://example.test' }, null]) {
+    assert.equal((await request('joe', 'appearance', { appearance: invalid })).code, 400);
+    assert.deepEqual(stored, afterAppearance);
+  }
+  assert.equal((await request('joe', 'appearance', { appearance: { visualStyle: 'soft', animated: true, usePortrait: true } })).code, 200);
   assert.equal((await request('focus', 'adopt', { name: 'Other', form: 'pet', seed: 'A cat', temperament: 'playful' })).code, 409);
   const first = await request('joe', 'feed', { operationId: 'care-retry-123', actor: 'focus' });
   assert.equal(first.body.data.companion.bonds.joe, 1);

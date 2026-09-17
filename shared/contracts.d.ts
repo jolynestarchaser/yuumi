@@ -66,6 +66,9 @@ export interface ApiFailure { success: false; error: { code: string; message: st
 export interface RequestError { response?: { data?: { error?: { message?: string } } }; code?: string; message?: string }
 
 export type CompanionForm = 'pet' | 'child' | 'creature';
+export interface CompanionAppearance {
+  visualStyle: 'soft' | 'pixel'; animated: boolean; usePortrait: boolean;
+}
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
 export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
@@ -79,6 +82,7 @@ export interface CompanionState {
   traits: { curiosity: number; affection: number; playfulness: number };
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
   chatColor: string;
+  appearance?: CompanionAppearance;
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -90,11 +94,12 @@ export interface PublicCompanion extends CompanionState { level: number; stage: 
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
 export interface BrainReply { reply: string; mood: CompanionMood; thought: string }
-export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament }
+export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance?: CompanionAppearance }
 export type CompanionAction =
   | ({ action: 'adopt' } & CompanionSetup)
   | { action: CareAction | 'portrait' }
   | { action: 'chat'; text: string }
   | { action: 'chatColor'; color: string }
+  | { action: 'appearance'; appearance: CompanionAppearance }
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string };

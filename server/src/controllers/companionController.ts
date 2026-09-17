@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import Companion from '../models/Companion.js';
-import { ACTIONS, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup } from '../services/companionState.js';
+import { ACTIONS, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup, validateAppearance } from '../services/companionState.js';
 import { chatWithCompanion, companionCapabilities, generatePortrait, removePortrait } from '../services/companionBrain.js';
 import type { StoredCompanion, CompanionBudget, CompanionPortrait } from '../../../shared/contracts.js';
 
@@ -63,7 +63,8 @@ export const interactWithCompanion = wrap(async (req, res) => {
   const { action, text, operationId, memoryId, expectedRevision } = req.body || {};
   const actor = req.desktop.profile;
   if (typeof operationId !== 'string' || !/^[a-zA-Z0-9-]{10,80}$/.test(operationId)) throw fail(400, 'A valid operation ID is required.');
-  if (!['adopt', 'inspiration', 'chat', 'chatColor', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (!['adopt', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (action === 'appearance' && !validateAppearance(req.body.appearance)) throw fail(400, 'Choose soft or pixel art and valid animation settings.');
   if (action === 'adopt' && !validateSetup(req.body)) throw fail(400, 'Choose a name (up to 32 characters), form, and description (up to 500 characters).');
   if (action === 'inspiration' && (typeof text !== 'string' || text.length > 300)) throw fail(400, 'Your inspiration can be up to 300 characters.');
   if (action === 'chat' && (typeof text !== 'string' || !text.trim() || text.trim().length > 1000)) throw fail(400, 'Write a message between 1 and 1,000 characters.');
@@ -79,9 +80,10 @@ export const interactWithCompanion = wrap(async (req, res) => {
       let next = settledState(state);
       if (action === 'adopt') {
         if (state.bornAt) throw fail(409, 'Your shared companion has already hatched. Reopen the widget to meet them.');
-        return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), bornAt: new Date() };
+        return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), appearance: req.body.appearance || next.appearance, bornAt: new Date() };
       }
       if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
+      if (action === 'appearance') return { ...next, appearance: req.body.appearance };
       if (action === 'chatColor') return { ...next, chatColor: req.body.color };
       if (action === 'inspiration') {
         if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
