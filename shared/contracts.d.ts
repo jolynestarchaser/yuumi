@@ -44,9 +44,16 @@ export interface DesktopTextData extends Point {
   _id?: string; text: string; color: string; size: number; revision?: number;
 }
 export type MessageAnimation = 'none' | 'hearts' | 'sparkles' | 'emoji-rain' | 'confetti' | 'bubbles' | 'stars';
-export interface MessageAttachment {
+export interface HostedMessageAttachment {
   kind: 'image' | 'audio'; secureUrl: string; name: string; mimeType: string; bytes: number; duration?: number | null;
 }
+export interface SpotifyMessageAttachment {
+  kind: 'spotify'; spotifyUrl: string; embedUrl: string; name: string;
+}
+export type MessageAttachment = HostedMessageAttachment | SpotifyMessageAttachment;
+export type MessageAttachmentInput = HostedMessageAttachment | { kind: 'spotify'; spotifyUrl: string };
+export type TranslationTarget = 'en' | 'th';
+export interface TranslationResult { text: string; target: TranslationTarget }
 export interface MessageDraft {
   subject: string; body: string; kind: 'letter' | 'alert'; icon: string;
   accentColor: string; emoji: string; animation: MessageAnimation; attachment?: MessageAttachment | null;
@@ -71,6 +78,7 @@ export interface CompanionState {
   needs: { fullness: number; energy: number; joy: number };
   traits: { curiosity: number; affection: number; playfulness: number };
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
+  chatColor: string;
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -87,5 +95,6 @@ export type CompanionAction =
   | ({ action: 'adopt' } & CompanionSetup)
   | { action: CareAction | 'portrait' }
   | { action: 'chat'; text: string }
+  | { action: 'chatColor'; color: string }
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string };

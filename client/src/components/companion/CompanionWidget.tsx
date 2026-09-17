@@ -45,9 +45,10 @@ function CompanionChat({ companion, capabilities, profile, busy, act }: Companio
   useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }); }, [companion.turns.length]);
   return <div className='companion-chat'>
     <div className='companion-section-heading'><MessageCircle size={18} /><div><h3>A little conversation</h3><p>Speaking as {profile === 'joe' ? 'Joe' : 'Focus'} · Shared with both of you</p></div></div>
+    <div className='companion-chat-legend'><span className='joe'><i />Joe</span><span className='focus'><i />Focus</span><label><i style={{ backgroundColor: companion.chatColor || '#cdb2ea' }} />{companion.name}<input aria-label={`${companion.name} chat color`} type='color' value={companion.chatColor || '#cdb2ea'} disabled={Boolean(busy)} onChange={(event) => act('chatColor', { color: event.target.value })} /></label></div>
     <div className='companion-conversation' role='log' aria-label='Shared companion conversation' aria-live='polite'>
       {!companion.turns.length && <div className='companion-empty'><Sparkles size={28} /><p>Tell me about your day.<br />I’m collecting our little stories.</p></div>}
-      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? 'Joe' : 'Focus'}</small><p>{turn.text}</p></article>)}
+      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} style={turn.actor === 'companion' ? { '--companion-chat-color': companion.chatColor || '#cdb2ea' } : undefined} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? 'Joe' : 'Focus'}</small><p>{turn.text}</p></article>)}
       {busy === 'chat' && <p className='companion-thinking' role='status'>{companion.name} is finding the words…</p>}<div ref={end} />
     </div>
     {!capabilities.chat && <p className='companion-offline'>AI chat isn’t connected yet. You can still play, care, and make memories.</p>}

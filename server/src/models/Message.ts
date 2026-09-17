@@ -16,12 +16,14 @@ export const messageIconTypes = Object.freeze([
 ]);
 
 const attachmentSchema = new mongoose.Schema({
-  kind: { type: String, enum: ['image', 'audio'], required: true },
-  secureUrl: { type: String, required: true, match: /^https:\/\// },
+  kind: { type: String, enum: ['image', 'audio', 'spotify'], required: true },
+  secureUrl: { type: String, required() { return this.kind !== 'spotify'; }, match: /^https:\/\// },
   name: { type: String, trim: true, maxlength: 180, required: true },
-  mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'], required: true },
+  mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'], required() { return this.kind !== 'spotify'; } },
   bytes: { type: Number, min: 0, max: 10 * 1024 * 1024 },
-  duration: { type: Number, min: 0, default: null }
+  duration: { type: Number, min: 0, default: null },
+  spotifyUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\// },
+  embedUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\/embed\// }
 }, { _id: false });
 
 const messageSchema = new mongoose.Schema({

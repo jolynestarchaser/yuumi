@@ -5,6 +5,7 @@ import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import Message, { messageAnimationTypes, messageIconTypes } from '../models/Message.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
+import { normalizeSpotifyAttachment } from '../services/spotifyAttachment.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
@@ -22,6 +23,8 @@ function uploadAttachment(file) {
 
 function normalizeAttachment(value) {
   if (!value) return null;
+  const spotifyAttachment = normalizeSpotifyAttachment(value);
+  if (spotifyAttachment) return spotifyAttachment;
   if (!['image', 'audio'].includes(value.kind) || typeof value.secureUrl !== 'string' || !/^https:\/\//.test(value.secureUrl) || typeof value.name !== 'string' || !attachmentTypes.has(value.mimeType) || !Number.isFinite(value.bytes) || value.bytes < 0 || value.bytes > 10 * 1024 * 1024) return undefined;
   if ((value.kind === 'image') !== value.mimeType.startsWith('image/')) return undefined;
   return { kind: value.kind, secureUrl: value.secureUrl, name: value.name.slice(0, 180), mimeType: value.mimeType, bytes: value.bytes, duration: Number.isFinite(value.duration) ? value.duration : null };

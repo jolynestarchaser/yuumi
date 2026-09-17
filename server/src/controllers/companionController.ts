@@ -63,10 +63,11 @@ export const interactWithCompanion = wrap(async (req, res) => {
   const { action, text, operationId, memoryId, expectedRevision } = req.body || {};
   const actor = req.desktop.profile;
   if (typeof operationId !== 'string' || !/^[a-zA-Z0-9-]{10,80}$/.test(operationId)) throw fail(400, 'A valid operation ID is required.');
-  if (!['adopt', 'inspiration', 'chat', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (!['adopt', 'inspiration', 'chat', 'chatColor', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
   if (action === 'adopt' && !validateSetup(req.body)) throw fail(400, 'Choose a name (up to 32 characters), form, and description (up to 500 characters).');
   if (action === 'inspiration' && (typeof text !== 'string' || text.length > 300)) throw fail(400, 'Your inspiration can be up to 300 characters.');
   if (action === 'chat' && (typeof text !== 'string' || !text.trim() || text.trim().length > 1000)) throw fail(400, 'Write a message between 1 and 1,000 characters.');
+  if (action === 'chatColor' && (typeof req.body?.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(req.body.color))) throw fail(400, 'Choose a valid companion chat color.');
   if (action === 'chat' && !companionCapabilities().chat) throw fail(503, 'Gemini chat is not connected yet. Add GEMINI_API_KEY on the server.');
   if (action === 'portrait' && !companionCapabilities().portraits) throw fail(503, 'Portraits need Gemini and Cloudinary configured on the server.');
   if (action === 'forget' && (typeof memoryId !== 'string' || memoryId.length > 80)) throw fail(400, 'Choose a valid memory.');
@@ -81,6 +82,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
         return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), bornAt: new Date() };
       }
       if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
+      if (action === 'chatColor') return { ...next, chatColor: req.body.color };
       if (action === 'inspiration') {
         if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
         return { ...next, inspirations: { ...state.inspirations, [actor]: text.trim() } };

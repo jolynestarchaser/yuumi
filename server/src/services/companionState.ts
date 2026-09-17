@@ -13,7 +13,7 @@ export function initialCompanion(): StoredCompanion {
     inspirations: { joe: '', focus: '' }, bornAt: null, updatedAt: new Date(),
     needs: { fullness: 75, energy: 80, joy: 75 },
     traits: { curiosity: 50, affection: 50, playfulness: 50 }, bonds: { joe: 0, focus: 0 },
-    xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.',
+    xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.', chatColor: '#cdb2ea',
     memories: [], turns: [], portrait: null, revision: 0
   };
 }

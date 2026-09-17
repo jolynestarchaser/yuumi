@@ -62,12 +62,16 @@ test('messages persist a whitelisted icon and any valid hex accent color', () =>
   assert.match(message.validateSync()?.message || '', /accentColor/);
 });
 
-test('messages can contain a validated image or playable audio attachment', () => {
+test('messages can contain a validated image, audio, or Spotify attachment', () => {
   const message = new Message({ sender: 'joe', recipient: 'focus', body: '', operationId: 'test-attachment', attachment: { kind: 'image', secureUrl: 'https://example.test/love.gif', name: 'love.gif', mimeType: 'image/gif', bytes: 1200 } });
   assert.equal(message.validateSync(), undefined);
   message.attachment = { kind: 'audio', secureUrl: 'https://example.test/song.mp3', name: 'song.mp3', mimeType: 'audio/mpeg', bytes: 2400 };
   assert.equal(message.validateSync(), undefined);
   message.attachment = { kind: 'audio', secureUrl: 'not-a-url', name: 'song.mp3', mimeType: 'audio/mpeg', bytes: 2400 };
+  assert.match(message.validateSync()?.message || '', /attachment/);
+  message.attachment = { kind: 'spotify', spotifyUrl: 'https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC', embedUrl: 'https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC', name: 'Spotify track' };
+  assert.equal(message.validateSync(), undefined);
+  message.attachment = { kind: 'spotify', spotifyUrl: 'https://example.test/song', embedUrl: 'https://example.test/embed/song', name: 'Not Spotify' };
   assert.match(message.validateSync()?.message || '', /attachment/);
 });
 

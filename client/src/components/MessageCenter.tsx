@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { BellRing, Heart, ImagePlus, Mail, Music2, Paperclip, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { BellRing, Heart, ImagePlus, Languages, Mail, Music2, Paperclip, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
@@ -9,6 +9,7 @@ import { Button } from './ui/button.js';
 import { Input } from './ui/input.js';
 import { Textarea } from './ui/textarea.js';
 import { iconCatalog, iconComponents } from '../lib/iconCatalog.js';
+import { useTranslation } from '../hooks/useTranslation.js';
 import type { MessageDraft, MessageAnimation } from '../../../shared/contracts.js';
 import {
   LETTER_EFFECTS,
@@ -59,6 +60,7 @@ function EffectOrbit({ animation, emoji, accentColor }) {
 
 function MessageAttachment({ attachment, compact = false }) {
   if (!attachment) return null;
+  if (attachment.kind === 'spotify') return <section className={`message-attachment spotify ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || 'Spotify music'}</span></div><iframe title={attachment.name || 'Spotify player'} src={attachment.embedUrl} loading='lazy' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' /></section>;
   if (attachment.kind === 'image') return <figure className={`message-attachment image ${compact ? 'compact' : ''}`}><img src={attachment.secureUrl} alt={attachment.name || 'Attached image'} /></figure>;
   return <section className={`message-attachment audio ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || 'Attached music'}</span></div><audio controls preload='metadata' src={attachment.secureUrl}>Your browser cannot play this audio file.</audio></section>;
 }
@@ -101,7 +103,9 @@ export default function MessageCenter({ suspended = false }) {
   const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState('');
   const [attachmentFile, setAttachmentFile] = useState(null);
+  const [spotifyUrl, setSpotifyUrl] = useState('');
   const [soundEnabled, setSoundEnabled] = useState(readSoundPreference);
+  const { translate, translating, translationError, clearTranslationError } = useTranslation();
   const played = useRef(new Set());
   const prefersReducedMotion = useReducedMotion();
 
@@ -186,11 +190,11 @@ export default function MessageCenter({ suspended = false }) {
 
   async function submit(event) {
     event.preventDefault();
-    if ((!form.body.trim() && !attachmentFile) || sending) return;
+    if ((!form.body.trim() && !attachmentFile && !spotifyUrl.trim()) || sending) return;
     setSending(true);
     setFormError('');
     try {
-      const attachment = attachmentFile ? await uploadMessageAttachment(attachmentFile) : null;
+      const attachment = attachmentFile ? await uploadMessageAttachment(attachmentFile) : spotifyUrl.trim() ? { kind: 'spotify' as const, spotifyUrl: spotifyUrl.trim() } : null;
       await sendMessage({
         ...form,
         attachment,
@@ -199,6 +203,7 @@ export default function MessageCenter({ suspended = false }) {
       });
       setForm({ ...DEFAULT_FORM });
       setAttachmentFile(null);
+      setSpotifyUrl('');
       setCompose(false);
       pushToast(`ส่งถึง ${profileName(recipientFor(profile))} แล้ว ✦`);
       playLetterChime({ enabled: soundEnabled }).catch(() => {});
@@ -207,6 +212,11 @@ export default function MessageCenter({ suspended = false }) {
     } finally {
       setSending(false);
     }
+  }
+
+  async function translateCompose(target) {
+    const translated = await translate(form.body, target);
+    if (translated) setForm((value) => ({ ...value, body: translated }));
   }
 
   const effect = resolveLetterEffect(form.animation, form.emoji);
@@ -233,9 +243,12 @@ export default function MessageCenter({ suspended = false }) {
       </div>
       <Input aria-label='หัวข้อจดหมาย' placeholder='หัวข้อจดหมาย' maxLength={120} value={form.subject} onChange={(event) => setForm((value) => ({ ...value, subject: event.target.value }))} />
       <Textarea aria-label='ข้อความ' placeholder='เขียนข้อความถึงอีกคน…' maxLength={5000} value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
+      <div className='translation-actions' aria-label='Translate message'><span><Languages size={14} /> แปลข้อความ</span><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('th')}>เป็นไทย</button><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('en')}>To English</button></div>
       <div className='message-attachment-picker'>
-        <label className='attachment-button'><Paperclip size={15} /> แนบรูป GIF หรือเพลง<input aria-label='แนบรูป GIF หรือเพลง' type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) setAttachmentFile(file); event.target.value = ''; }} /></label>
+        <label className='attachment-button'><Paperclip size={15} /> แนบรูป GIF หรือเพลง<input aria-label='แนบรูป GIF หรือเพลง' type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); } event.target.value = ''; }} /></label>
+        <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label='ลิงก์ Spotify' type='url' placeholder='วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)' value={spotifyUrl} onChange={(event) => { setSpotifyUrl(event.target.value); if (event.target.value) setAttachmentFile(null); }} /></label>
         {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label='ลบไฟล์แนบ' onClick={() => setAttachmentFile(null)}><X size={14} /></button></div>}
+        {spotifyUrl && <div className='attachment-file'><span><Music2 size={15} />Spotify link attached</span><button type='button' aria-label='ลบลิงก์ Spotify' onClick={() => setSpotifyUrl('')}><X size={14} /></button></div>}
       </div>
       <div className='message-symbol-heading'><span>สัญลักษณ์ประจำจดหมาย</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> สีที่เลือก</strong></div>
       <div className='message-icon-picker' aria-label='เลือกไอคอนจดหมาย'>
@@ -248,13 +261,13 @@ export default function MessageCenter({ suspended = false }) {
           <span><MessageMark icon={effectIconNames[name]} accentColor={form.accentColor} size={20} /></span><small>{option.label}</small>
         </button>)}
       </div>
-      {formError && <p className='form-error' role='alert'>{formError}</p>}
-      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); setAttachmentFile(null); }}>ยกเลิก</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</Button></div>
+      {(formError || translationError) && <p className='form-error' role='alert'>{formError || translationError}</p>}
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); }}>ยกเลิก</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? 'กำลังส่ง…' : `ส่งถึง ${profileName(recipientFor(profile))}`}</Button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label='Inbox'>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>
           <span className='message-emoji'><MessageMark {...message} /></span>
-          <span className='message-row-copy'><strong>{message.subject || 'A special message'} {message.attachment && <Paperclip className='message-row-attachment' size={12} />}</strong><small>จาก {profileName(message.sender)} · {new Date(message.createdAt).toLocaleString()}</small><span>{message.body || (message.attachment?.kind === 'audio' ? 'เพลงที่แนบมา' : 'รูปที่แนบมา')}</span></span>
+          <span className='message-row-copy'><strong>{message.subject || 'A special message'} {message.attachment && <Paperclip className='message-row-attachment' size={12} />}</strong><small>จาก {profileName(message.sender)} · {new Date(message.createdAt).toLocaleString()}</small><span>{message.body || (message.attachment?.kind === 'spotify' ? 'เพลงจาก Spotify ที่แนบมา' : message.attachment?.kind === 'audio' ? 'เพลงที่แนบมา' : 'รูปที่แนบมา')}</span></span>
         </button>) : <p className='empty-mailbox'><Sparkles size={22} /> ยังไม่มีข้อความ<br /><small>ลองเขียนฉบับแรกถึง {profileName(recipientFor(profile))}</small></p>}
       </div>
       <article className={`message-detail ${selected ? 'has-message' : ''}`}>
@@ -275,7 +288,7 @@ export default function MessageCenter({ suspended = false }) {
       </div>
       <h3>{nextUnread.subject || 'A little note for you'}</h3>
       <p className='incoming-copy'>{nextUnread.body}</p>
-      {nextUnread.attachment && <div className='incoming-attachment'><Paperclip size={13} /> {nextUnread.attachment.kind === 'audio' ? 'มีเพลงแนบมา' : 'มีรูป/GIF แนบมา'}</div>}
+      {nextUnread.attachment && <div className='incoming-attachment'><Paperclip size={13} /> {nextUnread.attachment.kind === 'spotify' ? 'มีเพลงจาก Spotify แนบมา' : nextUnread.attachment.kind === 'audio' ? 'มีเพลงแนบมา' : 'มีรูป/GIF แนบมา'}</div>}
       <div className='incoming-actions'><button type='button' onClick={dismissIncoming}>ไว้ทีหลัง</button><button type='button' className='primary' onClick={openIncoming}>เปิดอ่าน <Sparkles size={14} /></button></div>
     </motion.aside>
   </>, document.body) : null;

@@ -1,5 +1,5 @@
 import type { Socket } from 'socket.io-client';
-import type { DesktopItemData, DesktopWindowData, DesktopSettingsData, DesktopTextData, InkStroke, MessageData, MessageDraft, MessageAttachment, Point, Bounds, Profile } from '../../../shared/contracts.js';
+import type { DesktopItemData, DesktopWindowData, DesktopSettingsData, DesktopTextData, InkStroke, MessageData, MessageDraft, MessageAttachment, MessageAttachmentInput, Point, Bounds, Profile } from '../../../shared/contracts.js';
 
 export interface AuthStore {
   token: string; profile: Profile | ''; unlocked: boolean; busy: boolean;
@@ -35,7 +35,7 @@ export interface DesktopStore {
   toggleSecret(id: string, secret: boolean): Promise<DesktopItemData>;
   fetchHistory(entityType: string, entityId: string): Promise<Revision[]>;
   restoreHistory(historyId: string, expectedRevision: number): Promise<DesktopItemData>;
-  sendMessage(payload: MessageDraft & { recipient: Profile; operationId: string }): Promise<MessageData>;
+  sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string }): Promise<MessageData>;
   uploadMessageAttachment(file: File): Promise<MessageAttachment>; markMessageRead(id: string): Promise<MessageData>;
   undoStroke(): void; pushToast(message: string, tone?: string): void; dismissToast(id: string): void;
   setTool(tool: string): void; setPenSettings(patch: Partial<{ color: string; width: number }>): void;
