@@ -4,8 +4,8 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 
 ## 1. Deploy the API to Railway
 
-1. Create a Railway project from this repository. Set **Root Directory** to `server` (recommended); Railway then reads `server/.nvmrc` and `server/railway.json`, and uses Node 20.18.1 as required by the server's Cheerio dependency. A root `railway.json` and `.nvmrc` also deploy the backend correctly if the Root Directory field is left blank.
-   The included `nixpacks.toml` files use `npm install --omit=dev` to avoid `npm ci` deleting Railway's mounted build cache.
+1. Create a Railway project from this repository. Leave **Root Directory blank** and use `/railway.json` as the config file. The backend now imports types from `shared/`, so restricting the build context to `server/` would omit required files. Existing deployments with a `server` root must change this setting before deploying the migration. This follows Railway's [shared-monorepo setup](https://docs.railway.com/deployments/monorepo).
+   The root config installs backend dependencies with `--include=dev`, runs `npm run build --prefix server`, and starts `node dist/server.js` through the backend start script. TypeScript must be installed during the build; it is not needed by the running server. Remove dashboard command overrides that still start `src/server.js`.
 2. Add the following Railway service variables. Do not commit these values:
 
    ```text
@@ -24,7 +24,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 
 ## 2. Deploy the frontend to Vercel
 
-1. Import the same repository into Vercel and set **Root Directory** to `client`. The `client/vercel.json` installs dependencies, builds Vite, and publishes `dist`.
+1. Import the same repository into Vercel and set **Root Directory** to `client`. [Include source files outside the Root Directory](https://vercel.com/docs/monorepos/monorepo-faq) in the build so `shared/contracts.d.ts` is available. The `client/vercel.json` installs dependencies, type-checks the app, builds Vite, and publishes `dist`.
 2. Add these Production environment variables:
 
    ```text
@@ -41,6 +41,14 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 - Upload an image and verify its Cloudinary URL loads.
 - Confirm the browser console has no CORS or mixed-content errors.
 
-## Rollback
+## Optional shared AI companion
+
+Set `GEMINI_API_KEY` on the Railway backend only. Optional model overrides are
+`GEMINI_CHAT_MODEL` (default `gemini-2.5-flash`) and `GEMINI_IMAGE_MODEL`
+(default `gemini-2.5-flash-image`). Portraits also use the existing Cloudinary variables.
+Never put the Gemini key in Vercel frontend or `VITE_` variables. See
+[the companion specification](19-shared-companion.md) for limits, memory behavior, and checks.
+
+## Rollback procedure
 
 Use Vercel's previous deployment promotion and Railway's deployment rollback. After either rollback, recheck `/api/health`, then create a temporary note and verify it appears in a second session.

@@ -1,0 +1,58 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { api } from '../lib/api.js';
+import type { ApiResponse, CompanionSnapshot, CompanionAction } from '../../../shared/contracts.js';
+import type { CompanionActionValues } from '../components/companion/types.js';
+
+export default function useCompanion() {
+  const [data, setData] = useState<CompanionSnapshot | null>(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState('');
+  const alive = useRef(true);
+  const inFlight = useRef(false);
+  const pendingOperation = useRef<{ signature: string; id: string } | null>(null);
+  const apply = useCallback((next: CompanionSnapshot) => {
+    if (alive.current) setData((current) => !current || next.companion.revision >= current.companion.revision ? next : current);
+  }, []);
+
+  const refresh = useCallback(async (signal?: AbortSignal) => {
+    try {
+      const response = await api.get<ApiResponse<CompanionSnapshot>>('/companions', { signal });
+      apply(response.data.data);
+      if (alive.current && !inFlight.current) setError('');
+    } catch (err) {
+      if (alive.current && err.code !== 'ERR_CANCELED') setError(err.response?.data?.error?.message || 'Could not reach your companion. Try refreshing.');
+    }
+  }, [apply]);
+
+  useEffect(() => {
+    alive.current = true;
+    const controller = new AbortController();
+    refresh(controller.signal);
+    const timer = setInterval(() => { if (!document.hidden && !inFlight.current) refresh(controller.signal); }, 12000);
+    const onVisible = () => { if (!document.hidden && !inFlight.current) refresh(controller.signal); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { alive.current = false; controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
+  }, [refresh]);
+
+  async function act(action: CompanionAction['action'], values: CompanionActionValues = {}) {
+    if (inFlight.current) return false;
+    inFlight.current = true;
+    setBusy(action);
+    setError('');
+    const signature = JSON.stringify({ action, ...values });
+    if (pendingOperation.current?.signature !== signature) pendingOperation.current = { signature, id: crypto.randomUUID() };
+    try {
+      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { action, ...values, operationId: pendingOperation.current.id });
+      apply(response.data.data);
+      pendingOperation.current = null;
+      return true;
+    } catch (err) {
+      if (alive.current) setError(err.response?.data?.error?.message || 'Could not save this moment. Try again; your draft is still here.');
+      return false;
+    } finally {
+      inFlight.current = false;
+      if (alive.current) setBusy('');
+    }
+  }
+  return { ...data, error, busy, act, refresh };
+}

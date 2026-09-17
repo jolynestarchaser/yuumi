@@ -5,8 +5,9 @@
   "scripts": {
     "start": "concurrently --kill-others-on-fail --names client,server --prefix-colors cyan,magenta \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
     "dev": "npm run start",
-    "build": "npm run build --prefix client",
-    "test": "npm test --prefix server"
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "typecheck": "npm run typecheck --prefix server && npm run typecheck --prefix client",
+    "test": "npm test --prefix server && npm test --prefix client"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

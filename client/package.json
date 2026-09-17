@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "test": "node --test --experimental-test-coverage src/lib/letterEffects.test.js src/lib/messageState.test.js",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "test": "node --import tsx --test --experimental-test-coverage src/lib/letterEffects.test.ts src/lib/messageState.test.ts src/lib/releases.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,7 +35,12 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@types/node": "^22.20.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.23.13",
+    "typescript": "~5.9.3",
     "vite": "^6.0.5"
   }
 }

@@ -1,0 +1,91 @@
+export type Profile = 'joe' | 'focus';
+export type Actor = Profile | 'system' | 'unknown';
+export type Timestamp = string | Date;
+export type ItemKind = 'folder' | 'image' | 'video' | 'audio' | 'link' | 'note' | 'file' | 'calendar';
+export interface Point { x: number; y: number }
+export interface Bounds extends Point { width: number; height: number }
+export interface Asset {
+  publicId?: string; url?: string; secureUrl: string; thumbnailUrl?: string;
+  originalName?: string; extension?: string; resourceType?: string; mimeType?: string;
+  bytes?: number; width?: number; height?: number; duration?: number;
+}
+export interface LinkMetadata {
+  title?: string; description?: string; siteName?: string; favicon?: string;
+  previewImage?: string; provider?: string; providerId?: string; mediaType?: string; embedUrl?: string; url?: string;
+}
+export interface Appearance {
+  iconType?: 'default' | 'lucide' | 'emoji' | 'image'; iconValue?: string;
+  iconColor?: string; iconBackground?: string; sprite?: { enabled?: boolean; frames?: number; fps?: number };
+}
+export interface DesktopItemData {
+  _id: string; name: string; type: ItemKind; parentId?: string | null;
+  position: Point & { revision?: number }; size?: { width?: number; height?: number };
+  content?: string; url?: string; asset?: Asset; metadata?: LinkMetadata; appearance?: Appearance;
+  secret?: boolean; secretLabel?: string; contentRevision?: number; deletedAt?: Timestamp | null;
+  createdAt?: Timestamp; updatedAt?: Timestamp; updatedBy?: Actor;
+}
+export interface DesktopWindowData {
+  _id?: string; itemId: string; kind: ItemKind; bounds: Bounds; restoreBounds?: Bounds;
+  minimized: boolean; maximized?: boolean; z: number; revision: number;
+}
+export interface Wallpaper {
+  type: string; value: string; colors: string[]; angle: number; fit?: string;
+  position?: Point; backgroundColor?: string; dimness?: number; blur?: number; brightness?: number; saturation?: number;
+}
+export interface DesktopSettingsData {
+  wallpaper: Wallpaper; iconTheme: string; snapToGrid: boolean;
+  cursor: { enabled: boolean; style: string; shape: string; color: string; imageUrl?: string; size?: number };
+}
+export interface InkStroke {
+  _id?: string; points: Point[]; color: string; width: number; opacity?: number;
+  canvas?: { width: number; height: number }; owner?: string;
+}
+export interface DesktopTextData extends Point {
+  _id?: string; text: string; color: string; size: number; revision?: number;
+}
+export type MessageAnimation = 'none' | 'hearts' | 'sparkles' | 'emoji-rain' | 'confetti' | 'bubbles' | 'stars';
+export interface MessageAttachment {
+  kind: 'image' | 'audio'; secureUrl: string; name: string; mimeType: string; bytes: number; duration?: number | null;
+}
+export interface MessageDraft {
+  subject: string; body: string; kind: 'letter' | 'alert'; icon: string;
+  accentColor: string; emoji: string; animation: MessageAnimation; attachment?: MessageAttachment | null;
+}
+export interface MessageData extends MessageDraft {
+  _id: string; sender: Profile; recipient: Profile; createdAt: Timestamp; readAt?: Timestamp | null; operationId?: string;
+}
+export interface ApiResponse<T> { success: true; data: T }
+export interface ApiFailure { success: false; error: { code: string; message: string; data?: unknown } }
+export interface RequestError { response?: { data?: { error?: { message?: string } } }; code?: string; message?: string }
+
+export type CompanionForm = 'pet' | 'child' | 'creature';
+export type Temperament = 'curious' | 'gentle' | 'playful';
+export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
+export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
+export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
+export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
+export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
+export interface CompanionState {
+  name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
+  bornAt: Timestamp | null; updatedAt: Timestamp;
+  needs: { fullness: number; energy: number; joy: number };
+  traits: { curiosity: number; affection: number; playfulness: number };
+  bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
+  memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
+}
+export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
+export interface StoredCompanion extends CompanionState {
+  _id?: string; __v?: number; budget?: CompanionBudget;
+  lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
+}
+export interface PublicCompanion extends CompanionState { level: number; stage: string; wish: string }
+export interface CompanionCapabilities { chat: boolean; portraits: boolean }
+export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
+export interface BrainReply { reply: string; mood: CompanionMood; thought: string }
+export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament }
+export type CompanionAction =
+  | ({ action: 'adopt' } & CompanionSetup)
+  | { action: CareAction | 'portrait' }
+  | { action: 'chat'; text: string }
+  | { action: 'inspiration'; text: string; expectedRevision: number }
+  | { action: 'forget'; memoryId: string };

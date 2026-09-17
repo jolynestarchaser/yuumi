@@ -4,8 +4,13 @@
 
 ## Stack
 
+The application source now uses **TypeScript** (`.ts` / `.tsx`). See
+[local setup](RUN.md), [deployment](DEPLOYMENT.md), and
+[migration notes](20-typescript-migration.md) for current commands and conventions.
+
 ### Frontend
 - React
+- TypeScript
 - Vite
 - Tailwind CSS
 - dnd-kit
@@ -14,6 +19,7 @@
 ### Backend
 - Node.js
 - Express
+- TypeScript compiled to Node.js ESM
 - MongoDB Atlas
 - Mongoose
 
