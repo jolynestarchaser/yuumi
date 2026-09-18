@@ -40,6 +40,12 @@ test('forgetting removes the memory and derived conversational context', () => {
   assert.equal(state.turns.length, 0);
 });
 
+test('brain context includes the companion current need without private desktop data', () => {
+  const state = initialCompanion();
+  state.needs.fullness = 30;
+  assert.match(brainContext(state, 'joe', 'Hello'), /"currentNeed":"snack"/);
+});
+
 test('character creation validates its fields and seeds personality from the chosen temperament', () => {
   assert.equal(validateSetup({ name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'gentle' }), true);
   assert.equal(validateSetup({ name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'evil' as Temperament }), false);
