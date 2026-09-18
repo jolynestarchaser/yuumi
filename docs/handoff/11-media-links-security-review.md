@@ -6,6 +6,26 @@ Scope: direct HTTPS media imports used by letters and alerts. GIPHY stays ID-bas
 
 This document records source evidence and outstanding verification. It does not claim a production rollout.
 
+## Follow-up implementation status (2026-09-19)
+
+The user requested work on prerequisites without running tests. Package manifests,
+lockfile metadata, `.nvmrc` and both Nixpacks configurations now target Node 22;
+`scripts/setup-node22.ps1` and `scripts/node22.cmd` provide a repository-local
+Windows runtime. New attachment records retain provider storage identifiers and
+origin. This enables later precise cleanup but adds no deletion worker, reference
+transaction or crash recovery. `GET /api/revision` adds source revision/runtime
+visibility; deployed evidence remains outstanding. See documents 12–14 for the
+decoder design and isolated verification setup. All changes in this follow-up
+are untested; earlier passing results apply only to the earlier checkpoint.
+
+Runtime provisioning succeeded: Node `v22.23.2` was downloaded from nodejs.org,
+checked against its official SHA256 manifest, and installed in ignored
+`.tools/node22`. `scripts\node22.cmd node --version` returned `v22.23.2`.
+This confirms installation only, not application validation. The machine-wide
+Node installation remains unchanged; project commands must use the wrapper or
+an independently configured Node 22 shell. Download archives remain in ignored
+`.tools/download-*` directories.
+
 ## Flow and trust boundaries
 
 1. `MessageCenter` classifies GIPHY and Spotify before generic URLs, preserves the draft, and owns cancellation/generation checks.

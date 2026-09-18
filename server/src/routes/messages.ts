@@ -68,7 +68,7 @@ router.post('/attachment', upload.single('file'), async (req, res, next) => {
     if (!file || !attachmentTypes.has(file.mimetype)) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Choose a JPG, PNG, WebP, GIF, or audio file under 10 MB.' } });
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) throw new Error('Message attachments are not configured on the server.');
     const result = await uploadAttachment(file);
-    const asset = await MessageAttachmentAsset.create({ owner: req.desktop.profile, operationId: crypto.randomUUID(), fingerprint: crypto.createHash('sha256').update(file.buffer).digest('hex'), status: 'complete', kind: file.mimetype.startsWith('image/') ? 'image' : 'audio', secureUrl: result.secure_url, name: file.originalname.slice(0, 180), mimeType: file.mimetype, bytes: result.bytes, duration: result.duration ?? null });
+    const asset = await MessageAttachmentAsset.create({ owner: req.desktop.profile, operationId: crypto.randomUUID(), fingerprint: crypto.createHash('sha256').update(file.buffer).digest('hex'), status: 'complete', origin: 'upload', cloudinaryAssetId: result.asset_id, cloudinaryPublicId: result.public_id, cloudinaryResourceType: result.resource_type, kind: file.mimetype.startsWith('image/') ? 'image' : 'audio', secureUrl: result.secure_url, name: file.originalname.slice(0, 180), mimeType: file.mimetype, bytes: result.bytes, duration: result.duration ?? null });
     res.status(201).json({ success: true, data: attachmentView(asset) });
   } catch (error) { next(error); }
 });
@@ -86,7 +86,7 @@ router.post('/attachment-url', async (req, res, next) => {
     return res.status(409).json({ success: false, error: { code: asset.status === 'pending' ? 'IMPORT_PENDING' : asset.errorCode || 'IMPORT_FAILED', message: asset.status === 'pending' ? 'This media import is still running.' : 'This media import did not complete.' } });
   }
   if (!checkImportRate(req.desktop.profile)) return res.status(429).json({ success: false, error: { code: 'RATE_LIMITED', message: 'Please wait before importing another media link.' } });
-  try { asset = await MessageAttachmentAsset.create({ ...key, fingerprint, status: 'pending' }); }
+  try { asset = await MessageAttachmentAsset.create({ ...key, fingerprint, status: 'pending', origin: 'url-import' }); }
   catch (error) {
     if ((error as { code?: number }).code !== 11000) return next(error);
     asset = await MessageAttachmentAsset.findOne(key);
@@ -101,6 +101,7 @@ router.post('/attachment-url', async (req, res, next) => {
     const imported = await importRemoteMedia(sourceUrl, controller.signal);
     const uploaded = await uploadAttachment({ buffer: imported.buffer, mimetype: imported.mimeType });
     asset.status = 'complete'; asset.kind = imported.kind; asset.secureUrl = uploaded.secure_url; asset.name = imported.name; asset.mimeType = imported.mimeType; asset.bytes = uploaded.bytes; asset.duration = uploaded.duration ?? null;
+    asset.cloudinaryAssetId = uploaded.asset_id; asset.cloudinaryPublicId = uploaded.public_id; asset.cloudinaryResourceType = uploaded.resource_type;
     await asset.save();
     return res.status(201).json({ success: true, data: attachmentView(asset) });
   } catch (error) {
