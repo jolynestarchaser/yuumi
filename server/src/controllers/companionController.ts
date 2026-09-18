@@ -12,18 +12,18 @@ const wrap = (handler) => async (req, res) => {
   catch (error) { res.status(error.status || 500).json({ success: false, error: { code: 'COMPANION_ERROR', message: error.status ? error.message : 'Could not save your companion. Please try again.' } }); }
 };
 
-async function ensureCompanion() {
-  try { await Companion.updateOne({ _id: COMPANION_KEY }, { $setOnInsert: initialCompanion() }, { upsert: true }); }
+async function ensureCompanion(companionId = COMPANION_KEY) {
+  try { await Companion.updateOne({ _id: companionId }, { $setOnInsert: { ...initialCompanion(), _id: companionId } }, { upsert: true }); }
   catch (error) { if (error.code !== 11000) throw error; }
 }
 
 // A Mongo lease serializes both profiles and every server process. No long
 // transaction is kept open while an external generation request runs.
-export async function withCompanionLock(operationId: string, change: (state: StoredCompanion, token: string) => Promise<StoredCompanion>) {
-  await ensureCompanion();
+export async function withCompanionLock(operationId: string, change: (state: StoredCompanion, token: string) => Promise<StoredCompanion>, companionId = COMPANION_KEY) {
+  await ensureCompanion(companionId);
   const token = randomUUID();
   const state = await Companion.findOneAndUpdate(
-    { _id: COMPANION_KEY, lockedUntil: { $lte: new Date() } },
+    { _id: companionId, lockedUntil: { $lte: new Date() } },
     { $set: { lockToken: token, lockedUntil: new Date(Date.now() + 180000) } }, { new: true }
   ).lean();
   if (!state) throw fail(409, 'Your companion is busy with another moment. Please try again shortly.');
@@ -31,13 +31,13 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
     if (state.recentOperations?.includes(operationId)) return state;
     const changed = evolveCompanion(await change(state, token), state.xp);
     const { _id, __v, lockToken, lockedUntil, budget, ...fields } = changed;
-    const saved = await Companion.findOneAndUpdate({ _id: COMPANION_KEY, lockToken: token }, {
+    const saved = await Companion.findOneAndUpdate({ _id: companionId, lockToken: token }, {
       $set: { ...fields, updatedAt: new Date(), revision: state.revision + 1, recentOperations: [...(state.recentOperations || []), operationId].slice(-60) }
     }, { new: true, runValidators: true }).lean();
     if (!saved) throw fail(409, 'This moment expired before it could be saved. Please retry.');
     return saved;
   } finally {
-    await Companion.updateOne({ _id: COMPANION_KEY, lockToken: token }, { $set: { lockedUntil: new Date(0) }, $unset: { lockToken: 1 } }).catch(() => {});
+    await Companion.updateOne({ _id: companionId, lockToken: token }, { $set: { lockedUntil: new Date(0) }, $unset: { lockToken: 1 } }).catch(() => {});
   }
 }
 
@@ -58,6 +58,12 @@ async function reserveGeneration(state, token, kind) {
 
 export const getCompanion = wrap(async (_req, res) => {
   respond(res, await Companion.findById(COMPANION_KEY).lean() || initialCompanion());
+});
+
+export const getCompanionRoster = wrap(async (_req, res) => {
+  await ensureCompanion();
+  const companions = await Companion.find({}, { _id: 1, name: 1, bornAt: 1, mood: 1, xp: 1, appearance: 1, form: 1, revision: 1 }).sort({ bornAt: 1 }).lean();
+  res.json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, mood: companion.mood, level: Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })) } });
 });
 
 export const interactWithCompanion = wrap(async (req, res) => {
