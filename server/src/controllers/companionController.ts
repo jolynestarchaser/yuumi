@@ -51,13 +51,19 @@ export function nextBudget(current: Partial<CompanionBudget> | undefined, kind: 
   return { ...budget, [kind]: (budget[kind] || 0) + 1, [last]: now };
 }
 
-async function reserveGeneration(state, token, kind) {
+async function reserveGeneration(state, token, kind, companionId = COMPANION_KEY) {
   const budget = nextBudget(state.budget, kind);
-  await Companion.updateOne({ _id: COMPANION_KEY, lockToken: token }, { $set: { budget } });
+  await Companion.updateOne({ _id: companionId, lockToken: token }, { $set: { budget } });
 }
 
-export const getCompanion = wrap(async (_req, res) => {
-  respond(res, await Companion.findById(COMPANION_KEY).lean() || initialCompanion());
+const validCompanionId = (value) => typeof value === 'string' && (value === COMPANION_KEY || /^companion-[a-f0-9-]{36}$/.test(value));
+
+export const getCompanion = wrap(async (req, res) => {
+  const companionId = req.query.id || COMPANION_KEY;
+  if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
+  const companion = await Companion.findById(companionId).lean();
+  if (!companion && companionId !== COMPANION_KEY) throw fail(404, 'That companion could not be found.');
+  respond(res, companion || initialCompanion());
 });
 
 export const getCompanionRoster = wrap(async (_req, res) => {
@@ -77,9 +83,10 @@ export const createCompanion = wrap(async (req, res) => {
 });
 
 export const interactWithCompanion = wrap(async (req, res) => {
-  const { action, text, operationId, memoryId, expectedRevision } = req.body || {};
+  const { action, text, operationId, memoryId, expectedRevision, companionId = COMPANION_KEY } = req.body || {};
   const actor = req.desktop.profile;
   if (typeof operationId !== 'string' || !/^[a-zA-Z0-9-]{10,80}$/.test(operationId)) throw fail(400, 'A valid operation ID is required.');
+  if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
   if (!['adopt', 'customize', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', ...ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
   if (action === 'customize' && (!validateSetup({ ...req.body, temperament: 'curious' }) || !validateAppearance(req.body.appearance))) throw fail(400, 'Choose a valid name, description, form, and appearance.');
   if (action === 'appearance' && !validateAppearance(req.body.appearance)) throw fail(400, 'Choose soft or pixel art and valid animation settings.');
@@ -119,7 +126,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
         return { ...careFor(state, actor, action), lastCare: { ...state.lastCare, [actor]: new Date() } };
       }
       if (action === 'chat') {
-        await reserveGeneration(state, token, 'chats');
+        await reserveGeneration(state, token, 'chats', companionId);
         const reply = await chatWithCompanion(next, actor, text.trim());
         const id = randomUUID();
         next = remember(next, actor, 'conversation', text.trim(), new Date(), id);
@@ -128,6 +135,6 @@ export const interactWithCompanion = wrap(async (req, res) => {
           turns: [...state.turns, { id, actor, text: text.trim(), at: new Date() }, { id, actor: 'companion', text: reply.reply, at: new Date() }].slice(-60) };
       }
       throw fail(400, 'Choose a supported companion action.');
-    });
+    }, companionId);
   respond(res, saved);
 });
