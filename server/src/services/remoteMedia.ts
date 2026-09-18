@@ -4,7 +4,9 @@ import net from 'node:net';
 import path from 'node:path';
 
 export const MAX_REMOTE_MEDIA_BYTES = 10 * 1024 * 1024;
+export const MAX_REMOTE_URL_CHARS = 8_192;
 const MAX_REDIRECTS = 4;
+const OVERALL_TIMEOUT_MS = 15_000;
 const GIPHY_HOSTS = new Set(['giphy.com', 'www.giphy.com', 'media.giphy.com']);
 
 export class RemoteMediaError extends Error {
@@ -14,9 +16,43 @@ export class RemoteMediaError extends Error {
 
 const fail = (code: string, message: string): never => { throw new RemoteMediaError(code, message); };
 
+function ipv6Words(address: string): number[] | null {
+  let value = address.toLowerCase().split('%')[0];
+  if (value.includes('.')) {
+    const separator = value.lastIndexOf(':');
+    const octets = value.slice(separator + 1).split('.').map(Number);
+    if (separator < 0 || octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)) return null;
+    value = `${value.slice(0, separator)}:${((octets[0] << 8) | octets[1]).toString(16)}:${((octets[2] << 8) | octets[3]).toString(16)}`;
+  }
+  const halves = value.split('::');
+  if (halves.length > 2) return null;
+  const parseHalf = (half: string) => half ? half.split(':').map((part) => Number.parseInt(part, 16)) : [];
+  const left = parseHalf(halves[0]);
+  const right = parseHalf(halves[1] || '');
+  if ([...left, ...right].some((word) => !Number.isInteger(word) || word < 0 || word > 0xffff)) return null;
+  if (halves.length === 1) return left.length === 8 ? left : null;
+  const missing = 8 - left.length - right.length;
+  return missing > 0 ? [...left, ...Array(missing).fill(0), ...right] : null;
+}
+
+function embeddedIpv4(address: string): string | null {
+  const words = ipv6Words(address);
+  if (!words) return null;
+  let high: number | undefined;
+  let low: number | undefined;
+  if (words.slice(0, 6).every((word) => word === 0) || (words.slice(0, 5).every((word) => word === 0) && words[5] === 0xffff)) {
+    [high, low] = words.slice(6);
+  } else if (words[0] === 0x64 && words[1] === 0xff9b && words.slice(2, 6).every((word) => word === 0)) {
+    [high, low] = words.slice(6);
+  } else if (words[0] === 0x2002) {
+    [high, low] = words.slice(1, 3);
+  }
+  return high === undefined || low === undefined
+    ? null
+    : `${high >>> 8}.${high & 0xff}.${low >>> 8}.${low & 0xff}`;
+}
+
 export function isPublicAddress(address: string): boolean {
-  const mapped = address.toLowerCase().match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/)?.[1];
-  if (mapped) return isPublicAddress(mapped);
   const version = net.isIP(address);
   if (version === 4) {
     const octets = address.split('.').map(Number);
@@ -28,16 +64,23 @@ export function isPublicAddress(address: string): boolean {
       || (a === 198 && (b === 18 || b === 19 || b === 51)) || (a === 203 && b === 0));
   }
   if (version === 6) {
-    const value = address.toLowerCase();
-    const first = Number.parseInt(value.split(':')[0] || '0', 16);
-    return !(value.startsWith('::') || (first & 0xfe00) === 0xfc00 || (first & 0xffc0) === 0xfe80 || (first & 0xffc0) === 0xfec0
-      || (first & 0xff00) === 0xff00 || value.startsWith('2001:db8:') || value.startsWith('2001:10:')
-      || value.startsWith('2001:20:') || value.startsWith('3fff:') || value.startsWith('100:') || value.startsWith('64:ff9b:1:'));
+    const embedded = embeddedIpv4(address);
+    if (embedded && !isPublicAddress(embedded)) return false;
+    const words = ipv6Words(address);
+    if (!words) return false;
+    const [first, second, third] = words;
+    return !(words.slice(0, 6).every((word) => word === 0) || (words.slice(0, 5).every((word) => word === 0) && words[5] === 0xffff)
+      || (first & 0xfe00) === 0xfc00 || (first & 0xffc0) === 0xfe80 || (first & 0xffc0) === 0xfec0
+      || (first & 0xff00) === 0xff00 || (first === 0x2001 && second === 0xdb8)
+      || (first === 0x2001 && second === 0) || (first === 0x2001 && (second & 0xfff0) === 0x10)
+      || (first === 0x2001 && (second & 0xfff0) === 0x20) || first === 0x3fff || first === 0x100
+      || (first === 0x64 && second === 0xff9b && third === 1));
   }
   return false;
 }
 
 export function validateRemoteUrl(input: string): URL {
+  if (input.length > MAX_REMOTE_URL_CHARS) fail('INVALID_URL', 'The media URL is too long.');
   let url: URL;
   try { url = new URL(input); } catch { return fail('INVALID_URL', 'Enter a valid HTTPS media URL.'); }
   if (url.protocol !== 'https:') fail('INVALID_URL', 'Only HTTPS media URLs are supported.');
@@ -49,13 +92,15 @@ export function validateRemoteUrl(input: string): URL {
   return url;
 }
 
-export async function resolvePublicHost(hostname: string) {
+type DnsResolver = (hostname: string, options: { all: true; verbatim: true }) => Promise<Array<{ address: string; family: 4 | 6 }>>;
+
+export async function resolvePublicHost(hostname: string, lookup: DnsResolver = dnsLookup as DnsResolver) {
   const literal = hostname.replace(/^\[|\]$/g, '');
   if (net.isIP(literal)) {
     if (!isPublicAddress(literal)) fail('PRIVATE_ADDRESS', 'Private and reserved network addresses are not allowed.');
     return [{ address: literal, family: net.isIP(literal) as 4 | 6 }];
   }
-  const results = await dnsLookup(hostname, { all: true, verbatim: true });
+  const results = await lookup(hostname, { all: true, verbatim: true });
   if (!results.length || results.some((result) => !isPublicAddress(result.address))) fail('PRIVATE_ADDRESS', 'The host resolved to a private or reserved network address.');
   return results;
 }
@@ -131,7 +176,22 @@ export type RemoteDownload = { status: number; location?: string; buffer: Buffer
 type RemoteMediaDependencies = {
   resolve?: typeof resolvePublicHost;
   download?: (url: URL, address: string, family: number, signal?: AbortSignal) => Promise<RemoteDownload>;
+  overallTimeoutMs?: number;
 };
+
+function abortError(signal: AbortSignal) {
+  return signal.reason instanceof Error ? signal.reason : new RemoteMediaError('CANCELED', 'The media import was canceled.');
+}
+
+function abortable<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
+  if (signal.aborted) return Promise.reject(abortError(signal));
+  return new Promise((resolve, reject) => {
+    const onAbort = () => { cleanup(); reject(abortError(signal)); };
+    const cleanup = () => signal.removeEventListener('abort', onAbort);
+    signal.addEventListener('abort', onAbort, { once: true });
+    work.then((value) => { cleanup(); resolve(value); }, (error) => { cleanup(); reject(error); });
+  });
+}
 
 async function downloadPinned(url: URL, address: string, family: number, signal?: AbortSignal): Promise<RemoteDownload> {
   return new Promise((resolve, reject) => {
@@ -155,7 +215,7 @@ async function downloadPinned(url: URL, address: string, family: number, signal?
     connect = setTimeout(() => request.destroy(new RemoteMediaError('TIMEOUT', 'The remote host took too long to connect.')), 5_000);
     request.on('socket', (socket) => socket.once('secureConnect', () => clearTimeout(connect)));
     request.on('error', (error) => finish(error));
-    const abort = () => request.destroy(new RemoteMediaError('CANCELED', 'The media import was canceled.'));
+    const abort = () => request.destroy(signal ? abortError(signal) : new RemoteMediaError('CANCELED', 'The media import was canceled.'));
     signal?.addEventListener('abort', abort, { once: true });
     request.end();
   });
@@ -165,18 +225,35 @@ export async function importRemoteMedia(input: string, signal?: AbortSignal, dep
   const resolve = dependencies.resolve || resolvePublicHost;
   const download = dependencies.download || downloadPinned;
   let url = validateRemoteUrl(input);
-  for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects += 1) {
-    const addresses = await resolve(url.hostname);
-    const selected = addresses[0];
-    const response = await download(url, selected.address, selected.family, signal);
-    if (response.status >= 300 && response.status < 400) {
-      if (!response.location || redirects === MAX_REDIRECTS) fail('REDIRECT', 'The remote URL redirected too many times.');
-      url = validateRemoteUrl(new URL(response.location, url).toString());
-      continue;
+  const operation = new AbortController();
+  const cancel = () => operation.abort(new RemoteMediaError('CANCELED', 'The media import was canceled.'));
+  if (signal?.aborted) cancel();
+  else signal?.addEventListener('abort', cancel, { once: true });
+  const deadline = setTimeout(
+    () => operation.abort(new RemoteMediaError('TIMEOUT', 'The remote media import timed out.')),
+    dependencies.overallTimeoutMs ?? OVERALL_TIMEOUT_MS,
+  );
+  try {
+    for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects += 1) {
+      const addresses = await abortable(Promise.resolve().then(() => resolve(url.hostname)), operation.signal);
+      const selected = addresses[0];
+      const response = await abortable(download(url, selected.address, selected.family, operation.signal), operation.signal);
+      if (response.status >= 300 && response.status < 400) {
+        if (!response.location || redirects === MAX_REDIRECTS) fail('REDIRECT', 'The remote URL redirected too many times.');
+        let redirected: URL;
+        try { redirected = new URL(response.location, url); } catch { return fail('REDIRECT', 'The remote server returned an invalid redirect.'); }
+        url = validateRemoteUrl(redirected.toString());
+        continue;
+      }
+      const media = sniffMedia(response.buffer);
+      let decodedPath = url.pathname;
+      try { decodedPath = decodeURIComponent(decodedPath); } catch { /* Keep the encoded path as a display-name fallback. */ }
+      const filename = path.posix.basename(decodedPath) || `attachment.${media.mimeType.split('/')[1]}`;
+      return { ...media, buffer: response.buffer, bytes: response.buffer.length, name: filename.slice(0, 180) };
     }
-    const media = sniffMedia(response.buffer);
-    const filename = path.basename(decodeURIComponent(url.pathname)) || `attachment.${media.mimeType.split('/')[1]}`;
-    return { ...media, buffer: response.buffer, bytes: response.buffer.length, name: filename.slice(0, 180) };
+    return fail('REDIRECT', 'The remote URL redirected too many times.');
+  } finally {
+    clearTimeout(deadline);
+    signal?.removeEventListener('abort', cancel);
   }
-  return fail('REDIRECT', 'The remote URL redirected too many times.');
 }

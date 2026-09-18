@@ -1,6 +1,6 @@
 # Letters and alerts: paste a media URL or choose a GIPHY GIF
 
-Status: **SPECIFIED, NOT IMPLEMENTED**. Follow-up to the owner's request during the review of `e0531ff`. This document is the implementation handoff, not a claim that the composer already supports these sources.
+Status: **IMPLEMENTED LOCALLY, ACCEPTANCE BLOCKED**. The composer and secure URL-import path exist at the current checkpoint, but codec decoding, disposable replica-set ownership/idempotency tests, storage cleanup, browser verification, and deployed smoke gates remain open. See [the focused security review](11-media-links-security-review.md).
 
 Related: [review findings](07-review-and-required-fixes.md), [patch/release plan](09-patch-and-whats-new.md), and [letter/alert experience](../../18-letter-alert-experience.md).
 
