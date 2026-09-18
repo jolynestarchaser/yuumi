@@ -111,5 +111,10 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const path = safe.evolutions?.at(-1)?.path || 'guardian';
   const formId = `${species}-${growthStage}-${path}`;
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : 'Grown companion';
-  return { ...safe, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length] };
+  const request = safe.needs.fullness <= 38 ? { action: 'feed' as const, text: 'Could we have a little snack together?', urgency: 'soon' as const }
+    : safe.needs.joy <= 44 ? { action: 'play' as const, text: 'Will you play a tiny game with me?', urgency: 'gentle' as const }
+    : safe.needs.energy <= 42 ? { action: 'rest' as const, text: 'I think a cozy nap would help me recharge.', urgency: 'gentle' as const }
+    : safe.traits.affection <= 42 ? { action: 'cuddle' as const, text: 'Can I have a little cuddle?', urgency: 'gentle' as const }
+    : { action: 'explore' as const, text: 'Want to look for a small adventure together?', urgency: 'gentle' as const };
+  return { ...safe, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request };
 }

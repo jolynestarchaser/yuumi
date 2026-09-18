@@ -146,6 +146,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <CompanionGrowth companion={companion} />
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>
         <div className='companion-needs'>{Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}</div>
+        <button type='button' className={`companion-request ${companion.request.urgency}`} disabled={Boolean(busy)} onClick={() => care(companion.request.action)}><span>{t('I need')}</span><strong>{t(companion.request.text)}</strong><small>{t(careActions.find(([action]) => action === companion.request.action)?.[2] || 'Explore')}</small></button>
         <div className='companion-care'>{careActions.map(([action, Icon, label]) => <button type='button' key={action} disabled={Boolean(busy)} onClick={() => care(action)}><Icon size={19} /><span>{t(label)}</span></button>)}</div>
         <div className='companion-bonds'><span><i className='joe' />{t("Joe ·")} {companion.bonds.joe} {t('care moments')}</span><span><i className='focus' />{t("Focus ·")} {companion.bonds.focus} {t('care moments')}</span></div>
         <div className='companion-wish'><Leaf size={16} /><p>{t(companion.wish)}</p></div>

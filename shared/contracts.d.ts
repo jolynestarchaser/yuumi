@@ -101,7 +101,8 @@ export interface StoredCompanion extends CompanionState {
   _id?: string; __v?: number; budget?: CompanionBudget;
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
 }
-export interface PublicCompanion extends CompanionState { level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string }
+export interface CompanionRequest { action: CareAction; text: string; urgency: 'gentle' | 'soon' }
+export interface PublicCompanion extends CompanionState { level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
 export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }
