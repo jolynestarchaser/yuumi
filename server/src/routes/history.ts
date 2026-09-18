@@ -5,7 +5,7 @@ import DesktopText from '../models/DesktopText.js';
 import RevisionHistory from '../models/RevisionHistory.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 import { revisionService, itemSnapshot, textSnapshot } from '../services/historyService.js';
-import { ItemRevisionConflict, updateItemContent } from '../services/itemContent.js';
+import { commitItemContent, ItemRevisionConflict } from '../services/itemContent.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
@@ -26,15 +26,16 @@ router.post('/:historyId/restore', async (req, res) => {
   const expectedRevision = Number(req.body?.expectedRevision);
   if (history.entityType === 'item') {
     const snapshot = history.snapshot || {};
-    let item;
+    let result;
     try {
-      item = await updateItemContent({ id: String(history.entityId), expectedRevision: Number.isFinite(expectedRevision) ? expectedRevision : undefined, patch: snapshot, actor: req.desktop.profile });
+      result = await commitItemContent({ id: String(history.entityId), expectedRevision, operationId: req.body?.operationId, patch: snapshot, actor: req.desktop.profile, operation: 'restore', restoredFromRevision: history.revision });
     } catch (error) {
       if (error instanceof ItemRevisionConflict) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: error.message, data: { current: error.current } } });
-      throw error;
+      const status = error.status || 500;
+      return res.status(status).json({ success: false, error: { code: status === 400 ? 'VALIDATION_ERROR' : status === 404 ? 'NOT_FOUND' : status === 410 ? 'IN_TRASH' : 'SERVER_ERROR', message: status === 500 ? 'Could not restore this item.' : error.message } });
     }
-    await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision, operation: 'restore', actor: req.desktop.profile, snapshot: itemSnapshot(item), restoredFromRevision: history.revision });
-    return res.json({ success: true, data: item });
+    if (!result.replay) req.app.get('io')?.to('shared-desktop').emit('item:updated', result.item);
+    return res.json({ success: true, data: result.item });
   }
   const text = await DesktopText.findById(history.entityId);
   if (!text) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Desktop text not found.' } });

@@ -1,7 +1,22 @@
 # Yuu & Mi — implementation handoff: companion life, notes, and travel
 
-Status: **PLANNED — implementation has not started for this handoff.**
-Prepared: 2026-09-18. Inspected application baseline: `924afcc`.
+Status: **PARTIALLY IMPLEMENTED — P1/P2 backend contract patch is implemented locally; UI and release gates remain.**
+Prepared: 2026-09-18. Original planning baseline: `924afcc`.
+Reviewed implementation baseline: `e0531ff`.
+
+Current follow-up documents:
+
+- [07 — implementation review and prioritized fixes](docs/handoff/07-review-and-required-fixes.md)
+- [08 — URL and GIPHY attachments for letters and alerts](docs/handoff/08-message-url-giphy-attachments.md)
+- [09 — patch sequence and EN/TH What's new copy](docs/handoff/09-patch-and-whats-new.md)
+- [10 — P1/P2 backend contract and rollout](docs/handoff/10-p1-p2-backend-rollout.md)
+
+The completion statements in earlier conversation updates referred to small
+implementation slices, not completion of every acceptance requirement below.
+Use document 07 for the reviewed baseline and its dated implementation update.
+The companion roster/quota/migration/needs-clock contract and transactional item
+write contract are now implemented locally and covered by automated tests. URL/GIPHY
+attachments, remaining UI fixes, production migration, and release entries are not complete.
 
 This is the root `plan.md` requested by the owner. The repository already uses
 `Plan.md`; on this Windows filesystem they are the same filename. Keep this casing

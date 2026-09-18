@@ -4,16 +4,19 @@ import express from 'express';
 import type { Profile, Temperament, ApiResponse, CompanionSnapshot } from '../../shared/contracts.js';
 import type { AddressInfo } from 'node:net';
 import Companion from '../src/models/Companion.js';
+import CompanionFamily from '../src/models/CompanionFamily.js';
 import companionRoutes from '../src/routes/companions.js';
-import { interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
+import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
 import { brainContext, generateContent, parseBrainReply } from '../src/services/companionBrain.js';
 import { careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
+import { companionMigrationPatch } from '../src/services/companionMigration.js';
 
 test('time away preserves safe needs and relationships; repeated reads do not compound decay', () => {
-  const state = { ...initialCompanion(), updatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
+  const state = { ...initialCompanion(), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
   const later = new Date('2027-01-01');
-  assert.deepEqual(settledState(state, later), settledState(state, later));
-  assert.deepEqual(settledState(state, later).needs, { fullness: 20, energy: 100, joy: 35 });
+  const settled = settledState(state, later);
+  assert.deepEqual(settledState(settled, later), settled);
+  assert.deepEqual(settled.needs, { fullness: 20, energy: 32, joy: 27, comfort: 39 });
   assert.deepEqual(settledState(state, later).bonds, state.bonds);
   assert.equal(state.needs.fullness, 75);
 });
@@ -54,8 +57,18 @@ test('character creation validates its fields and seeds personality from the cho
 });
 
 test('public state omits leases, retry IDs, and usage metadata', () => {
-  const output = publicCompanion({ ...initialCompanion(), lockToken: 'private', budget: { day: '2026-09-17', chats: 3, portraits: 0 }, lastCare: {}, recentOperations: ['private'], lockedUntil: new Date() });
-  for (const key of ['lockToken', 'budget', 'lastCare', 'recentOperations', 'lockedUntil']) assert.equal(key in output, false);
+  const output = publicCompanion({ ...initialCompanion(), _id: 'companion-test', lockToken: 'private', budget: { day: '2026-09-17', chats: 3, portraits: 0 }, lastCare: {}, recentOperations: ['private'], lockedUntil: new Date(), createdOperationId: 'private-create' });
+  for (const key of ['lockToken', 'budget', 'lastCare', 'recentOperations', 'lockedUntil', 'familyId', 'schemaVersion', 'needsUpdatedAt', 'createdOperationId']) assert.equal(key in output, false);
+  assert.equal(output.id, 'companion-test');
+});
+
+test('legacy companion migration is explicit and idempotent', () => {
+  const updatedAt = new Date('2026-01-01T00:00:00Z');
+  const legacy = { ...initialCompanion(), familyId: undefined, schemaVersion: undefined, archivedAt: undefined, needsUpdatedAt: undefined, updatedAt, needs: { fullness: 60, energy: 50, joy: 40 } };
+  const patch = companionMigrationPatch(legacy as never);
+  assert.deepEqual(patch, { familyId: 'joe-and-focus', schemaVersion: 2, archivedAt: null, needsUpdatedAt: updatedAt, 'needs.comfort': 75 });
+  const migrated = { ...legacy, ...patch, needs: { ...legacy.needs, comfort: patch['needs.comfort'] } };
+  assert.deepEqual(companionMigrationPatch(migrated), {});
 });
 
 test('legacy companions use the authored soft form when appearance settings are absent', () => {
@@ -115,10 +128,56 @@ test('companion routes reject unauthenticated callers without reaching MongoDB',
   } finally { await new Promise((resolve) => server.close(resolve)); }
 });
 
+test('roster creation is replay-safe, capped under a family lease, and unknown action IDs do not write', async (t) => {
+  const rows = [];
+  let family;
+  const clone = (value) => structuredClone(value);
+  const familyMatches = (query) => family && (!query.lockToken || family.lockToken === query.lockToken) && (!query.lockedUntil || new Date(family.lockedUntil) <= query.lockedUntil.$lte);
+  const applyFamily = (update) => { Object.assign(family, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete family[key]; };
+  t.mock.method(Companion, 'find', () => ({ lean: async () => [] }));
+  t.mock.method(Companion, 'findOne', (query) => ({ lean: async () => clone(rows.find((row) => row.familyId === query.familyId && row.createdOperationId === query.createdOperationId) || null) }));
+  t.mock.method(Companion, 'findById', (id) => ({ lean: async () => clone(rows.find((row) => row._id === id) || null) }));
+  t.mock.method(Companion, 'countDocuments', async () => rows.filter((row) => row.familyId === 'joe-and-focus' && row.archivedAt === null && row.bornAt).length);
+  t.mock.method(Companion, 'create', async (value) => {
+    rows.push(clone(value));
+    return { toObject: () => clone(value) };
+  });
+  t.mock.method(CompanionFamily, 'updateOne', async (query, update) => {
+    if (update.$setOnInsert && !family) family = { _id: 'joe-and-focus', ...clone(update.$setOnInsert) };
+    else if (familyMatches(query)) applyFamily(update);
+    return { acknowledged: true, matchedCount: familyMatches(query) ? 1 : 0 };
+  });
+  t.mock.method(CompanionFamily, 'findOneAndUpdate', (query, update) => ({ lean: async () => {
+    if (!familyMatches(query)) return null;
+    applyFamily(update);
+    return clone(family);
+  } }));
+  const response = () => ({ code: 200, body: undefined, status(code) { this.code = code; return this; }, json(body) { this.body = body; } });
+  const setup = { name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'curious' };
+  const create = async (operationId) => { const res = response(); await createCompanion({ body: { ...setup, operationId } }, res); return res; };
+  const first = await create('create-pet-0001');
+  const replay = await create('create-pet-0001');
+  assert.equal(first.code, 201);
+  assert.equal(replay.code, 201);
+  assert.equal(first.body.data.id, replay.body.data.id);
+  assert.equal(rows.length, 1);
+  for (let index = 2; index <= 5; index++) assert.equal((await create(`create-pet-000${index}`)).code, 201);
+  const contenders = await Promise.all([create('create-pet-0006'), create('create-pet-0007')]);
+  assert.deepEqual(contenders.map((entry) => entry.code).sort(), [201, 409]);
+  assert.equal(rows.length, 6);
+  assert.equal((await create('create-pet-0007')).code, 409);
+  const unknownId = 'companion-00000000-0000-4000-8000-000000000000';
+  const unknown = response();
+  await interactWithCompanion({ desktop: { profile: 'joe' }, body: { action: 'feed', companionId: unknownId, operationId: 'unknown-pet-0001' } }, unknown);
+  assert.equal(unknown.code, 404);
+  assert.equal(rows.length, 6);
+});
+
 // Exercise the real controller and brain adapter against an atomic in-memory
 // model, with provider responses mocked. No database or paid calls are used.
 test('shared actions serialize both caregivers, deduplicate retries, and preserve state on provider failure', async (t) => {
   let stored;
+  let family;
   const clone = (value) => structuredClone(value);
   const matches = (query) => stored && (!query.lockToken || stored.lockToken === query.lockToken) && (!query.lockedUntil || new Date(stored.lockedUntil) <= query.lockedUntil.$lte);
   const apply = (update) => { Object.assign(stored, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete stored[key]; };
@@ -127,10 +186,24 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     else if (matches(query)) apply(update);
     return { acknowledged: true };
   });
+  t.mock.method(Companion, 'findById', (id) => ({ lean: async () => id === stored?._id ? clone(stored) : null }));
+  t.mock.method(Companion, 'find', () => ({ lean: async () => [] }));
   t.mock.method(Companion, 'findOneAndUpdate', (query, update) => ({ lean: async () => {
     if (!matches(query)) return null;
     apply(update);
     return clone(stored);
+  } }));
+  const familyMatches = (query) => family && (!query.lockToken || family.lockToken === query.lockToken) && (!query.lockedUntil || new Date(family.lockedUntil) <= query.lockedUntil.$lte);
+  const applyFamily = (update) => { Object.assign(family, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete family[key]; };
+  t.mock.method(CompanionFamily, 'updateOne', async (query, update) => {
+    if (update.$setOnInsert && !family) family = { _id: 'joe-and-focus', ...clone(update.$setOnInsert) };
+    else if (familyMatches(query)) applyFamily(update);
+    return { acknowledged: true, matchedCount: familyMatches(query) ? 1 : 0 };
+  });
+  t.mock.method(CompanionFamily, 'findOneAndUpdate', (query, update) => ({ lean: async () => {
+    if (!familyMatches(query)) return null;
+    applyFamily(update);
+    return clone(family);
   } }));
   let serial = 0;
   const request = async (actor, action, values = {}) => {
@@ -182,12 +255,12 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     const result = await chat;
     assert.equal(result.code, 200);
     assert.equal(result.body.data.companion.turns[0].actor, 'joe');
-    assert.equal(stored.budget.chats, 1);
+    assert.equal(family.budget.chats, 1);
     const memory = stored.memories.at(-1);
     await request('focus', 'forget', { memoryId: memory.id });
     assert.equal(stored.turns.length, 0);
     assert.equal(stored.memories.some((row) => row.id === memory.id), false);
-    stored.budget.lastChat = new Date(0);
+    family.budget.lastChat = new Date(0);
     const xp = stored.xp;
     const failed = request('joe', 'chat', { text: 'This should not be remembered on failure.' });
     finish = null;
@@ -195,7 +268,7 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     finish({ ok: false, status: 429 });
     assert.equal((await failed).code, 429);
     assert.equal(stored.xp, xp);
-    assert.equal(stored.budget.chats, 2);
+    assert.equal(family.budget.chats, 2);
     assert.equal(stored.lockToken, undefined);
   } finally { if (previous === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previous; }
 });

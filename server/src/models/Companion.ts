@@ -13,12 +13,16 @@ const turnSchema = new mongoose.Schema({
 const defaults = initialCompanion();
 const schema = new mongoose.Schema<StoredCompanion>({
   _id: String,
+  familyId: { type: String, required: true, default: 'joe-and-focus', index: true },
+  schemaVersion: { type: Number, default: 2, min: 2 },
+  archivedAt: { type: Date, default: null, index: true },
+  createdOperationId: { type: String, maxlength: 80, sparse: true, unique: true },
   name: { type: String, required: true, maxlength: 32, default: defaults.name },
   form: { type: String, enum: ['pet', 'child', 'creature'], default: 'creature' },
   seed: { type: String, maxlength: 500, default: defaults.seed },
   inspirations: { joe: { type: String, maxlength: 300, default: '' }, focus: { type: String, maxlength: 300, default: '' } },
-  bornAt: { type: Date, default: null }, updatedAt: { type: Date, default: Date.now },
-  needs: { fullness: bounded(75), energy: bounded(80), joy: bounded(75) },
+  bornAt: { type: Date, default: null }, updatedAt: { type: Date, default: Date.now }, needsUpdatedAt: { type: Date, default: Date.now },
+  needs: { fullness: bounded(75), energy: bounded(80), joy: bounded(75), comfort: bounded(75) },
   traits: { curiosity: bounded(50), affection: bounded(50), playfulness: bounded(50) },
   bonds: { joe: { type: Number, default: 0, min: 0 }, focus: { type: Number, default: 0, min: 0 } },
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },

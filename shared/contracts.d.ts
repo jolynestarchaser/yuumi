@@ -88,7 +88,7 @@ export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown';
 export interface CompanionState {
   name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
   bornAt: Timestamp | null; updatedAt: Timestamp;
-  needs: { fullness: number; energy: number; joy: number };
+  needs: { fullness: number; energy: number; joy: number; comfort: number };
   traits: { curiosity: number; affection: number; playfulness: number };
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
   chatColor: string;
@@ -100,9 +100,11 @@ export interface CompanionBudget { day: string; chats: number; portraits: number
 export interface StoredCompanion extends CompanionState {
   _id?: string; __v?: number; budget?: CompanionBudget;
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
+  familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
 }
 export interface CompanionRequest { action: CareAction; text: string; urgency: 'gentle' | 'soon' }
-export interface PublicCompanion extends CompanionState { level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
+export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
+export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
 export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }
@@ -115,4 +117,5 @@ export type CompanionAction =
   | { action: 'appearance'; appearance: CompanionAppearance }
   | { action: 'customize'; name: string; form: CompanionForm; seed: string; appearance: CompanionAppearance; expectedRevision: number }
   | { action: 'inspiration'; text: string; expectedRevision: number }
-  | { action: 'forget'; memoryId: string };
+  | { action: 'forget'; memoryId: string }
+  | { action: 'archive' | 'restore' };

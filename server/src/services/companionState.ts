@@ -1,17 +1,21 @@
 import { randomUUID } from 'node:crypto';
-import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, CompanionSetup, Temperament, CompanionGrowthStage } from '../../../shared/contracts.js';
+import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, CompanionSetup, Temperament, CompanionGrowthStage, CompanionState } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
+export const COMPANION_FAMILY_ID = 'joe-and-focus';
+export const COMPANION_SCHEMA_VERSION = 2;
 export const ACTIONS = Object.freeze(['feed', 'play', 'cuddle', 'rest', 'explore']);
 export const MOODS = Object.freeze(['curious', 'happy', 'cozy', 'sleepy', 'playful']);
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 export const displayName = (actor) => actor === 'joe' ? 'Joe' : 'Focus';
 
 export function initialCompanion(): StoredCompanion {
+  const now = new Date();
   return {
+    familyId: COMPANION_FAMILY_ID, schemaVersion: COMPANION_SCHEMA_VERSION, archivedAt: null,
     name: 'Mochi', form: 'creature', seed: 'A round little forest spirit with leaf ears, soft lavender fur, and a curious smile.',
-    inspirations: { joe: '', focus: '' }, bornAt: null, updatedAt: new Date(),
-    needs: { fullness: 75, energy: 80, joy: 75 },
+    inspirations: { joe: '', focus: '' }, bornAt: null, updatedAt: now, needsUpdatedAt: now,
+    needs: { fullness: 75, energy: 80, joy: 75, comfort: 75 },
     traits: { curiosity: 50, affection: 50, playfulness: 50 }, bonds: { joe: 0, focus: 0 },
     xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.', chatColor: '#cdb2ea',
     appearance: { visualStyle: 'soft', animated: true, usePortrait: false },
@@ -20,16 +24,19 @@ export function initialCompanion(): StoredCompanion {
 }
 
 export function settledState(state: StoredCompanion, now = new Date()): StoredCompanion {
-  const hours = clamp((now.getTime() - new Date(state.updatedAt).getTime()) / 3_600_000, 0, 48);
+  const clock = state.needsUpdatedAt || state.updatedAt;
+  const hours = clamp((now.getTime() - new Date(clock).getTime()) / 3_600_000, 0, 24);
   return {
     ...state,
     // Portraits remain in old records for backwards-compatible data reads, but
     // rendered forms are now entirely authored and evolve in-app.
     appearance: state.appearance || { visualStyle: 'soft', animated: true, usePortrait: false },
+    needsUpdatedAt: now,
     needs: {
-      fullness: Math.round(clamp(state.needs.fullness - hours * 2, 20)),
-      energy: Math.round(clamp(state.needs.energy + hours * 3, 20)),
-      joy: Math.round(clamp(state.needs.joy - hours, 35))
+      fullness: clamp(state.needs.fullness - hours * 3, 20),
+      energy: clamp(state.needs.energy - hours * 2, 20),
+      joy: clamp(state.needs.joy - hours * 2, 25),
+      comfort: clamp((state.needs.comfort ?? 75) - hours * 1.5, 25)
     }
   };
 }
@@ -45,15 +52,15 @@ export function careFor(state: StoredCompanion, actor: Profile, action: CareActi
   next.bonds = { ...state.bonds, [actor]: state.bonds[actor] + 1 };
   next.xp = state.xp + 8;
   const person = displayName(actor);
-  const effects: Record<CareAction, [number, number, number, CompanionMood, keyof StoredCompanion['traits'], string]> = {
-    feed: [24, 0, 4, 'cozy', 'affection', `${person} brought me a snack. I saved a tiny imaginary bite for later.`],
-    play: [-5, -12, 24, 'playful', 'playfulness', `We invented a game! I think ${person} let me win the last round.`],
-    cuddle: [0, 4, 14, 'cozy', 'affection', `A little cuddle with ${person}. My favorite place is somewhere cozy.`],
-    rest: [-2, 30, 3, 'sleepy', 'affection', `${person} tucked me in. Tonight I might dream about floating islands.`],
-    explore: [-6, -10, 16, 'curious', 'curiosity', `I explored with ${person} and found a pebble that looks like a moon!`]
+  const effects: Record<CareAction, [number, number, number, number, CompanionMood, keyof StoredCompanion['traits'], string]> = {
+    feed: [24, 0, 4, 3, 'cozy', 'affection', `${person} brought me a snack. I saved a tiny imaginary bite for later.`],
+    play: [-5, -12, 24, 4, 'playful', 'playfulness', `We invented a game! I think ${person} let me win the last round.`],
+    cuddle: [0, 4, 14, 26, 'cozy', 'affection', `A little cuddle with ${person}. My favorite place is somewhere cozy.`],
+    rest: [-2, 30, 3, 12, 'sleepy', 'affection', `${person} tucked me in. Tonight I might dream about floating islands.`],
+    explore: [-6, -10, 16, 2, 'curious', 'curiosity', `I explored with ${person} and found a pebble that looks like a moon!`]
   };
-  const [food, energy, joy, mood, trait, thought] = effects[action];
-  next.needs = { fullness: clamp(next.needs.fullness + food, 20), energy: clamp(next.needs.energy + energy, 20), joy: clamp(next.needs.joy + joy, 35) };
+  const [food, energy, joy, comfort, mood, trait, thought] = effects[action];
+  next.needs = { fullness: clamp(next.needs.fullness + food, 20), energy: clamp(next.needs.energy + energy, 20), joy: clamp(next.needs.joy + joy, 25), comfort: clamp(next.needs.comfort + comfort, 25) };
   next.traits[trait] = clamp(next.traits[trait] + 2);
   next.mood = mood;
   next.thought = thought;
@@ -103,7 +110,9 @@ export function startingTraits(temperament: Temperament) {
 }
 
 export function publicCompanion(state: StoredCompanion, now = new Date()): PublicCompanion {
-  const { _id, __v, lockToken, lockedUntil, budget, lastCare, recentOperations, ...safe } = settledState(state, now);
+  const settled = settledState(state, now);
+  const { _id, __v, lockToken, lockedUntil, budget, lastCare, recentOperations, familyId, schemaVersion, needsUpdatedAt, createdOperationId, ...safe } = settled;
+  const needs = Object.fromEntries(Object.entries(safe.needs).map(([key, value]) => [key, Math.round(value)])) as CompanionState['needs'];
   const level = Math.floor(safe.xp / 80) + 1;
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
   const growthStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
@@ -111,10 +120,10 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const path = safe.evolutions?.at(-1)?.path || 'guardian';
   const formId = `${species}-${growthStage}-${path}`;
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : 'Grown companion';
-  const request = safe.needs.fullness <= 38 ? { action: 'feed' as const, text: 'Could we have a little snack together?', urgency: 'soon' as const }
-    : safe.needs.joy <= 44 ? { action: 'play' as const, text: 'Will you play a tiny game with me?', urgency: 'gentle' as const }
-    : safe.needs.energy <= 42 ? { action: 'rest' as const, text: 'I think a cozy nap would help me recharge.', urgency: 'gentle' as const }
-    : safe.traits.affection <= 42 ? { action: 'cuddle' as const, text: 'Can I have a little cuddle?', urgency: 'gentle' as const }
+  const request = needs.fullness <= 38 ? { action: 'feed' as const, text: 'Could we have a little snack together?', urgency: 'soon' as const }
+    : needs.joy <= 44 ? { action: 'play' as const, text: 'Will you play a tiny game with me?', urgency: 'gentle' as const }
+    : needs.energy <= 42 ? { action: 'rest' as const, text: 'I think a cozy nap would help me recharge.', urgency: 'gentle' as const }
+    : needs.comfort <= 45 ? { action: 'cuddle' as const, text: 'Can I have a little cuddle?', urgency: 'gentle' as const }
     : { action: 'explore' as const, text: 'Want to look for a small adventure together?', urgency: 'gentle' as const };
-  return { ...safe, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request };
+  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request };
 }

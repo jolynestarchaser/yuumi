@@ -4,7 +4,7 @@ import Item from '../models/Item.js';
 import DesktopWindow from '../models/DesktopWindow.js';
 import { revisionService, itemSnapshot } from '../services/historyService.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
-import { ItemRevisionConflict, updateItemContent } from '../services/itemContent.js';
+import { commitItemContent, ItemRevisionConflict } from '../services/itemContent.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
@@ -56,16 +56,16 @@ router.post('/', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
-  let item;
+  let result;
   try {
-    item = await updateItemContent({ id: req.params.id, expectedRevision: req.body.expectedRevision, patch: req.body || {}, actor: req.desktop?.profile || 'unknown' });
+    result = await commitItemContent({ id: req.params.id, expectedRevision: req.body?.expectedRevision, operationId: req.body?.operationId, patch: req.body || {}, actor: req.desktop?.profile || 'unknown' });
   } catch (error) {
     if (error instanceof ItemRevisionConflict) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: error.message, data: { current: error.current } } });
-    throw error;
+    const status = error.status || 500;
+    return res.status(status).json({ success: false, error: { code: status === 400 ? 'VALIDATION_ERROR' : status === 404 ? 'NOT_FOUND' : status === 410 ? 'IN_TRASH' : 'SERVER_ERROR', message: status === 500 ? 'Could not save this item.' : error.message } });
   }
-  await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision, operation: 'update', actor: req.desktop?.profile, snapshot: itemSnapshot(item) });
-  broadcast(req, 'item:updated', item);
-  send(res, item);
+  if (!result.replay) broadcast(req, 'item:updated', result.item);
+  send(res, result.item);
 });
 
 router.patch('/:id/position', async (req, res) => {

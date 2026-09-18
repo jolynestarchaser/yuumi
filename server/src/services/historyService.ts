@@ -11,8 +11,13 @@ export class RevisionService {
     this.auditModel = auditModel;
   }
 
-  async record({ entityType, entityId, revision, operation, actor, snapshot, restoredFromRevision = null }) {
+  async record({ entityType, entityId, revision, operation, actor, snapshot, restoredFromRevision = null, session = undefined }) {
     const normalizedActor = safeActor(actor);
+    if (session) {
+      await this.historyModel.create([{ entityType, entityId, revision, operation, actor: normalizedActor, snapshot, restoredFromRevision }], { session });
+      await this.auditModel.create([{ actor: normalizedActor, action: `${entityType}.${operation}`, entityType, entityId: String(entityId) }], { session });
+      return;
+    }
     await this.historyModel.create({ entityType, entityId, revision, operation, actor: normalizedActor, snapshot, restoredFromRevision });
     await this.auditModel.create({ actor: normalizedActor, action: `${entityType}.${operation}`, entityType, entityId: String(entityId) });
   }

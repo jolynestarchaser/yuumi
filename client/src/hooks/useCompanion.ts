@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionAppearance, CompanionForm, CompanionMood, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
+import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionRosterSummary, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
 import type { CompanionActionValues } from '../components/companion/types.js';
 
 export default function useCompanion() {
   const [data, setData] = useState<CompanionSnapshot | null>(null);
-  const [roster, setRoster] = useState<{ id: string; name: string; bornAt: string | Date | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }[]>([]);
+  const [roster, setRoster] = useState<CompanionRosterSummary[]>([]);
   const [companionId, setCompanionId] = useState(() => localStorage.getItem('yuu-mi:active-companion') || 'joe-and-focus');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
   const alive = useRef(true);
   const inFlight = useRef(false);
   const pendingOperation = useRef<{ signature: string; id: string } | null>(null);
+  const pendingCreate = useRef<{ signature: string; id: string } | null>(null);
   const apply = useCallback((next: CompanionSnapshot) => {
     if (alive.current) setData((current) => !current || next.companion.revision >= current.companion.revision ? next : current);
   }, []);
@@ -64,9 +65,12 @@ export default function useCompanion() {
   async function createCompanion(setup: CompanionSetup) {
     if (inFlight.current) return false;
     inFlight.current = true; setBusy('create'); setError('');
+    const signature = JSON.stringify(setup);
+    if (pendingCreate.current?.signature !== signature) pendingCreate.current = { signature, id: crypto.randomUUID() };
     try {
-      const response = await api.post<ApiResponse<{ id: string; companion: PublicCompanion }>>('/companions/roster', setup);
+      const response = await api.post<ApiResponse<{ id: string; companion: PublicCompanion }>>('/companions/roster', { ...setup, operationId: pendingCreate.current.id });
       selectCompanion(response.data.data.id);
+      pendingCreate.current = null;
       return true;
     } catch (err) { if (alive.current) setError(err.response?.data?.error?.message || 'Could not hatch a new companion.'); return false; }
     finally { inFlight.current = false; if (alive.current) setBusy(''); }
