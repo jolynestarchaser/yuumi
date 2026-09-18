@@ -11,7 +11,8 @@ import { Input } from './ui/input.js';
 import { Textarea } from './ui/textarea.js';
 import { iconCatalog, iconComponents } from '../lib/iconCatalog.js';
 import { useTranslation } from '../hooks/useTranslation.js';
-import type { MessageDraft, MessageAnimation } from '../../../shared/contracts.js';
+import { giphyIdFromUrl, giphyImageUrl } from '../lib/giphy.js';
+import type { MessageDraft, MessageAnimation, MessageAttachmentInput } from '../../../shared/contracts.js';
 import {
   LETTER_EFFECTS,
   createCelebrationParticles,
@@ -34,7 +35,7 @@ const messageIconKeys = new Set(['heart', 'star', 'sparkles', 'bell', 'gift', 'm
 const messageIconOptions = iconCatalog.filter(({ key }) => messageIconKeys.has(key));
 const effectIconNames = Object.freeze({ none: 'message', hearts: 'heart', sparkles: 'sparkles', 'emoji-rain': 'palette', confetti: 'gift', bubbles: 'cloud', stars: 'star' });
 
-const recipientFor = (profile) => profile === 'joe' ? 'focus' : 'joe';
+const recipientFor = (profile: 'joe' | 'focus' | ''): 'joe' | 'focus' => profile === 'joe' ? 'focus' : 'joe';
 const profileName = (profile) => profile === 'joe' ? 'Joe' : 'Focus';
 
 function readSoundPreference() {
@@ -65,6 +66,7 @@ function MessageAttachment({ attachment, compact = false }) {
   useI18n();
   if (!attachment) return null;
   if (attachment.kind === 'spotify') return <section className={`message-attachment spotify ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || t("Spotify music")}</span></div><iframe title={attachment.name || t("Spotify player")} src={attachment.embedUrl} loading='lazy' allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture' /></section>;
+  if (attachment.kind === 'giphy') return <figure className={`message-attachment image giphy ${compact ? 'compact' : ''}`}><img src={giphyImageUrl(attachment.gifId)} alt={attachment.name || 'GIPHY GIF'} /><figcaption>Powered by GIPHY</figcaption></figure>;
   if (attachment.kind === 'image') return <figure className={`message-attachment image ${compact ? 'compact' : ''}`}><img src={attachment.secureUrl} alt={attachment.name || t("Attached image")} /></figure>;
   return <section className={`message-attachment audio ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || t("Attached music")}</span></div><audio controls preload='metadata' src={attachment.secureUrl}>{t("Your browser cannot play this audio file.")}</audio></section>;
 }
@@ -110,9 +112,12 @@ export default function MessageCenter({ suspended = false }) {
   const [formError, setFormError] = useState('');
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [spotifyUrl, setSpotifyUrl] = useState('');
+  const [giphyUrl, setGiphyUrl] = useState('');
   const [soundEnabled, setSoundEnabled] = useState(readSoundPreference);
   const { translate, translating, translationError, clearTranslationError } = useTranslation();
   const played = useRef(new Set());
+  const pendingMessage = useRef<{ signature: string; operationId: string } | null>(null);
+  const uploadedAttachment = useRef<{ file: File; attachment: MessageAttachmentInput } | null>(null);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -196,20 +201,27 @@ export default function MessageCenter({ suspended = false }) {
 
   async function submit(event) {
     event.preventDefault();
-    if ((!form.body.trim() && !attachmentFile && !spotifyUrl.trim()) || sending) return;
+    if ((!form.body.trim() && !attachmentFile && !spotifyUrl.trim() && !giphyUrl.trim()) || sending) return;
     setSending(true);
     setFormError('');
     try {
-      const attachment = attachmentFile ? await uploadMessageAttachment(attachmentFile) : spotifyUrl.trim() ? { kind: 'spotify' as const, spotifyUrl: spotifyUrl.trim() } : null;
+      const gifId = giphyIdFromUrl(giphyUrl);
+      if (giphyUrl.trim() && !gifId) throw new Error(t('This link is not a supported media file.'));
+      const attachment = attachmentFile ? uploadedAttachment.current?.file === attachmentFile ? uploadedAttachment.current.attachment : await uploadMessageAttachment(attachmentFile) as MessageAttachmentInput : spotifyUrl.trim() ? { kind: 'spotify' as const, spotifyUrl: spotifyUrl.trim() } : gifId ? { kind: 'giphy' as const, gifId } : null;
+      if (attachmentFile) uploadedAttachment.current = { file: attachmentFile, attachment };
+      const snapshot = { ...form, attachment, recipient: recipientFor(profile) };
+      const signature = JSON.stringify(snapshot);
+      if (pendingMessage.current?.signature !== signature) pendingMessage.current = { signature, operationId: `${profile}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}` };
       await sendMessage({
-        ...form,
-        attachment,
-        recipient: recipientFor(profile),
-        operationId: `${profile}-${Date.now()}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`
+        ...snapshot,
+        operationId: pendingMessage.current.operationId
       });
+      pendingMessage.current = null;
+      uploadedAttachment.current = null;
       setForm({ ...DEFAULT_FORM });
       setAttachmentFile(null);
       setSpotifyUrl('');
+      setGiphyUrl('');
       setCompose(false);
       pushToast(t('Sent to {name} ✦', { name: profileName(recipientFor(profile)) }));
       playLetterChime({ enabled: soundEnabled }).catch(() => {});
@@ -250,10 +262,12 @@ export default function MessageCenter({ suspended = false }) {
       <Textarea aria-label={t("ข้อความ")} placeholder={t("เขียนข้อความถึงอีกคน…")} maxLength={5000} value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
       <div className='translation-actions' aria-label={t("Translate message")}><span><Languages size={14} /> {t("แปลข้อความ")}</span><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('th')}>{t("เป็นไทย")}</button><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('en')}>{t("To English")}</button></div>
       <div className='message-attachment-picker'>
-        <label className='attachment-button'><Paperclip size={15} /> {t("แนบรูป GIF หรือเพลง")}<input aria-label={t("แนบรูป GIF หรือเพลง")} type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); } event.target.value = ''; }} /></label>
+        <label className='attachment-button'><Paperclip size={15} /> {t("แนบรูป GIF หรือเพลง")}<input aria-label={t("แนบรูป GIF หรือเพลง")} type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); setGiphyUrl(''); uploadedAttachment.current = null; } event.target.value = ''; }} /></label>
         <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label={t("ลิงก์ Spotify")} type='url' placeholder={t("วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)")} value={spotifyUrl} onChange={(event) => { setSpotifyUrl(event.target.value); if (event.target.value) setAttachmentFile(null); }} /></label>
-        {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => setAttachmentFile(null)}><X size={14} /></button></div>}
+        <label className='spotify-attachment-input'><ImagePlus size={15} /><input aria-label={t('Paste a GIPHY link')} type='url' placeholder={t('Paste a GIPHY link')} value={giphyUrl} onChange={(event) => { setGiphyUrl(event.target.value); if (event.target.value) { setAttachmentFile(null); setSpotifyUrl(''); } }} /></label>
+        {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => { setAttachmentFile(null); uploadedAttachment.current = null; }}><X size={14} /></button></div>}
         {spotifyUrl && <div className='attachment-file'><span><Music2 size={15} />{t("Spotify link attached")}</span><button type='button' aria-label={t("ลบลิงก์ Spotify")} onClick={() => setSpotifyUrl('')}><X size={14} /></button></div>}
+        {giphyUrl && <div className='attachment-file'><span><ImagePlus size={15} />{t('GIPHY link attached')}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => setGiphyUrl('')}><X size={14} /></button></div>}
       </div>
       <div className='message-symbol-heading'><span>{t("สัญลักษณ์ประจำจดหมาย")}</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> {t("สีที่เลือก")}</strong></div>
       <div className='message-icon-picker' aria-label={t("เลือกไอคอนจดหมาย")}>
@@ -267,7 +281,7 @@ export default function MessageCenter({ suspended = false }) {
         </button>)}
       </div>
       {(formError || translationError) && <p className='form-error' role='alert'>{t(formError || translationError)}</p>}
-      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); setGiphyUrl(''); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label={t("Inbox")}>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>

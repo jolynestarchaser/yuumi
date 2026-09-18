@@ -7,7 +7,7 @@
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
-    "test": "node --import tsx --test --experimental-test-coverage src/lib/letterEffects.test.ts src/lib/messageState.test.ts src/lib/releases.test.ts src/lib/i18n.test.ts src/lib/travelMap.test.ts",
+    "test": "node --import tsx --test --experimental-test-coverage src/lib/letterEffects.test.ts src/lib/messageState.test.ts src/lib/releases.test.ts src/lib/i18n.test.ts src/lib/travelMap.test.ts src/lib/giphy.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -50,8 +50,9 @@ export interface HostedMessageAttachment {
 export interface SpotifyMessageAttachment {
   kind: 'spotify'; spotifyUrl: string; embedUrl: string; name: string;
 }
-export type MessageAttachment = HostedMessageAttachment | SpotifyMessageAttachment;
-export type MessageAttachmentInput = HostedMessageAttachment | { kind: 'spotify'; spotifyUrl: string };
+export interface GiphyMessageAttachment { kind: 'giphy'; provider: 'giphy'; gifId: string; name: string }
+export type MessageAttachment = HostedMessageAttachment | SpotifyMessageAttachment | GiphyMessageAttachment;
+export type MessageAttachmentInput = HostedMessageAttachment | { kind: 'spotify'; spotifyUrl: string } | { kind: 'giphy'; gifId: string };
 export type TranslationTarget = 'en' | 'th';
 export interface TranslationResult { text: string; target: TranslationTarget }
 export interface MessageDraft {

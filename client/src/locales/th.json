@@ -633,5 +633,17 @@
   "Save changes": "บันทึกการเปลี่ยนแปลง",
   "Retry save": "ลองบันทึกอีกครั้ง",
   "Remove {name}?": "ลบ {name} ใช่ไหม",
-  "Edit {name}": "แก้ไข {name}"
+  "Edit {name}": "แก้ไข {name}",
+  "Latitude": "ละติจูด",
+  "Longitude": "ลองจิจูด",
+  "Zoom in": "ซูมเข้า",
+  "Zoom out": "ซูมออก",
+  "Search places": "ค้นหาสถานที่",
+  "Filter pins": "กรองหมุด",
+  "All": "ทั้งหมด",
+  "Planned": "วางแผนไว้",
+  "Visited": "ไปแล้ว",
+  "Paste a GIPHY link": "วางลิงก์ GIPHY",
+  "GIPHY link attached": "แนบลิงก์ GIPHY แล้ว",
+  "This link is not a supported media file.": "ลิงก์นี้ไม่ใช่ไฟล์สื่อที่รองรับ"
 }

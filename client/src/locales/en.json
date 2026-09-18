@@ -633,5 +633,17 @@
   "Save changes": "Save changes",
   "Retry save": "Retry save",
   "Remove {name}?": "Remove {name}?",
-  "Edit {name}": "Edit {name}"
+  "Edit {name}": "Edit {name}",
+  "Latitude": "Latitude",
+  "Longitude": "Longitude",
+  "Zoom in": "Zoom in",
+  "Zoom out": "Zoom out",
+  "Search places": "Search places",
+  "Filter pins": "Filter pins",
+  "All": "All",
+  "Planned": "Planned",
+  "Visited": "Visited",
+  "Paste a GIPHY link": "Paste a GIPHY link",
+  "GIPHY link attached": "GIPHY link attached",
+  "This link is not a supported media file.": "This link is not a supported media file."
 }

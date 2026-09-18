@@ -16,14 +16,16 @@ export const messageIconTypes = Object.freeze([
 ]);
 
 const attachmentSchema = new mongoose.Schema({
-  kind: { type: String, enum: ['image', 'audio', 'spotify'], required: true },
-  secureUrl: { type: String, required() { return this.kind !== 'spotify'; }, match: /^https:\/\// },
+  kind: { type: String, enum: ['image', 'audio', 'spotify', 'giphy'], required: true },
+  secureUrl: { type: String, required() { return !['spotify', 'giphy'].includes(this.kind); }, match: /^https:\/\// },
   name: { type: String, trim: true, maxlength: 180, required: true },
   mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'], required() { return this.kind !== 'spotify'; } },
   bytes: { type: Number, min: 0, max: 10 * 1024 * 1024 },
   duration: { type: Number, min: 0, default: null },
   spotifyUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\// },
-  embedUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\/embed\// }
+  embedUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\/embed\// },
+  provider: { type: String, enum: ['giphy'], required() { return this.kind === 'giphy'; } },
+  gifId: { type: String, maxlength: 80, required() { return this.kind === 'giphy'; } }
 }, { _id: false });
 
 const messageSchema = new mongoose.Schema({
@@ -38,9 +40,11 @@ const messageSchema = new mongoose.Schema({
   emoji: { type: String, maxlength: 16, default: '💌' },
   animation: { type: String, enum: messageAnimationTypes, default: 'hearts' },
   readAt: { type: Date, default: null },
-  operationId: { type: String, required: true, unique: true, index: true }
+  operationId: { type: String, required: true, maxlength: 80 },
+  operationFingerprint: { type: String, required: true, maxlength: 64, default: 'legacy' }
 }, { timestamps: true });
 
 messageSchema.index({ recipient: 1, readAt: 1, createdAt: -1 });
+messageSchema.index({ sender: 1, operationId: 1 }, { unique: true });
 
 export default mongoose.model('Message', messageSchema);

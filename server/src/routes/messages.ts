@@ -6,6 +6,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import Message, { messageAnimationTypes, messageIconTypes } from '../models/Message.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 import { normalizeSpotifyAttachment } from '../services/spotifyAttachment.js';
+import { normalizeGiphyAttachment } from '../services/giphyAttachment.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
@@ -25,6 +26,8 @@ function normalizeAttachment(value) {
   if (!value) return null;
   const spotifyAttachment = normalizeSpotifyAttachment(value);
   if (spotifyAttachment) return spotifyAttachment;
+  const giphyAttachment = normalizeGiphyAttachment(value);
+  if (giphyAttachment) return giphyAttachment;
   if (!['image', 'audio'].includes(value.kind) || typeof value.secureUrl !== 'string' || !/^https:\/\//.test(value.secureUrl) || typeof value.name !== 'string' || !attachmentTypes.has(value.mimeType) || !Number.isFinite(value.bytes) || value.bytes < 0 || value.bytes > 10 * 1024 * 1024) return undefined;
   if ((value.kind === 'image') !== value.mimeType.startsWith('image/')) return undefined;
   return { kind: value.kind, secureUrl: value.secureUrl, name: value.name.slice(0, 180), mimeType: value.mimeType, bytes: value.bytes, duration: Number.isFinite(value.duration) ? value.duration : null };
@@ -61,7 +64,6 @@ router.post('/attachment', upload.single('file'), async (req, res, next) => {
 });
 
 router.post('/', async (req, res) => {
-  if (!checkRate(req.desktop.profile)) return res.status(429).json({ success: false, error: { code: 'RATE_LIMITED', message: 'Please wait before sending another message.' } });
   const recipient = String(req.body?.recipient || '').toLowerCase();
   const body = typeof req.body?.body === 'string' ? req.body.body.trim() : '';
   const subject = typeof req.body?.subject === 'string' ? req.body.subject.trim() : '';
@@ -74,8 +76,24 @@ router.post('/', async (req, res) => {
   const emoji = typeof req.body?.emoji === 'string' ? req.body.emoji.slice(0, 16) : '💌';
   const attachment = normalizeAttachment(req.body?.attachment);
   if (!['joe', 'focus'].includes(recipient) || recipient === req.desktop.profile || (!body && !attachment) || attachment === undefined || body.length > 5000 || subject.length > 120) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Message details are invalid.' } });
-  const operationId = typeof req.body?.operationId === 'string' && req.body.operationId.length <= 80 ? req.body.operationId : crypto.randomUUID();
-  const message = await Message.findOneAndUpdate({ operationId }, { sender: req.desktop.profile, recipient, kind, subject, body, attachment, icon, accentColor, emoji, animation, operationId }, { upsert: true, new: true, setDefaultsOnInsert: true });
+  const operationId = typeof req.body?.operationId === 'string' && /^[A-Za-z0-9-]{10,80}$/.test(req.body.operationId) ? req.body.operationId : null;
+  if (!operationId) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'A valid operation ID is required.' } });
+  const payload = { sender: req.desktop.profile, recipient, kind, subject, body, attachment, icon, accentColor, emoji, animation };
+  const operationFingerprint = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+  const previous = await Message.findOne({ sender: req.desktop.profile, operationId });
+  if (previous) {
+    if (previous.operationFingerprint !== operationFingerprint) return res.status(409).json({ success: false, error: { code: 'OPERATION_CONFLICT', message: 'This send retry does not match the original message.' } });
+    return res.status(201).json({ success: true, data: previous });
+  }
+  if (!checkRate(req.desktop.profile)) return res.status(429).json({ success: false, error: { code: 'RATE_LIMITED', message: 'Please wait before sending another message.' } });
+  let message;
+  try { message = await Message.create({ ...payload, operationId, operationFingerprint }); }
+  catch (error) {
+    if ((error as { code?: number }).code !== 11000) throw error;
+    const replay = await Message.findOne({ sender: req.desktop.profile, operationId });
+    if (replay?.operationFingerprint === operationFingerprint) return res.status(201).json({ success: true, data: replay });
+    return res.status(409).json({ success: false, error: { code: 'OPERATION_CONFLICT', message: 'This send retry does not match the original message.' } });
+  }
   req.app.get('io')?.to(`profile:${recipient}`).emit('message:received', message);
   res.status(201).json({ success: true, data: message });
 });
