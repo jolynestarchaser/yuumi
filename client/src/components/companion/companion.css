@@ -46,6 +46,7 @@
 .companion-go-out { width:100%; margin:0 0 12px; }
 .companion-growth { padding:12px; margin-bottom:14px; border:1px solid #c6b6da30; border-radius:12px; background:#cdb7ed08; }
 .companion-roster { display:flex; gap:6px; overflow:auto; padding-bottom:2px; }.companion-roster button { display:grid; min-width:92px; gap:2px; padding:7px 9px; border:1px solid #c6b6da30; border-radius:9px; color:#cfc3df; text-align:left; background:#ffffff06; }.companion-roster button[aria-pressed='true'] { border-color:#ccb5ee; color:#f4eaff; background:#ccb5ee1b; }.companion-roster small { font-size:9px; color:#a99cba; }
+.companion-roster .companion-add { display:block; min-width:auto; color:#e8d9ff; }
 .companion-request { display:grid; gap:3px; width:100%; padding:11px 13px; border:1px solid #c6b6da4a; border-radius:12px; color:#efe7ff; text-align:left; background:#cdb7ed10; }.companion-request:hover:not(:disabled) { transform:translateY(-1px); background:#cdb7ed20; }.companion-request.soon { border-color:#e9bc8377; background:#e9bc8314; }.companion-request span,.companion-request small { color:#b9aaca; font-size:10px; }.companion-request strong { font-size:12px; }
 .companion-growth > div { display:flex; justify-content:space-between; gap:10px; font-size:12px; margin-bottom:8px; }
 .companion-growth p, .companion-growth small, .companion-growth summary { color:#b9aaca; font-size:11px; line-height:1.8; }

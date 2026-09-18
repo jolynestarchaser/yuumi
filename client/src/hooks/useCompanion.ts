@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionAppearance, CompanionForm, CompanionMood } from '../../../shared/contracts.js';
+import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionAppearance, CompanionForm, CompanionMood, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
 import type { CompanionActionValues } from '../components/companion/types.js';
 
 export default function useCompanion() {
@@ -61,5 +61,15 @@ export default function useCompanion() {
     }
   }
   const selectCompanion = (id: string) => { localStorage.setItem('yuu-mi:active-companion', id); setCompanionId(id); };
-  return { ...data, roster, companionId, selectCompanion, error, busy, act, refresh };
+  async function createCompanion(setup: CompanionSetup) {
+    if (inFlight.current) return false;
+    inFlight.current = true; setBusy('create'); setError('');
+    try {
+      const response = await api.post<ApiResponse<{ id: string; companion: PublicCompanion }>>('/companions/roster', setup);
+      selectCompanion(response.data.data.id);
+      return true;
+    } catch (err) { if (alive.current) setError(err.response?.data?.error?.message || 'Could not hatch a new companion.'); return false; }
+    finally { inFlight.current = false; if (alive.current) setBusy(''); }
+  }
+  return { ...data, roster, companionId, selectCompanion, createCompanion, error, busy, act, refresh };
 }
