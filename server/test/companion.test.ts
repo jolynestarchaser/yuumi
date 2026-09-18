@@ -52,13 +52,24 @@ test('public state omits leases, retry IDs, and usage metadata', () => {
   for (const key of ['lockToken', 'budget', 'lastCare', 'recentOperations', 'lockedUntil']) assert.equal(key in output, false);
 });
 
-test('legacy companions retain their portrait choice when appearance settings are absent', () => {
+test('legacy companions use the authored soft form when appearance settings are absent', () => {
   const legacy = initialCompanion();
   delete legacy.appearance;
-  assert.equal(publicCompanion(legacy).appearance.visualStyle, 'soft');
+  assert.deepEqual(publicCompanion(legacy).appearance, { visualStyle: 'soft', animated: true, usePortrait: false });
   legacy.portrait = { url: 'https://example.test/pixel.png', publicId: 'original', createdAt: new Date() };
-  assert.deepEqual(publicCompanion(legacy).appearance, { visualStyle: 'pixel', animated: true, usePortrait: true });
+  assert.deepEqual(publicCompanion(legacy).appearance, { visualStyle: 'soft', animated: true, usePortrait: false });
   assert.equal(legacy.appearance, undefined);
+});
+
+test('public companion derives a visible evolution form from level and care path', () => {
+  const state = initialCompanion();
+  state.xp = 9 * 80;
+  state.appearance = { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon' };
+  state.evolutions = [{ level: 9, species: 'dragon', path: 'explorer', at: new Date() }];
+  const companion = publicCompanion(state);
+  assert.equal(companion.growthStage, 'grown');
+  assert.equal(companion.formId, 'dragon-grown-explorer');
+  assert.equal(companion.stage, 'Grown companion');
 });
 
 test('AI requests are capped per shared day, cooldowns apply, and a new day resets usage', () => {

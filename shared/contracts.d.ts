@@ -84,6 +84,7 @@ export interface CompanionMemory { id: string; actor: Profile; kind: string; tex
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
 export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
+export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown';
 export interface CompanionState {
   name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
   bornAt: Timestamp | null; updatedAt: Timestamp;
@@ -100,7 +101,7 @@ export interface StoredCompanion extends CompanionState {
   _id?: string; __v?: number; budget?: CompanionBudget;
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
 }
-export interface PublicCompanion extends CompanionState { level: number; stage: string; wish: string }
+export interface PublicCompanion extends CompanionState { level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
 export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }

@@ -1,13 +1,12 @@
 import type { CompanionAppearance } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
 
-export const defaultAppearance: CompanionAppearance = { visualStyle: 'soft', animated: true, usePortrait: true };
+export const defaultAppearance: CompanionAppearance = { visualStyle: 'soft', animated: true, usePortrait: false };
 
-export default function CompanionAppearancePicker({ value, onChange, disabled = false, hasPortrait = false }: {
+export default function CompanionAppearancePicker({ value, onChange, disabled = false }: {
   value: CompanionAppearance;
   onChange: (value: CompanionAppearance) => void;
   disabled?: boolean;
-  hasPortrait?: boolean;
 }) {
   const { t } = useCompanionLanguage();
   return <fieldset className='companion-appearance-picker' disabled={disabled}>
@@ -17,6 +16,5 @@ export default function CompanionAppearancePicker({ value, onChange, disabled = 
       <button type='button' aria-pressed={value.visualStyle === 'pixel'} onClick={() => onChange({ ...value, visualStyle: 'pixel' })}>{t('Pixel art')}</button>
     </div>
     <label><input type='checkbox' checked={value.animated} onChange={(event) => onChange({ ...value, animated: event.target.checked })} />{t('Animation')}</label>
-    {hasPortrait && value.visualStyle === 'pixel' && <label><input type='checkbox' checked={value.usePortrait} onChange={(event) => onChange({ ...value, usePortrait: event.target.checked })} />{t('Use saved portrait')}</label>}
   </fieldset>;
 }

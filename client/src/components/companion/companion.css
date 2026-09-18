@@ -48,8 +48,9 @@
 .companion-growth > div { display:flex; justify-content:space-between; gap:10px; font-size:12px; margin-bottom:8px; }
 .companion-growth p, .companion-growth small, .companion-growth summary { color:#b9aaca; font-size:11px; line-height:1.8; }
 .companion-growth small { display:block; margin-top:7px; }
-.companion-growth .companion-evolution-badge { color:#e9da9b; }
-.companion-evolution-mark { position:absolute; top:4px; left:50%; transform:translateX(-50%); padding:0 8px; border-radius:12px; color:#fff0aa; background:#2c2546; border:1px solid #ddc27e; font-size:24px; }
+.companion-growth .companion-form-label { color:#e9da9b; margin:4px 0 0; text-transform:capitalize; }
+.companion-avatar.stage-child .companion-avatar-motion { scale:1.08 1.04; }.companion-avatar.stage-juvenile .companion-avatar-motion { scale:1.16 .98; }.companion-avatar.stage-grown .companion-avatar-motion { scale:1.24 .92; }.companion-avatar.stage-juvenile .creature-wing { display:block; width:34px; height:41px; }.companion-avatar.stage-grown .creature-wing { display:block; width:48px; height:58px; }.companion-avatar.stage-grown .creature-tail { display:block; width:52px; height:20px; }.companion-avatar.path-explorer.stage-grown .creature-tail { transform:rotate(-30deg) translateX(-12px); }.companion-avatar.path-trickster .creature-ear { transform:rotate(14deg) scale(1.13); }.companion-avatar.path-guardian.stage-grown .creature-foot { transform:scale(1.26,1.12); }
+.creature-markings { position:absolute; top:17px; left:28px; color:var(--creature-accent); font-size:18px; text-shadow:1px 1px var(--creature-eye); }.creature-crown { position:absolute; top:-27px; left:50%; color:#ffe5a4; font-size:31px; text-shadow:2px 2px var(--creature-eye); transform:translateX(-50%); }
 .companion-avatar .companion-creature .creature-body { background:var(--creature-body); border-color:color-mix(in srgb,var(--creature-body) 70%,#463251); box-shadow:inset -10px -8px color-mix(in srgb,var(--creature-body) 70%,#463251),inset 9px 4px color-mix(in srgb,var(--creature-body) 70%,white); }
 .companion-avatar .companion-creature .creature-ear { background:var(--creature-accent); border-color:color-mix(in srgb,var(--creature-accent) 70%,#463251); }
 .companion-avatar .creature-face i { background:var(--creature-eye); }
@@ -230,7 +231,7 @@
   .companion-home > .companion-stage { margin:0 0 4px; }
   .companion-home > h3 { font-size:24px; }
   .companion-growth { grid-column:1 / -1; margin:0; padding:9px 12px; }
-  .companion-growth > p:not(.companion-evolution-badge) { margin:4px 0 0; }
+  .companion-growth > p { margin:4px 0 0; }
   .companion-growth > div { margin-bottom:5px; }
   .companion-thought { grid-column:1; }
   .companion-needs { grid-column:2; margin:0; align-content:center; }

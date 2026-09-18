@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto';
 import Companion from '../models/Companion.js';
 import { evolveCompanion } from '../services/companionEvolution.js';
 import { ACTIONS, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup, validateAppearance } from '../services/companionState.js';
-import { chatWithCompanion, companionCapabilities, generatePortrait, removePortrait } from '../services/companionBrain.js';
-import type { StoredCompanion, CompanionBudget, CompanionPortrait } from '../../../shared/contracts.js';
+import { chatWithCompanion, companionCapabilities } from '../services/companionBrain.js';
+import type { StoredCompanion, CompanionBudget } from '../../../shared/contracts.js';
 
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const respond = (res, state) => res.json({ success: true, data: { companion: publicCompanion(state), capabilities: companionCapabilities() } });
@@ -72,13 +72,10 @@ export const interactWithCompanion = wrap(async (req, res) => {
   if (action === 'chat' && (typeof text !== 'string' || !text.trim() || text.trim().length > 1000)) throw fail(400, 'Write a message between 1 and 1,000 characters.');
   if (action === 'chatColor' && (typeof req.body?.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(req.body.color))) throw fail(400, 'Choose a valid companion chat color.');
   if (action === 'chat' && !companionCapabilities().chat) throw fail(503, 'Gemini chat is not connected yet. Add GEMINI_API_KEY on the server.');
-  if (action === 'portrait' && !companionCapabilities().portraits) throw fail(503, 'Portraits need Gemini and Cloudinary configured on the server.');
+  if (action === 'portrait') throw fail(410, 'Portrait generation has been retired. Your companion now grows through built-in animated forms.');
   if (action === 'forget' && (typeof memoryId !== 'string' || memoryId.length > 80)) throw fail(400, 'Choose a valid memory.');
-  let newPortrait;
-  let oldPortrait;
   let saved;
-  try {
-    saved = await withCompanionLock(operationId, async (state, token) => {
+  saved = await withCompanionLock(operationId, async (state, token) => {
       let next = settledState(state);
       if (action === 'adopt') {
         if (state.bornAt) throw fail(409, 'Your shared companion has already hatched. Reopen the widget to meet them.');
@@ -101,7 +98,9 @@ export const interactWithCompanion = wrap(async (req, res) => {
       }
       if (ACTIONS.includes(action)) {
         if (state.lastCare?.[actor] && Date.now() - new Date(state.lastCare[actor]).getTime() < 5000) throw fail(429, 'Let your companion enjoy this moment. Try again in a few seconds.');
-        return { ...careFor(next, actor, action), lastCare: { ...state.lastCare, [actor]: new Date() } };
+        // careFor performs time settlement itself. Passing `next` here would
+        // decay the same absence twice before applying the care action.
+        return { ...careFor(state, actor, action), lastCare: { ...state.lastCare, [actor]: new Date() } };
       }
       if (action === 'chat') {
         await reserveGeneration(state, token, 'chats');
@@ -112,15 +111,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
           traits: { ...next.traits, [reply.growth || 'curiosity']: Math.min(100, next.traits[reply.growth || 'curiosity'] + 1) },
           turns: [...state.turns, { id, actor, text: text.trim(), at: new Date() }, { id, actor: 'companion', text: reply.reply, at: new Date() }].slice(-60) };
       }
-      await reserveGeneration(state, token, 'portraits');
-      newPortrait = await generatePortrait(next);
-      oldPortrait = state.portrait;
-      return { ...next, portrait: newPortrait };
+      throw fail(400, 'Choose a supported companion action.');
     });
-  } catch (error) {
-    if (newPortrait) await removePortrait(newPortrait);
-    throw error;
-  }
-  if (newPortrait) await removePortrait(oldPortrait);
   respond(res, saved);
 });

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, CompanionSetup, Temperament } from '../../../shared/contracts.js';
+import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, CompanionSetup, Temperament, CompanionGrowthStage } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
 export const ACTIONS = Object.freeze(['feed', 'play', 'cuddle', 'rest', 'explore']);
@@ -14,7 +14,7 @@ export function initialCompanion(): StoredCompanion {
     needs: { fullness: 75, energy: 80, joy: 75 },
     traits: { curiosity: 50, affection: 50, playfulness: 50 }, bonds: { joe: 0, focus: 0 },
     xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.', chatColor: '#cdb2ea',
-    appearance: { visualStyle: 'soft', animated: true, usePortrait: true },
+    appearance: { visualStyle: 'soft', animated: true, usePortrait: false },
     memories: [], turns: [], portrait: null, revision: 0
   };
 }
@@ -23,7 +23,9 @@ export function settledState(state: StoredCompanion, now = new Date()): StoredCo
   const hours = clamp((now.getTime() - new Date(state.updatedAt).getTime()) / 3_600_000, 0, 48);
   return {
     ...state,
-    appearance: state.appearance || { visualStyle: state.portrait?.url ? 'pixel' : 'soft', animated: true, usePortrait: true },
+    // Portraits remain in old records for backwards-compatible data reads, but
+    // rendered forms are now entirely authored and evolve in-app.
+    appearance: state.appearance || { visualStyle: 'soft', animated: true, usePortrait: false },
     needs: {
       fullness: Math.round(clamp(state.needs.fullness - hours * 2, 20)),
       energy: Math.round(clamp(state.needs.energy + hours * 3, 20)),
@@ -104,5 +106,10 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const { _id, __v, lockToken, lockedUntil, budget, lastCare, recentOperations, ...safe } = settledState(state, now);
   const level = Math.floor(safe.xp / 80) + 1;
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
-  return { ...safe, level, stage: level < 3 ? 'Little one' : level < 7 ? 'Growing explorer' : 'Dream keeper', wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length] };
+  const growthStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
+  const species = safe.appearance?.species || (safe.form === 'child' ? 'child' : safe.form === 'pet' ? 'bunny' : 'spirit');
+  const path = safe.evolutions?.at(-1)?.path || 'guardian';
+  const formId = `${species}-${growthStage}-${path}`;
+  const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : 'Grown companion';
+  return { ...safe, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length] };
 }

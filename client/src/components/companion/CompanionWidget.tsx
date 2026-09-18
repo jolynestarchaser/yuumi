@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
-import { Apple, BookHeart, Heart, ImagePlus, Leaf, MessageCircle, Moon, PawPrint, RefreshCw, Send, Settings2, Sparkles, Star, Volume2 } from 'lucide-react';
+import { Apple, BookHeart, Heart, Leaf, MessageCircle, Moon, PawPrint, RefreshCw, Send, Settings2, Sparkles, Star, Volume2 } from 'lucide-react';
 import GlassDialog from '../GlassDialog.js';
 import { useAuthStore } from '../../store/authStore.js';
 import useCompanion from '../../hooks/useCompanion.js';
@@ -59,14 +59,14 @@ function HatchCompanion({ busy, act }: Pick<CompanionPanelProps, 'busy' | 'act'>
     </aside>
     <section className='companion-creation-editor'>
     {step === 0 && <>
-    <p>{t('Build your own creature. Choose its shape, colors, little details, and name. The portrait will follow your description.')}</p>
+    <p>{t('Build your own creature. Choose its shape, colors, little details, and name. Their animated form will grow from your choices.')}</p>
     <label>{t('Their name')}<input required maxLength={32} value={name} onChange={(event) => setName(event.target.value)} /></label>
     <div className='companion-form-picker' aria-label={t('Companion form')}>{([['pet', 'Magical pet'], ['child', 'Storybook child'], ['creature', 'Little creature']] as const).map(([key, label]) => <button type='button' key={key} aria-pressed={form === key} onClick={() => { setForm(key); setSeed(t(seeds[key])); setAppearance((current) => ({ ...current, species: key === 'child' ? 'child' : key === 'pet' ? 'bunny' : 'spirit' })); }}>{t(label)}</button>)}</div>
     <CompanionDesignFields value={appearance} onChange={setAppearance} disabled={Boolean(busy)} />
     </>}
     {step === 1 && <><p>{t('A starting point, not a fixed personality. They will grow through the way Joe and Focus care for and talk to them.')}</p><div className='companion-temperaments'>{([['curious', 'Curious explorer', 'Asks questions, collects odd little treasures.'], ['gentle', 'Gentle daydreamer', 'Loves quiet company and cozy stories.'], ['playful', 'Playful mischief', 'Invents games and sees magic in small things.']] as const).map(([key, label, hint]) => <button key={key} type='button' aria-pressed={temperament === key} onClick={() => setTemperament(key)}><strong>{t(label)}</strong><span>{t(hint)}</span></button>)}</div></>}
     {step === 1 && appearance.species !== 'custom' && <label>{t('Species, colors, and special features')}<textarea required maxLength={500} placeholder={t('A tiny teal dragon with peach wings, star freckles, and a leaf hat…')} value={seed} onChange={(event) => setSeed(event.target.value)} /></label>}
-    {step === 2 && <><p>{t('Your shared {form}, starting {temperament}. Both of you will help them become someone a little different.', { form: t(form), temperament: t(temperament) })}</p><div className='companion-character-summary'><b>{t('Our character')}</b><p>{appearance.species === 'custom' ? appearance.customDescription : seed}</p><small>{t('The creature above is a starter illustration. Generate your custom pixel-art portrait after hatching.')}</small></div></>}
+    {step === 2 && <><p>{t('Your shared {form}, starting {temperament}. Both of you will help them become someone a little different.', { form: t(form), temperament: t(temperament) })}</p><div className='companion-character-summary'><b>{t('Our character')}</b><p>{appearance.species === 'custom' ? appearance.customDescription : seed}</p><small>{t('The creature above is their hatchling form. Caring for them changes their built-in soft and pixel-art bodies as they grow.')}</small></div></>}
     </section></div>
     <div className='companion-creation-actions'>{step > 0 && <button className='companion-secondary' type='button' disabled={Boolean(busy)} onClick={() => setStep(step - 1)}>{t('Back')}</button>}<button className='companion-primary' type='submit' disabled={Boolean(busy) || !name.trim() || !seed.trim() || (appearance.species === 'custom' && !appearance.customDescription?.trim())}><Sparkles size={17} />{t(busy ? 'Hatching…' : step < 2 ? 'Continue' : 'Welcome to our world')}</button></div>
     <small>{t('One shared companion · Saved for both of you · You can care for them without AI connected')}</small>
@@ -109,9 +109,7 @@ function CompanionPersonality({ companion, capabilities, profile, busy, act }: C
       <button type='submit' className='companion-secondary' disabled={Boolean(busy)}>{t('Save my inspiration')}</button>
     </form>
     <div className='companion-inspirations'>{['joe', 'focus'].map((actor) => <p key={actor}><b>{actor === 'joe' ? t("Joe") : t("Focus")}</b>{companion.inspirations[actor] || t('A blank page, waiting for a little inspiration.')}</p>)}</div>
-    <div className='companion-portrait-action'><ImagePlus size={21} /><div><h4>{t('Picture who they’re becoming')}</h4><p>{t('Portrait explanation')}</p></div></div>
-    <button className='companion-primary' type='button' disabled={Boolean(busy) || !capabilities.portraits} onClick={() => act('portrait')}><ImagePlus size={16} />{t(busy === 'portrait' ? 'Imagining a portrait…' : companion.portrait?.url ? 'Generate a new portrait' : 'Generate their portrait')}</button>
-    <small>{t('Uses your Gemini image allowance. Up to 5 shared portrait requests per day.')} {t(capabilities.portraits ? 'Your current portrait stays until a new one is saved.' : 'Gemini and image storage must be connected first.')}</small>
+    <div className='companion-portrait-action'><Sparkles size={21} /><div><h4>{t('Growing into their own shape')}</h4><p>{t('Care, play, hugs, and exploring change their next evolved form. Their body changes at each growth stage.')}</p></div></div>
     <p className='companion-simulation-note'>{t('Simulation note')}</p>
   </div>;
 }
@@ -143,7 +141,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <div className='companion-home-top'><span className='companion-kicker'>{t('OUR LITTLE WORLD')}</span><span className='companion-mood'>{t(companion.mood)}</span></div>
         <CompanionAvatar companion={companion} reaction={reaction} />
         {onGoOut && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}
-        <CompanionAppearancePicker value={companion.appearance || { ...defaultAppearance, visualStyle: companion.portrait?.url ? 'pixel' : 'soft' }} hasPortrait={Boolean(companion.portrait?.url)} disabled={Boolean(busy)} onChange={(appearance) => { void act('appearance', { appearance }); }} />
+        <CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy)} onChange={(appearance) => { void act('appearance', { appearance }); }} />
         <h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p>
         <CompanionGrowth companion={companion} />
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>

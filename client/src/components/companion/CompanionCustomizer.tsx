@@ -19,7 +19,7 @@ export default function CompanionCustomizer({ companion, busy, act }: Pick<Compa
     <div className='companion-customizer-preview'><CompanionAvatar companion={{ ...companion, ...draft }} small />
     <label>{t('Their name')}<input required maxLength={32} value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} /></label>
     </div>
-    <CompanionAppearancePicker value={draft.appearance} hasPortrait={Boolean(companion.portrait?.url)} disabled={Boolean(busy)} onChange={(appearance) => { setDraft({ ...draft, appearance }); setSaved(false); }} />
+    <CompanionAppearancePicker value={draft.appearance} disabled={Boolean(busy)} onChange={(appearance) => { setDraft({ ...draft, appearance }); setSaved(false); }} />
     <CompanionDesignFields value={draft.appearance} disabled={Boolean(busy)} onChange={(appearance) => setDraft({ ...draft, appearance })} />
     <details><summary>{t('Species, colors, and special features')}</summary><label><textarea aria-label={t('Species, colors, and special features')} maxLength={500} value={draft.seed} onChange={(event) => setDraft({ ...draft, seed: event.target.value })} /></label></details>
     <div className='companion-creation-actions'><button type='button' className='companion-secondary' onClick={reload} disabled={Boolean(busy)}>{t('Reload saved design')}</button><button type='submit' className='companion-primary' disabled={Boolean(busy) || !draft.name.trim() || !draft.seed.trim() || (draft.appearance.species === 'custom' && !draft.appearance.customDescription?.trim())}>{t(busy === 'customize' ? 'Saving…' : 'Save design')}</button></div>
