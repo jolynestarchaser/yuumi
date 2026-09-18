@@ -72,6 +72,8 @@ test('messages can contain a validated image, audio, or Spotify attachment', () 
   assert.match(message.validateSync()?.message || '', /attachment/);
   message.attachment = { kind: 'spotify', spotifyUrl: 'https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC', embedUrl: 'https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC', name: 'Spotify track' };
   assert.equal(message.validateSync(), undefined);
+  message.attachment = { kind: 'giphy', provider: 'giphy', gifId: 'AbCd123', name: 'GIPHY GIF' };
+  assert.equal(message.validateSync(), undefined);
   message.attachment = { kind: 'spotify', spotifyUrl: 'https://example.test/song', embedUrl: 'https://example.test/embed/song', name: 'Not Spotify' };
   assert.match(message.validateSync()?.message || '', /attachment/);
 });
@@ -91,4 +93,10 @@ test('canonical travel maps validate bounded pins and reject unsafe payloads', (
   assert.doesNotThrow(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: Array.from({ length: 100 }, (_, index) => ({ ...pin, id: `bangkok-${index}` })) })));
   assert.throws(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: [{ ...pin, emoji: '❌' }] })), /sticker/);
   assert.throws(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: [{ ...pin, plannedDate: '2026-02-30' }] })), /date/);
+});
+
+test('legacy travel-map history can be restored verbatim but not accepted as a new edit', () => {
+  const legacy = JSON.stringify({ pins: [{ name: 'Old trip', note: '', emoji: '📍', status: 'planned', lat: 1, lon: 2 }] });
+  assert.doesNotThrow(() => assertTravelMapContent(legacy, { allowLegacy: true }));
+  assert.throws(() => assertTravelMapContent(legacy), /version 2/);
 });

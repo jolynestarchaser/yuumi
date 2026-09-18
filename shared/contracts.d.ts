@@ -45,14 +45,14 @@ export interface DesktopTextData extends Point {
 }
 export type MessageAnimation = 'none' | 'hearts' | 'sparkles' | 'emoji-rain' | 'confetti' | 'bubbles' | 'stars';
 export interface HostedMessageAttachment {
-  kind: 'image' | 'audio'; secureUrl: string; name: string; mimeType: string; bytes: number; duration?: number | null;
+  kind: 'image' | 'audio'; assetId?: string; secureUrl: string; name: string; mimeType: string; bytes: number; duration?: number | null;
 }
 export interface SpotifyMessageAttachment {
   kind: 'spotify'; spotifyUrl: string; embedUrl: string; name: string;
 }
 export interface GiphyMessageAttachment { kind: 'giphy'; provider: 'giphy'; gifId: string; name: string }
 export type MessageAttachment = HostedMessageAttachment | SpotifyMessageAttachment | GiphyMessageAttachment;
-export type MessageAttachmentInput = HostedMessageAttachment | { kind: 'spotify'; spotifyUrl: string } | { kind: 'giphy'; gifId: string };
+export type MessageAttachmentInput = { kind: 'image' | 'audio'; assetId: string } | { kind: 'spotify'; spotifyUrl: string } | { kind: 'giphy'; gifId: string };
 export type TranslationTarget = 'en' | 'th';
 export interface TranslationResult { text: string; target: TranslationTarget }
 export interface MessageDraft {

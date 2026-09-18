@@ -20,7 +20,7 @@ export interface DesktopStore {
   fetchMessages(folder?: string): Promise<MessageData[]>; fetchFolderItems(parentId: string): Promise<DesktopItemData[]>;
   connectRealtime(): void; disconnectRealtime(): void;
   createItem(payload: Partial<DesktopItemData> & Pick<DesktopItemData, 'name' | 'type'>): Promise<DesktopItemData>;
-  updateItem(id: string, patch: Partial<DesktopItemData>, expectedRevision?: number): Promise<DesktopItemData>;
+  updateItem(id: string, patch: Partial<DesktopItemData>, expectedRevision?: number, operationId?: string): Promise<DesktopItemData>;
   trashItem(id: string): Promise<void>; deleteItem(id: string): Promise<void>; restoreItem(id: string): Promise<DesktopItemData>;
   deletePermanently(id: string): Promise<void>; emptyTrash(): Promise<void>;
   moveItem(id: string, parentId: string | null, position: Point): Promise<unknown>;
@@ -36,7 +36,9 @@ export interface DesktopStore {
   fetchHistory(entityType: string, entityId: string): Promise<Revision[]>;
   restoreHistory(historyId: string, expectedRevision: number): Promise<DesktopItemData>;
   sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string }): Promise<MessageData>;
-  uploadMessageAttachment(file: File): Promise<MessageAttachment>; markMessageRead(id: string): Promise<MessageData>;
+  uploadMessageAttachment(file: File): Promise<MessageAttachment>;
+  importMessageAttachment(url: string, operationId: string, signal?: AbortSignal): Promise<MessageAttachment>;
+  markMessageRead(id: string): Promise<MessageData>;
   undoStroke(): void; pushToast(message: string, tone?: string): void; dismissToast(id: string): void;
   setTool(tool: string): void; setPenSettings(patch: Partial<{ color: string; width: number }>): void;
   setSelected(id: string | null): void; setSelectedIds(ids: string[]): void; toggleSelected(id: string): void;

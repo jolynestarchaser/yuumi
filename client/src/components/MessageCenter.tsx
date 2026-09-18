@@ -12,7 +12,8 @@ import { Textarea } from './ui/textarea.js';
 import { iconCatalog, iconComponents } from '../lib/iconCatalog.js';
 import { useTranslation } from '../hooks/useTranslation.js';
 import { giphyIdFromUrl, giphyImageUrl } from '../lib/giphy.js';
-import type { MessageDraft, MessageAnimation, MessageAttachmentInput } from '../../../shared/contracts.js';
+import { acceptsUrlAttachmentResult, attachmentFromProviderUrl, beginUrlAttachmentRequest, isGiphyUrl, isMessageSendBlocked, messageOperationForSnapshot, type UrlAttachmentRequest } from '../lib/messageAttachmentResolution.js';
+import type { MessageDraft, MessageAnimation, MessageAttachment, MessageAttachmentInput } from '../../../shared/contracts.js';
 import {
   LETTER_EFFECTS,
   createCelebrationParticles,
@@ -71,6 +72,11 @@ function MessageAttachment({ attachment, compact = false }) {
   return <section className={`message-attachment audio ${compact ? 'compact' : ''}`}><div><Music2 size={18} /><span>{attachment.name || t("Attached music")}</span></div><audio controls preload='metadata' src={attachment.secureUrl}>{t("Your browser cannot play this audio file.")}</audio></section>;
 }
 
+function hostedAttachmentInput(attachment: MessageAttachment): MessageAttachmentInput | undefined {
+  if ((attachment.kind === 'image' || attachment.kind === 'audio') && attachment.assetId) return { kind: attachment.kind, assetId: attachment.assetId };
+  return undefined;
+}
+
 function CelebrationLayer({ message, visible }) {
   useI18n();
   const particles = useMemo(() => createCelebrationParticles({
@@ -99,6 +105,7 @@ export default function MessageCenter({ suspended = false }) {
   const fetchMessages = useDesktopStore((state) => state.fetchMessages);
   const sendMessage = useDesktopStore((state) => state.sendMessage);
   const uploadMessageAttachment = useDesktopStore((state) => state.uploadMessageAttachment);
+  const importMessageAttachment = useDesktopStore((state) => state.importMessageAttachment);
   const markRead = useDesktopStore((state) => state.markMessageRead);
   const pushToast = useDesktopStore((state) => state.pushToast);
   const [open, setOpen] = useState(false);
@@ -113,11 +120,17 @@ export default function MessageCenter({ suspended = false }) {
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [giphyUrl, setGiphyUrl] = useState('');
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [urlAttachment, setUrlAttachment] = useState<MessageAttachmentInput | null>(null);
+  const [resolvingAttachment, setResolvingAttachment] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(readSoundPreference);
   const { translate, translating, translationError, clearTranslationError } = useTranslation();
   const played = useRef(new Set());
   const pendingMessage = useRef<{ signature: string; operationId: string } | null>(null);
   const uploadedAttachment = useRef<{ file: File; attachment: MessageAttachmentInput } | null>(null);
+  const pendingUrlImport = useRef<(UrlAttachmentRequest & { controller?: AbortController }) | null>(null);
+  const mediaUrlRef = useRef('');
+  const sendingRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -199,19 +212,68 @@ export default function MessageCenter({ suspended = false }) {
     if (next) playLetterChime().catch(() => {});
   }
 
+  function invalidateUrlImport(clearPreview = true) {
+    pendingUrlImport.current?.controller?.abort();
+    pendingUrlImport.current = null;
+    setResolvingAttachment(false);
+    if (clearPreview) setUrlAttachment(null);
+  }
+
+  function clearAttachmentDraft() {
+    invalidateUrlImport();
+    setAttachmentFile(null);
+    setSpotifyUrl('');
+    setGiphyUrl('');
+    setMediaUrl('');
+    mediaUrlRef.current = '';
+    uploadedAttachment.current = null;
+  }
+
+  async function previewMediaUrl() {
+    const sourceUrl = mediaUrlRef.current.trim();
+    if (!sourceUrl) { setFormError(t('Paste an HTTPS media link first.')); return; }
+    if (!profile) { setFormError(t('Could not preview this attachment. Your draft is still here.')); return; }
+    setFormError('');
+    const providerAttachment = attachmentFromProviderUrl(sourceUrl);
+    if (isGiphyUrl(sourceUrl) && !providerAttachment) { setFormError(t('This link is not a supported media file.')); return; }
+    if (providerAttachment) {
+      invalidateUrlImport(false);
+      setUrlAttachment(providerAttachment);
+      return;
+    }
+    const request = { ...beginUrlAttachmentRequest(pendingUrlImport.current, profile, sourceUrl, () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)), controller: new AbortController() };
+    pendingUrlImport.current?.controller?.abort();
+    pendingUrlImport.current = request;
+    setUrlAttachment(null);
+    setResolvingAttachment(true);
+    try {
+      const attachment = await importMessageAttachment(sourceUrl, request.operationId, request.controller.signal) as MessageAttachment;
+      const input = hostedAttachmentInput(attachment);
+      if (!input) throw new Error(t('This link is not a supported media file.'));
+      if (acceptsUrlAttachmentResult(pendingUrlImport.current, request, mediaUrlRef.current)) setUrlAttachment(input);
+    } catch (error) {
+      if (pendingUrlImport.current !== request || (error as { code?: string }).code === 'ERR_CANCELED') return;
+      pendingUrlImport.current = { ...request, status: 'failed' };
+      setFormError((error as { response?: { data?: { error?: { message?: string } } }; message?: string }).response?.data?.error?.message || t('Could not preview this attachment. Your draft is still here.'));
+    } finally {
+      if (acceptsUrlAttachmentResult(pendingUrlImport.current, request, mediaUrlRef.current)) setResolvingAttachment(false);
+    }
+  }
+
   async function submit(event) {
     event.preventDefault();
-    if ((!form.body.trim() && !attachmentFile && !spotifyUrl.trim() && !giphyUrl.trim()) || sending) return;
+    const hasAttachment = Boolean(attachmentFile || urlAttachment || spotifyUrl.trim() || giphyUrl.trim());
+    if (isMessageSendBlocked({ body: form.body, hasAttachment, urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment }) || sendingRef.current) return;
+    sendingRef.current = true;
     setSending(true);
     setFormError('');
     try {
       const gifId = giphyIdFromUrl(giphyUrl);
       if (giphyUrl.trim() && !gifId) throw new Error(t('This link is not a supported media file.'));
-      const attachment = attachmentFile ? uploadedAttachment.current?.file === attachmentFile ? uploadedAttachment.current.attachment : await uploadMessageAttachment(attachmentFile) as MessageAttachmentInput : spotifyUrl.trim() ? { kind: 'spotify' as const, spotifyUrl: spotifyUrl.trim() } : gifId ? { kind: 'giphy' as const, gifId } : null;
+      const attachment = urlAttachment || (attachmentFile ? uploadedAttachment.current?.file === attachmentFile ? uploadedAttachment.current.attachment : await uploadMessageAttachment(attachmentFile) as MessageAttachmentInput : spotifyUrl.trim() ? { kind: 'spotify' as const, spotifyUrl: spotifyUrl.trim() } : gifId ? { kind: 'giphy' as const, gifId } : null);
       if (attachmentFile) uploadedAttachment.current = { file: attachmentFile, attachment };
       const snapshot = { ...form, attachment, recipient: recipientFor(profile) };
-      const signature = JSON.stringify(snapshot);
-      if (pendingMessage.current?.signature !== signature) pendingMessage.current = { signature, operationId: `${profile}-${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}` };
+      pendingMessage.current = messageOperationForSnapshot(pendingMessage.current, profile as 'joe' | 'focus', snapshot, () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2));
       await sendMessage({
         ...snapshot,
         operationId: pendingMessage.current.operationId
@@ -219,15 +281,14 @@ export default function MessageCenter({ suspended = false }) {
       pendingMessage.current = null;
       uploadedAttachment.current = null;
       setForm({ ...DEFAULT_FORM });
-      setAttachmentFile(null);
-      setSpotifyUrl('');
-      setGiphyUrl('');
+      clearAttachmentDraft();
       setCompose(false);
       pushToast(t('Sent to {name} ✦', { name: profileName(recipientFor(profile)) }));
       playLetterChime({ enabled: soundEnabled }).catch(() => {});
     } catch (error) {
       setFormError(error.response?.data?.error?.message ?? 'ส่งข้อความไม่สำเร็จ กรุณาลองอีกครั้ง');
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   }
@@ -262,12 +323,14 @@ export default function MessageCenter({ suspended = false }) {
       <Textarea aria-label={t("ข้อความ")} placeholder={t("เขียนข้อความถึงอีกคน…")} maxLength={5000} value={form.body} onChange={(event) => setForm((value) => ({ ...value, body: event.target.value }))} />
       <div className='translation-actions' aria-label={t("Translate message")}><span><Languages size={14} /> {t("แปลข้อความ")}</span><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('th')}>{t("เป็นไทย")}</button><button type='button' disabled={!form.body.trim() || translating} onClick={() => translateCompose('en')}>{t("To English")}</button></div>
       <div className='message-attachment-picker'>
-        <label className='attachment-button'><Paperclip size={15} /> {t("แนบรูป GIF หรือเพลง")}<input aria-label={t("แนบรูป GIF หรือเพลง")} type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { setAttachmentFile(file); setSpotifyUrl(''); setGiphyUrl(''); uploadedAttachment.current = null; } event.target.value = ''; }} /></label>
-        <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label={t("ลิงก์ Spotify")} type='url' placeholder={t("วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)")} value={spotifyUrl} onChange={(event) => { setSpotifyUrl(event.target.value); if (event.target.value) setAttachmentFile(null); }} /></label>
-        <label className='spotify-attachment-input'><ImagePlus size={15} /><input aria-label={t('Paste a GIPHY link')} type='url' placeholder={t('Paste a GIPHY link')} value={giphyUrl} onChange={(event) => { setGiphyUrl(event.target.value); if (event.target.value) { setAttachmentFile(null); setSpotifyUrl(''); } }} /></label>
+        <label className='attachment-button'><Paperclip size={15} /> {t("แนบรูป GIF หรือเพลง")}<input aria-label={t("แนบรูป GIF หรือเพลง")} type='file' accept='image/jpeg,image/png,image/webp,image/gif,audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/aac,audio/x-m4a' onChange={(event) => { const [file] = event.target.files; if (file) { invalidateUrlImport(); setAttachmentFile(file); setSpotifyUrl(''); setGiphyUrl(''); setMediaUrl(''); mediaUrlRef.current = ''; uploadedAttachment.current = null; } event.target.value = ''; }} /></label>
+        <label className='spotify-attachment-input'><Music2 size={15} /><input aria-label={t("ลิงก์ Spotify")} type='url' placeholder={t("วางลิงก์ Spotify (เพลง / อัลบั้ม / เพลย์ลิสต์)")} value={spotifyUrl} onChange={(event) => { const next = event.target.value; setSpotifyUrl(next); if (next) { invalidateUrlImport(); setAttachmentFile(null); setGiphyUrl(''); setMediaUrl(''); mediaUrlRef.current = ''; } }} /></label>
+        <label className='spotify-attachment-input'><ImagePlus size={15} /><input aria-label={t('Paste a GIPHY link')} type='url' placeholder={t('Paste a GIPHY link')} value={giphyUrl} onChange={(event) => { const next = event.target.value; setGiphyUrl(next); if (next) { invalidateUrlImport(); setAttachmentFile(null); setSpotifyUrl(''); setMediaUrl(''); mediaUrlRef.current = ''; } }} /></label>
+        <div className='spotify-attachment-input media-url-input'><ImagePlus size={15} /><input aria-label={t('Paste media link')} type='url' placeholder={t('Paste an image, GIF, or audio HTTPS link')} value={mediaUrl} onChange={(event) => { const next = event.target.value; mediaUrlRef.current = next; setMediaUrl(next); if (pendingUrlImport.current?.sourceUrl !== next.trim()) invalidateUrlImport(); }} /><button type='button' onClick={previewMediaUrl} disabled={resolvingAttachment || !mediaUrl.trim()}>{resolvingAttachment ? t('Checking attachment…') : t('Preview link')}</button>{resolvingAttachment && <button type='button' onClick={() => invalidateUrlImport()}>{t('Cancel preview')}</button>}</div>
         {attachmentFile && <div className='attachment-file'><span>{attachmentFile.type.startsWith('image/') ? <ImagePlus size={15} /> : <Music2 size={15} />}{attachmentFile.name}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => { setAttachmentFile(null); uploadedAttachment.current = null; }}><X size={14} /></button></div>}
         {spotifyUrl && <div className='attachment-file'><span><Music2 size={15} />{t("Spotify link attached")}</span><button type='button' aria-label={t("ลบลิงก์ Spotify")} onClick={() => setSpotifyUrl('')}><X size={14} /></button></div>}
         {giphyUrl && <div className='attachment-file'><span><ImagePlus size={15} />{t('GIPHY link attached')}</span><button type='button' aria-label={t("ลบไฟล์แนบ")} onClick={() => setGiphyUrl('')}><X size={14} /></button></div>}
+        {urlAttachment && <div className='attachment-file'><span>{urlAttachment.kind === 'audio' ? <Music2 size={15} /> : <ImagePlus size={15} />}{t('Link attachment ready')}</span><button type='button' aria-label={t('Remove attachment')} onClick={clearAttachmentDraft}><X size={14} /></button></div>}
       </div>
       <div className='message-symbol-heading'><span>{t("สัญลักษณ์ประจำจดหมาย")}</span><strong><MessageMark icon={form.icon} accentColor={form.accentColor} size={17} /> {t("สีที่เลือก")}</strong></div>
       <div className='message-icon-picker' aria-label={t("เลือกไอคอนจดหมาย")}>
@@ -281,7 +344,7 @@ export default function MessageCenter({ suspended = false }) {
         </button>)}
       </div>
       {(formError || translationError) && <p className='form-error' role='alert'>{t(formError || translationError)}</p>}
-      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); setAttachmentFile(null); setSpotifyUrl(''); setGiphyUrl(''); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); clearAttachmentDraft(); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending || isMessageSendBlocked({ body: form.body, hasAttachment: Boolean(attachmentFile || urlAttachment || spotifyUrl.trim() || giphyUrl.trim()), urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment })}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label={t("Inbox")}>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>

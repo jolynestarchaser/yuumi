@@ -28,7 +28,7 @@ function assertWriteContract(expectedRevision: number, operationId?: string) {
   if (operationId !== undefined && !OPERATION_ID.test(operationId)) throw Object.assign(new Error('A valid operation ID is required.'), { status: 400 });
 }
 
-export async function updateItemContent({ id, expectedRevision, patch, actor, session }: { id: string; expectedRevision: number; patch: Record<string, unknown>; actor: Actor; session?: mongoose.ClientSession }) {
+export async function updateItemContent({ id, expectedRevision, patch, actor, session, allowLegacyMap = false }: { id: string; expectedRevision: number; patch: Record<string, unknown>; actor: Actor; session?: mongoose.ClientSession; allowLegacyMap?: boolean }) {
   if (!mongoose.isValidObjectId(id)) throw Object.assign(new Error('Invalid item ID'), { status: 400 });
   assertWriteContract(expectedRevision);
   const fields = contentPatch(patch);
@@ -42,7 +42,7 @@ export async function updateItemContent({ id, expectedRevision, patch, actor, se
     if (typeof fields.content !== 'string') throw Object.assign(new Error('Content must be text.'), { status: 400 });
     const current = await currentQuery().select('type');
     if (!current) throw Object.assign(new Error('Item not found.'), { status: 404 });
-    if (current.type === 'map') assertTravelMapContent(fields.content);
+    if (current.type === 'map') assertTravelMapContent(fields.content, { allowLegacy: allowLegacyMap });
     else if (fields.content.length > 10000) throw Object.assign(new Error('Content must be 10,000 characters or fewer.'), { status: 400 });
   }
   const revisionFilter = expectedRevision === 0
@@ -72,7 +72,7 @@ export async function commitItemContent({ id, expectedRevision, operationId, pat
     await session.withTransaction(async () => {
       const replay = await ItemOperation.findOne(key, null, { session }).lean();
       if (replay) { response = replay.response; return; }
-      const item = await updateItemContent({ id, expectedRevision, patch, actor, session });
+      const item = await updateItemContent({ id, expectedRevision, patch, actor, session, allowLegacyMap: operation === 'restore' });
       response = item.toObject ? item.toObject() : item;
       await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision, operation, actor, snapshot: itemSnapshot(item), restoredFromRevision, session });
       await ItemOperation.create([{ ...key, operation, revision: item.contentRevision, response }], { session });

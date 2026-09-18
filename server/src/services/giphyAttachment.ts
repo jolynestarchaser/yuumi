@@ -18,7 +18,8 @@ export function giphyIdFromUrl(value: string): string | null {
 }
 
 export function normalizeGiphyAttachment(input: GiphyAttachmentInput) {
-  if (input.kind !== 'giphy' || typeof input.gifId !== 'string' || !GIPHY_ID.test(input.gifId)) {
+  if (!input || input.kind !== 'giphy') return null;
+  if (typeof input.gifId !== 'string' || !GIPHY_ID.test(input.gifId)) {
     throw new Error('Invalid GIPHY GIF');
   }
 

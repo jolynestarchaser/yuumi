@@ -82,6 +82,23 @@ Proposed authenticated endpoint: `POST /api/messages/attachment-url`, accepting 
 
 Suggested error codes: `INVALID_URL`, `UNSUPPORTED_SOURCE`, `UNSUPPORTED_MEDIA`, `MEDIA_TOO_LARGE`, `MEDIA_UNAVAILABLE`, `MEDIA_TIMEOUT`, `RATE_LIMITED`. Return localized product copy from codes; do not show stack traces or raw upstream errors.
 
+### Current structural validation and decoder decision
+
+The current importer intentionally performs bounded structural validation before the hosted upload. It is **not** a full codec decoder, and this must not be described as complete media decodability.
+
+| Format | Current structural verification | Not yet codec-decoded |
+| --- | --- | --- |
+| PNG | PNG signature, `IHDR`, dimensions, pixel limit | chunk CRCs, zlib stream, pixel decode |
+| JPEG | SOI and a supported SOF marker with dimensions | entropy stream, Huffman tables, complete image decode |
+| GIF | GIF header, logical dimensions, frame-marker count and animation limits | block/LZW parse, trailer, frame pixel decode |
+| WebP | RIFF/WEBP signature plus VP8/VP8L/VP8X dimension headers and animation marker count | VP8/VP8L bitstream and full RIFF chunk validation |
+| WAV | RIFF/WAVE signature | `fmt`/`data` chunks and audio samples |
+| Ogg | `OggS` signature | page CRC/lacing and codec stream |
+| MP3 | ID3 or MPEG sync prefix | frame chain, duration, audio decode |
+| MP4/M4A | `ftyp` marker | ISO-BMFF box tree, audio track and samples |
+
+No safe bounded image/audio decoder dependency is currently installed. Introducing `sharp`, FFmpeg, or a new native/media parsing library changes deployment and security posture and needs senior approval, explicit resource limits, and disposable-environment coverage. Until then, retain the current signature/header/resource checks and treat codec-level malformed media rejection as a release blocker for any acceptance gate that requires actual decodability.
+
 ## GIPHY provider integration
 
 The official API documents require direct client requests, visible attribution, unchanged returned media URLs, and no media/URL caching without special approval. They provide Search, Trending, and Get GIF by ID. Accordingly, this plan uses a browser-specific GIPHY integration and ID-based persisted references, not a server proxy or Cloudinary reupload. Use a dedicated web API key for this integration; it is separate from the server-only Gemini and Cloudinary credentials. Confirm the dashboard's current limits/configuration before rollout. [Official GIPHY API documentation](https://developers.giphy.com/docs/api/).

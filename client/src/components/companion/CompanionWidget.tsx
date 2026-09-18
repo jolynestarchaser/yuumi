@@ -129,6 +129,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const active = useRef(true);
   useEffect(() => { active.current = true; return () => { active.current = false; if (reactionTimer.current) clearTimeout(reactionTimer.current); }; }, []);
+  useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); }, [companionId]);
   async function care(action: CareAction) {
     if (await act(action) && active.current) {
       if (reactionTimer.current) clearTimeout(reactionTimer.current);
@@ -156,10 +157,10 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
       </section>
       <section className='companion-inner'>
         <div className='companion-tabs' aria-label={t('Our little companion')}>{pages.map(([key, Icon, label]) => <button type='button' key={key} aria-pressed={tab === key} onClick={() => setTab(key)}><Icon size={15} />{t(label)}</button>)}</div>
-        {tab === 'chat' && <CompanionChat companion={companion} capabilities={capabilities} profile={profile} busy={busy} act={act} />}
-        {tab === 'memories' && <CompanionJournal companion={companion} busy={busy} act={act} />}
-        {tab === 'design' && <CompanionCustomizer companion={companion} busy={busy} act={act} />}
-        {tab === 'personality' && <CompanionPersonality companion={companion} capabilities={capabilities} profile={profile} busy={busy} act={act} />}
+        {tab === 'chat' && <CompanionChat key={companion.id} companion={companion} capabilities={capabilities} profile={profile} busy={busy} act={act} />}
+        {tab === 'memories' && <CompanionJournal key={companion.id} companion={companion} busy={busy} act={act} />}
+        {tab === 'design' && <CompanionCustomizer key={companion.id} companion={companion} busy={busy} act={act} />}
+        {tab === 'personality' && <CompanionPersonality key={companion.id} companion={companion} capabilities={capabilities} profile={profile} busy={busy} act={act} />}
       </section>
     </div>}
   </GlassDialog>;

@@ -20,4 +20,5 @@ test('GIPHY resolver rejects malformed IDs', () => {
     () => normalizeGiphyAttachment({ kind: 'giphy', gifId: '../private' }),
     /Invalid GIPHY GIF/,
   );
+  assert.equal(normalizeGiphyAttachment({ kind: 'image' } as never), null);
 });

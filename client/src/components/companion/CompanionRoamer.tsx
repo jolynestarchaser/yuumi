@@ -45,6 +45,7 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
     return () => { clearInterval(timer); window.removeEventListener('resize', clamp); };
   }, [moving]);
   useEffect(() => () => { if (reactionTimer.current) clearTimeout(reactionTimer.current); }, []);
+  useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setTurn(0); }, [companion?.id]);
   if (!companion?.bornAt) return error ? <aside className='companion-roamer' style={{ left: 16 }}><button onClick={onHome}>{t('Return home')}</button><p>{t(error)}</p></aside> : null;
   const words = t(roamingWords(companion, turn));
   const voice = { ...(companion.appearance?.voice || defaultVoice), language: language === 'th' ? 'th-TH' as const : 'en-US' as const };

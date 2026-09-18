@@ -645,5 +645,17 @@
   "Visited": "Visited",
   "Paste a GIPHY link": "Paste a GIPHY link",
   "GIPHY link attached": "GIPHY link attached",
-  "This link is not a supported media file.": "This link is not a supported media file."
+  "This link is not a supported media file.": "This link is not a supported media file.",
+  "This travel map needs recovery before it can be edited.": "This travel map needs recovery before it can be edited.",
+  "This pin changed somewhere else. Your draft is still safe.": "This pin changed somewhere else. Your draft is still safe.",
+  "Copy": "Copy",
+  "Paste media link": "Paste media link",
+  "Paste an image, GIF, or audio HTTPS link": "Paste an image, GIF, or audio HTTPS link",
+  "Paste an HTTPS media link first.": "Paste an HTTPS media link first.",
+  "Preview link": "Preview link",
+  "Checking attachment…": "Checking attachment…",
+  "Cancel preview": "Cancel preview",
+  "Link attachment ready": "Link attachment ready",
+  "Remove attachment": "Remove attachment",
+  "Could not preview this attachment. Your draft is still here.": "Could not preview this attachment. Your draft is still here."
 }

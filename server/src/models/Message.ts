@@ -17,9 +17,10 @@ export const messageIconTypes = Object.freeze([
 
 const attachmentSchema = new mongoose.Schema({
   kind: { type: String, enum: ['image', 'audio', 'spotify', 'giphy'], required: true },
+  assetId: { type: mongoose.Schema.Types.ObjectId },
   secureUrl: { type: String, required() { return !['spotify', 'giphy'].includes(this.kind); }, match: /^https:\/\// },
   name: { type: String, trim: true, maxlength: 180, required: true },
-  mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'], required() { return this.kind !== 'spotify'; } },
+  mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a'], required() { return !['spotify', 'giphy'].includes(this.kind); } },
   bytes: { type: Number, min: 0, max: 10 * 1024 * 1024 },
   duration: { type: Number, min: 0, default: null },
   spotifyUrl: { type: String, required() { return this.kind === 'spotify'; }, match: /^https:\/\/open\.spotify\.com\// },
