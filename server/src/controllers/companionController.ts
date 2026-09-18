@@ -66,6 +66,16 @@ export const getCompanionRoster = wrap(async (_req, res) => {
   res.json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, mood: companion.mood, level: Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })) } });
 });
 
+export const createCompanion = wrap(async (req, res) => {
+  if (!validateSetup(req.body)) throw fail(400, 'Choose a name (up to 32 characters), form, and description (up to 500 characters).');
+  const id = `companion-${randomUUID()}`;
+  const state = initialCompanion();
+  state.name = req.body.name.trim(); state.form = req.body.form; state.seed = req.body.seed.trim();
+  state.traits = startingTraits(req.body.temperament); state.appearance = req.body.appearance || state.appearance;
+  await Companion.create({ ...state, _id: id });
+  res.status(201).json({ success: true, data: { id, companion: publicCompanion({ ...state, _id: id }) } });
+});
+
 export const interactWithCompanion = wrap(async (req, res) => {
   const { action, text, operationId, memoryId, expectedRevision } = req.body || {};
   const actor = req.desktop.profile;
