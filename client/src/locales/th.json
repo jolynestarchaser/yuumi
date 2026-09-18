@@ -624,5 +624,14 @@
   "Our companions": "น้อง ๆ ของเรา",
   "Add companion": "เพิ่มน้องใหม่",
   "Reload remote": "โหลดข้อมูลล่าสุด",
-  "Save copy": "บันทึกสำเนาของฉัน"
+  "Save copy": "บันทึกสำเนาของฉัน",
+  "Your existing pins are safe. Saving a change will update this map to the newest format.": "หมุดเดิมของคุณยังปลอดภัย การบันทึกครั้งถัดไปจะอัปเดตแผนที่เป็นรูปแบบใหม่",
+  "Reset view": "รีเซ็ตมุมมอง",
+  "Edit travel pin": "แก้ไขหมุดท่องเที่ยว",
+  "Planned date": "วันที่วางแผน",
+  "Visited date": "วันที่ไปแล้ว",
+  "Save changes": "บันทึกการเปลี่ยนแปลง",
+  "Retry save": "ลองบันทึกอีกครั้ง",
+  "Remove {name}?": "ลบ {name} ใช่ไหม",
+  "Edit {name}": "แก้ไข {name}"
 }

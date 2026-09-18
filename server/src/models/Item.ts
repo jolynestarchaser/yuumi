@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { assertTravelMapContent } from '../services/travelMap.js';
 
 const assetSchema = new mongoose.Schema({
   publicId: String, url: String, secureUrl: String, thumbnailUrl: String, originalName: String, extension: String, resourceType: String, mimeType: String,
@@ -33,7 +34,7 @@ const itemSchema = new mongoose.Schema(
       position: { x: Number, y: Number }
     },
     size: { width: Number, height: Number },
-    content: { type: String, maxlength: 10000 },
+    content: { type: String },
     url: { type: String, required: [function requiresUrl() { return this.type === 'link'; }, 'A link requires a URL'] },
     asset: { type: assetSchema, required: [function requiresAsset() { return ['image', 'video', 'audio', 'file'].includes(this.type); }, 'Media requires an asset URL'], validate: { validator(asset) { return !['image', 'video', 'audio', 'file'].includes(this.type) || Boolean(asset?.secureUrl); }, message: 'Media requires an asset URL' } }, metadata: metadataSchema, appearance: appearanceSchema,
     secret: { type: Boolean, default: false, index: true },
@@ -54,6 +55,12 @@ itemSchema.pre('validate', function validateItem(next) {
   if (this.parentId && this._id && this.parentId.equals(this._id)) return next(new Error('An item cannot contain itself'));
   if (this.type === 'link' && !this.url) return next(new Error('A link requires a URL'));
   if (['image', 'video', 'audio', 'file'].includes(this.type) && !this.asset?.secureUrl) return next(new Error('Media requires an asset URL'));
+  if (typeof this.content === 'string') {
+    try {
+      if (this.type === 'map') assertTravelMapContent(this.content, { allowLegacy: true });
+      else if (this.content.length > 10000) return next(new Error('Content must be 10,000 characters or fewer'));
+    } catch (error) { return next(error as Error); }
+  }
   next();
 });
 

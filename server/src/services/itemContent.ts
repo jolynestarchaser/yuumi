@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Item from '../models/Item.js';
 import type { Actor } from '../../../shared/contracts.js';
+import { assertTravelMapContent } from './travelMap.js';
 
 const writableFields = ['name', 'content', 'url', 'metadata', 'size', 'appearance', 'secret', 'secretLabel'] as const;
 type WritableField = typeof writableFields[number];
@@ -27,6 +28,11 @@ export async function updateItemContent({ id, expectedRevision, patch, actor }: 
     const current = await Item.findOne({ _id: id, deletedAt: null });
     if (!current) throw Object.assign(new Error('Item not found.'), { status: 404 });
     return current;
+  }
+  if (fields.content !== undefined) {
+    const current = await Item.findOne({ _id: id, deletedAt: null }).select('type');
+    if (!current) throw Object.assign(new Error('Item not found.'), { status: 404 });
+    if (current.type === 'map') assertTravelMapContent(fields.content);
   }
   const filter: Record<string, unknown> = { _id: id, deletedAt: null };
   if (expectedRevision !== undefined) filter.contentRevision = expectedRevision;

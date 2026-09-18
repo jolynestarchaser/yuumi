@@ -624,5 +624,14 @@
   "Our companions": "Our companions",
   "Add companion": "Add companion",
   "Reload remote": "Reload remote",
-  "Save copy": "Save my copy"
+  "Save copy": "Save my copy",
+  "Your existing pins are safe. Saving a change will update this map to the newest format.": "Your existing pins are safe. Saving a change will update this map to the newest format.",
+  "Reset view": "Reset view",
+  "Edit travel pin": "Edit travel pin",
+  "Planned date": "Planned date",
+  "Visited date": "Visited date",
+  "Save changes": "Save changes",
+  "Retry save": "Retry save",
+  "Remove {name}?": "Remove {name}?",
+  "Edit {name}": "Edit {name}"
 }

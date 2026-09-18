@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import Item from '../src/models/Item.js';
 import DesktopStroke from '../src/models/DesktopStroke.js';
 import Message from '../src/models/Message.js';
+import { assertTravelMapContent } from '../src/services/travelMap.js';
 
 const creator = new mongoose.Types.ObjectId();
 
@@ -83,4 +84,11 @@ test('calendar items are valid shared desktop items', () => {
 test('travel map items are valid shared desktop items', () => {
   const item = new Item({ name: 'Our travel map', type: 'map', content: '{"pins":[]}', position: { x: 0, y: 0 } });
   assert.equal(item.validateSync(), undefined);
+});
+
+test('canonical travel maps validate bounded pins and reject unsafe payloads', () => {
+  const pin = { id: 'bangkok-1', name: 'กรุงเทพฯ', note: '💚'.repeat(120), emoji: '📍', status: 'planned', lat: 13.76, lon: 100.5, plannedDate: '2026-02-28' };
+  assert.doesNotThrow(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: Array.from({ length: 100 }, (_, index) => ({ ...pin, id: `bangkok-${index}` })) })));
+  assert.throws(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: [{ ...pin, emoji: '❌' }] })), /sticker/);
+  assert.throws(() => assertTravelMapContent(JSON.stringify({ version: 2, pins: [{ ...pin, plannedDate: '2026-02-30' }] })), /date/);
 });

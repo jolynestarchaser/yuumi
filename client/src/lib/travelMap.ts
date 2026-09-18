@@ -1,10 +1,18 @@
-export type TravelPin = { id: string; name: string; note: string; emoji: string; status: 'planned' | 'visited'; lat: number; lon: number; date?: string };
-export type TravelMapState = { rotation: { lon: number; lat: number }; pins: TravelPin[] };
+export type TravelPin = { id: string; name: string; note: string; emoji: string; status: 'planned' | 'visited'; lat: number; lon: number; plannedDate?: string; visitedDate?: string };
+export type TravelMapState = { version: 2; pins: TravelPin[]; rotation: { lon: number; lat: number }; legacyWarning?: boolean };
 export const MAX_TRAVEL_PINS = 100;
+export const TRAVEL_STICKERS = ['📍', '✈️', '🏝️', '🏔️', '🍜', '☕', '💚', '💙', '✨'] as const;
 export const GLOBE_RADIUS = 132;
 export const GLOBE_SIZE = 300;
 export const wrapLongitude = (lon: number) => ((lon + 180) % 360 + 360) % 360 - 180;
-export const defaultTravelMap = (): TravelMapState => ({ rotation: { lon: 15, lat: 18 }, pins: [] });
+export const defaultTravelMap = (): TravelMapState => ({ version: 2, rotation: { lon: 15, lat: 18 }, pins: [] });
+export const serializeTravelMap = (map: Pick<TravelMapState, 'pins'>) => JSON.stringify({ version: 2, pins: map.pins });
+const validDate = (value: unknown) => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+};
 export function readTravelMap(content?: string): TravelMapState {
   try {
     const raw = JSON.parse(content || '');
@@ -16,10 +24,13 @@ export function readTravelMap(content?: string): TravelMapState {
       const id = typeof pin.id === 'string' && pin.id.length > 0 && pin.id.length <= 80 ? pin.id : `legacy-${index}`;
       if (seen.has(id)) continue;
       seen.add(id);
-      pins.push({ id, name: pin.name.trim().slice(0, 80), note: pin.note.slice(0, 240), emoji: pin.emoji.slice(0, 16) || '📍', status: pin.status, lat: pin.lat, lon: pin.lon });
+      const emoji = TRAVEL_STICKERS.includes(pin.emoji) ? pin.emoji : '📍';
+      const plannedDate = validDate(pin.plannedDate) ? pin.plannedDate : validDate(pin.date) && pin.status === 'planned' ? pin.date : undefined;
+      const visitedDate = validDate(pin.visitedDate) ? pin.visitedDate : validDate(pin.date) && pin.status === 'visited' ? pin.date : undefined;
+      pins.push({ id, name: pin.name.trim().slice(0, 80), note: pin.note.slice(0, 240), emoji, status: pin.status, lat: pin.lat, lon: pin.lon, ...(plannedDate ? { plannedDate } : {}), ...(visitedDate ? { visitedDate } : {}) });
       if (pins.length === MAX_TRAVEL_PINS) break;
     }
-    return { rotation: { lon: Number.isFinite(raw.rotation?.lon) ? wrapLongitude(raw.rotation.lon) : 15, lat: Number.isFinite(raw.rotation?.lat) ? Math.max(-70, Math.min(70, raw.rotation.lat)) : 18 }, pins };
+    return { version: 2, rotation: { lon: Number.isFinite(raw.rotation?.lon) ? wrapLongitude(raw.rotation.lon) : 15, lat: Number.isFinite(raw.rotation?.lat) ? Math.max(-70, Math.min(70, raw.rotation.lat)) : 18 }, pins, legacyWarning: raw.version !== 2 };
   } catch { return defaultTravelMap(); }
 }
 export function projectPin(lat: number, lon: number, rotation: { lon: number; lat: number }) {
