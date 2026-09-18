@@ -3,10 +3,11 @@ import mongoose from 'mongoose';
 import Item from '../models/Item.js';
 import DesktopWindow from '../models/DesktopWindow.js';
 import { revisionService, itemSnapshot } from '../services/historyService.js';
-import { optionalDesktopSession } from '../middleware/auth.js';
+import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
+import { ItemRevisionConflict, updateItemContent } from '../services/itemContent.js';
 
 const router = Router();
-router.use(optionalDesktopSession);
+router.use(requireDesktopSession, requireProfile);
 const validId = (id) => mongoose.isValidObjectId(id);
 const send = (res, data, status = 200) => res.status(status).json({ success: true, data });
 const broadcast = (req, event, payload) => req.app.get('io')?.to('shared-desktop').emit(event, payload);
@@ -55,16 +56,13 @@ router.post('/', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
-  if (!validId(req.params.id)) throw new Error('Invalid item ID');
-  const item = await Item.findById(req.params.id);
-  if (!item) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Item not found.' } });
-  if (item.deletedAt) throw new Error('Item is in Trash');
-  const expectedRevision = req.body.expectedRevision;
-  if (expectedRevision !== undefined && Number(expectedRevision) !== (item.contentRevision || 0)) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: 'This item changed elsewhere.', data: { current: item } } });
-  itemFields.forEach((field) => { if (req.body[field] !== undefined) item[field] = req.body[field]; });
-  item.updatedBy = req.desktop?.profile || 'unknown';
-  item.contentRevision = (item.contentRevision || 0) + 1;
-  await item.save();
+  let item;
+  try {
+    item = await updateItemContent({ id: req.params.id, expectedRevision: req.body.expectedRevision, patch: req.body || {}, actor: req.desktop?.profile || 'unknown' });
+  } catch (error) {
+    if (error instanceof ItemRevisionConflict) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: error.message, data: { current: error.current } } });
+    throw error;
+  }
   await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision, operation: 'update', actor: req.desktop?.profile, snapshot: itemSnapshot(item) });
   broadcast(req, 'item:updated', item);
   send(res, item);

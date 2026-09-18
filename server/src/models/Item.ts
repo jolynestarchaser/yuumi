@@ -33,7 +33,7 @@ const itemSchema = new mongoose.Schema(
       position: { x: Number, y: Number }
     },
     size: { width: Number, height: Number },
-    content: { type: String, maxlength: 10000, required: [function requiresContent() { return this.type === 'note'; }, 'A note requires content'] },
+    content: { type: String, maxlength: 10000 },
     url: { type: String, required: [function requiresUrl() { return this.type === 'link'; }, 'A link requires a URL'] },
     asset: { type: assetSchema, required: [function requiresAsset() { return ['image', 'video', 'audio', 'file'].includes(this.type); }, 'Media requires an asset URL'], validate: { validator(asset) { return !['image', 'video', 'audio', 'file'].includes(this.type) || Boolean(asset?.secureUrl); }, message: 'Media requires an asset URL' } }, metadata: metadataSchema, appearance: appearanceSchema,
     secret: { type: Boolean, default: false, index: true },
@@ -52,7 +52,6 @@ itemSchema.index({ createdBy: 1 });
 itemSchema.pre('validate', function validateItem(next) {
   if (!Number.isFinite(this.position?.x) || !Number.isFinite(this.position?.y)) return next(new Error('Position must be finite numbers'));
   if (this.parentId && this._id && this.parentId.equals(this._id)) return next(new Error('An item cannot contain itself'));
-  if (this.type === 'note' && !this.content) return next(new Error('A note requires content'));
   if (this.type === 'link' && !this.url) return next(new Error('A link requires a URL'));
   if (['image', 'video', 'audio', 'file'].includes(this.type) && !this.asset?.secureUrl) return next(new Error('Media requires an asset URL'));
   next();

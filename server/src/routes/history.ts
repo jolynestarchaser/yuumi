@@ -5,6 +5,7 @@ import DesktopText from '../models/DesktopText.js';
 import RevisionHistory from '../models/RevisionHistory.js';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 import { revisionService, itemSnapshot, textSnapshot } from '../services/historyService.js';
+import { ItemRevisionConflict, updateItemContent } from '../services/itemContent.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
@@ -24,13 +25,14 @@ router.post('/:historyId/restore', async (req, res) => {
   if (!history) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'History version not found.' } });
   const expectedRevision = Number(req.body?.expectedRevision);
   if (history.entityType === 'item') {
-    const item = await Item.findById(history.entityId);
-    if (!item) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Item not found.' } });
-    if (Number.isFinite(expectedRevision) && expectedRevision !== (item.contentRevision || 0)) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: 'This item changed elsewhere.', data: { current: item } } });
     const snapshot = history.snapshot || {};
-    ['name', 'content', 'url', 'metadata', 'size', 'appearance', 'secret', 'secretLabel'].forEach((field) => { if (snapshot[field] !== undefined) item[field] = snapshot[field]; });
-    item.contentRevision = (item.contentRevision || 0) + 1;
-    await item.save();
+    let item;
+    try {
+      item = await updateItemContent({ id: String(history.entityId), expectedRevision: Number.isFinite(expectedRevision) ? expectedRevision : undefined, patch: snapshot, actor: req.desktop.profile });
+    } catch (error) {
+      if (error instanceof ItemRevisionConflict) return res.status(409).json({ success: false, error: { code: 'REVISION_CONFLICT', message: error.message, data: { current: error.current } } });
+      throw error;
+    }
     await revisionService.record({ entityType: 'item', entityId: item._id, revision: item.contentRevision, operation: 'restore', actor: req.desktop.profile, snapshot: itemSnapshot(item), restoredFromRevision: history.revision });
     return res.json({ success: true, data: item });
   }

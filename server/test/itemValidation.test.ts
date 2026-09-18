@@ -7,9 +7,9 @@ import Message from '../src/models/Message.js';
 
 const creator = new mongoose.Types.ObjectId();
 
-test('notes require content', () => {
+test('notes allow a blank body so a new draft can save', () => {
   const item = new Item({ name: 'Empty note', type: 'note', position: { x: 0, y: 0 }, createdBy: creator });
-  assert.match(item.validateSync()?.message || '', /note requires content/);
+  assert.equal(item.validateSync(), undefined);
 });
 
 test('media requires a secure asset URL', () => {
