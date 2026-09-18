@@ -76,6 +76,7 @@
 .companion-speech { padding:12px; border:1px solid #cdb7ed66; border-radius:16px 16px 16px 4px; background:#171b35f5; box-shadow:0 8px 28px #0005; }
 .companion-speech p { margin:5px 0; line-height:1.7; }
 .companion-speech button, .companion-roamer-actions button { display:inline-flex; align-items:center; justify-content:center; gap:4px; border:1px solid #cdb7ed44; border-radius:9px; background:#1c2039; color:#e4d4ff; padding:7px; }
+.companion-speech .companion-roamer-care { width:100%; justify-content:flex-start; margin:7px 0 2px; border-color:#e9bc8370; color:#fff0d7; background:#e9bc8318; text-align:left; line-height:1.35; cursor:pointer; }.companion-speech .companion-roamer-care:hover:not(:disabled) { background:#e9bc8330; }.companion-speech .companion-roamer-care span { flex:1; }
 .companion-roamer-pet { display:block; margin:auto; padding:0; border:0; background:transparent; cursor:pointer; }
 .companion-roamer-actions { display:flex; justify-content:center; gap:6px; }
 .companion-roamer-actions button { min-width:36px; min-height:36px; cursor:pointer; }
