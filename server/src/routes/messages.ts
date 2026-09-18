@@ -101,7 +101,7 @@ router.post('/attachment-url', async (req, res, next) => {
     const imported = await importRemoteMedia(sourceUrl, controller.signal);
     const uploaded = await uploadAttachment({ buffer: imported.buffer, mimetype: imported.mimeType });
     asset.status = 'complete'; asset.kind = imported.kind; asset.secureUrl = uploaded.secure_url; asset.name = imported.name; asset.mimeType = imported.mimeType; asset.bytes = uploaded.bytes; asset.duration = uploaded.duration ?? null;
-    asset.cloudinaryAssetId = uploaded.asset_id; asset.cloudinaryPublicId = uploaded.public_id; asset.cloudinaryResourceType = uploaded.resource_type;
+    asset.cloudinaryAssetId = uploaded.asset_id; asset.cloudinaryPublicId = uploaded.public_id; asset.cloudinaryResourceType = uploaded.resource_type as 'image' | 'video' | 'raw';
     await asset.save();
     return res.status(201).json({ success: true, data: attachmentView(asset) });
   } catch (error) {
