@@ -25,7 +25,13 @@ function NoteWindow({ item, onRegisterClose }) {
   const [conflict, setConflict] = useState<any>(null);
   const nameRef = useRef(item.name);
   const contentRef = useRef(item.content || '');
+  const baseRef = useRef({ name: item.name, content: item.content || '' });
   const revisionRef = useRef(item.contentRevision || 0);
+  const editSequenceRef = useRef(0);
+  const savingRef = useRef(false);
+  const inFlightRef = useRef<Promise<any> | null>(null);
+  const inFlightSnapshotRef = useRef<{ name: string; content: string; revision: number; sequence: number } | null>(null);
+  const queueSaveRef = useRef<() => void>(() => {});
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -33,29 +39,52 @@ function NoteWindow({ item, onRegisterClose }) {
     setContent(item.content || '');
     nameRef.current = restored?.name ?? item.name;
     contentRef.current = restored?.content ?? (item.content || '');
+    baseRef.current = restored?.base ?? { name: item.name, content: item.content || '' };
     revisionRef.current = restored?.revision ?? (item.contentRevision || 0);
+    editSequenceRef.current = 0;
     setStatus(restored ? 'dirty' : 'clean');
     setConflict(null);
   }, [item._id]);
 
   useEffect(() => () => { if (saveTimer.current) clearTimeout(saveTimer.current); }, []);
   const persistRecovery = () => {
-    try { sessionStorage.setItem(recoveryKey, JSON.stringify({ name: nameRef.current, content: contentRef.current, revision: revisionRef.current })); } catch { /* In-memory draft remains until this window closes. */ }
+    try { sessionStorage.setItem(recoveryKey, JSON.stringify({ name: nameRef.current, content: contentRef.current, revision: revisionRef.current, base: baseRef.current })); } catch { /* In-memory draft remains until this window closes. */ }
   };
   const clearRecovery = () => { try { sessionStorage.removeItem(recoveryKey); } catch { /* Nothing to clear. */ } };
 
   const save = useCallback(async ({ announce = false } = {}) => {
-    const nextName = nameRef.current.trim();
-    const nextContent = contentRef.current;
-    const patch = { ...(nextName !== item.name ? { name: nextName || t('Untitled note') } : {}), ...(nextContent !== (item.content || '') ? { content: nextContent } : {}) };
-    if (!Object.keys(patch).length) { setStatus('clean'); clearRecovery(); return item; }
+    if (savingRef.current && inFlightRef.current) return inFlightRef.current;
+    const sequence = editSequenceRef.current;
+    const snapshot = { name: nameRef.current.trim() || t('Untitled note'), content: contentRef.current };
+    const base = baseRef.current;
+    const patch = { ...(snapshot.name !== base.name ? { name: snapshot.name } : {}), ...(snapshot.content !== base.content ? { content: snapshot.content } : {}) };
+    if (!Object.keys(patch).length) {
+      if (sequence === editSequenceRef.current) { setStatus('clean'); clearRecovery(); }
+      return item;
+    }
+    const requestRevision = revisionRef.current;
+    savingRef.current = true;
     setSaving(true);
     setStatus('saving');
+    inFlightSnapshotRef.current = { ...snapshot, revision: requestRevision, sequence };
+    const request = update(item._id, patch, requestRevision);
+    inFlightRef.current = request;
     try {
-      const saved = await update(item._id, patch, revisionRef.current);
-      revisionRef.current = saved.contentRevision || revisionRef.current + 1;
-      setConflict(null); setStatus('clean'); clearRecovery();
-      if (announce) pushToast('Note saved.');
+      const saved = await request;
+      baseRef.current = snapshot;
+      revisionRef.current = saved.contentRevision || requestRevision + 1;
+      setConflict(null);
+      if (sequence === editSequenceRef.current) {
+        setStatus('clean');
+        clearRecovery();
+        if (announce) pushToast('Note saved.');
+      } else {
+        // The user kept typing after this request left. Keep that newer draft and
+        // save it against the revision just acknowledged; never call it Saved.
+        persistRecovery();
+        setStatus('dirty');
+        queueSaveRef.current();
+      }
       return saved;
     } catch (error) {
       const current = error?.response?.data?.error?.data?.current;
@@ -64,29 +93,61 @@ function NoteWindow({ item, onRegisterClose }) {
       pushToast(error.response?.data?.error?.message || 'Could not save this note.', 'error');
       throw error;
     } finally {
+      savingRef.current = false;
+      inFlightRef.current = null;
+      inFlightSnapshotRef.current = null;
       setSaving(false);
     }
   }, [item, pushToast, update]);
 
-  const scheduleSave = () => {
-    persistRecovery(); setStatus('dirty');
+  const queueSave = useCallback(() => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => { void save().catch(() => {}); }, 600);
+  }, [save]);
+
+  useEffect(() => { queueSaveRef.current = queueSave; }, [queueSave]);
+
+  const scheduleSave = () => {
+    persistRecovery(); setStatus('dirty');
+    editSequenceRef.current += 1;
+    queueSave();
   };
+
+  const flush = useCallback(async ({ announce = false } = {}) => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    // A save can acknowledge an older snapshot while typing continues. Repeat
+    // until the currently visible draft is based on its own acknowledgement.
+    while (nameRef.current.trim() || contentRef.current) {
+      const before = editSequenceRef.current;
+      await save({ announce });
+      if (before === editSequenceRef.current && nameRef.current.trim() === baseRef.current.name && contentRef.current === baseRef.current.content) return;
+    }
+    await save({ announce });
+  }, [save]);
 
   useEffect(() => {
     if ((item.contentRevision || 0) <= revisionRef.current) return;
     const remote = { name: item.name, content: item.content || '', revision: item.contentRevision || 0 };
-    if (status === 'clean') { setName(remote.name); setContent(remote.content); nameRef.current = remote.name; contentRef.current = remote.content; revisionRef.current = remote.revision; clearRecovery(); }
+    const pending = inFlightSnapshotRef.current;
+    // Socket broadcasts are emitted after the server has committed. Recognize
+    // our own in-flight write so it cannot be shown as a false two-person conflict.
+    if (pending && remote.revision === pending.revision + 1 && remote.name === pending.name && remote.content === pending.content) {
+      baseRef.current = { name: remote.name, content: remote.content };
+      revisionRef.current = remote.revision;
+      if (pending.sequence === editSequenceRef.current) { setStatus('clean'); clearRecovery(); }
+      else { setStatus('dirty'); persistRecovery(); }
+      return;
+    }
+    if (status === 'clean') { setName(remote.name); setContent(remote.content); nameRef.current = remote.name; contentRef.current = remote.content; baseRef.current = { name: remote.name, content: remote.content }; revisionRef.current = remote.revision; clearRecovery(); }
     else setConflict(remote);
-  }, [item.contentRevision, item.name, item.content]);
+  }, [item.contentRevision, item.name, item.content, status]);
 
   useEffect(() => {
-    onRegisterClose?.(save);
+    onRegisterClose?.(flush);
     return () => onRegisterClose?.(null);
-  }, [onRegisterClose, save]);
+  }, [flush, onRegisterClose]);
 
-  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} maxLength={160} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; scheduleSave(); }} placeholder={t("Note title")} /><button data-no-drag type='button' disabled={saving} onClick={() => { void save({ announce: true }).catch(() => {}); }}>{saving ? t("Saving…") : t("Save")}</button><button data-no-drag type='button' onClick={() => setHistoryOpen(true)}><History size={14} /> {t("History")}</button></div><textarea data-no-drag value={content} maxLength={10000} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; scheduleSave(); }} placeholder={t("Write something...")} /><small role='status'>{conflict ? t('Conflict') : status === 'error' ? t('Retry') : saving ? t('Saving…') : status === 'dirty' ? t('Unsaved') : t('Saved')} · {content.length}/10000</small>{conflict && <div className='note-conflict'><button data-no-drag type='button' onClick={() => { setName(conflict.name); setContent(conflict.content || ''); nameRef.current = conflict.name; contentRef.current = conflict.content || ''; revisionRef.current = conflict.contentRevision || conflict.revision || 0; setConflict(null); setStatus('clean'); clearRecovery(); }}>{t('Reload saved design')}</button><button data-no-drag type='button' onClick={() => { revisionRef.current = conflict.contentRevision || conflict.revision || revisionRef.current; setConflict(null); void save().catch(() => {}); }}>{t('Retry')}</button></div>}</section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
+  return <><section className='note-window'><div className='note-toolbar'><input data-no-drag value={name} maxLength={160} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setName(event.target.value); nameRef.current = event.target.value; scheduleSave(); }} placeholder={t("Note title")} /><button data-no-drag type='button' disabled={saving} onClick={() => { void flush({ announce: true }).catch(() => {}); }}>{saving ? t("Saving…") : t("Save")}</button><button data-no-drag type='button' onClick={() => setHistoryOpen(true)}><History size={14} /> {t("History")}</button></div><textarea data-no-drag value={content} maxLength={10000} onPointerDown={(event) => event.stopPropagation()} onChange={(event) => { setContent(event.target.value); contentRef.current = event.target.value; scheduleSave(); }} placeholder={t("Write something...")} /><small role='status'>{conflict ? t('Conflict') : status === 'error' ? t('Retry') : saving ? t('Saving…') : status === 'dirty' ? t('Unsaved') : t('Saved')} · {content.length}/10000</small>{conflict && <div className='note-conflict'><button data-no-drag type='button' onClick={() => { setName(conflict.name); setContent(conflict.content || ''); nameRef.current = conflict.name; contentRef.current = conflict.content || ''; baseRef.current = { name: conflict.name, content: conflict.content || '' }; revisionRef.current = conflict.contentRevision || conflict.revision || 0; setConflict(null); setStatus('clean'); clearRecovery(); }}>{t('Reload remote')}</button><button data-no-drag type='button' onClick={() => { baseRef.current = { name: conflict.name, content: conflict.content || '' }; revisionRef.current = conflict.contentRevision || conflict.revision || revisionRef.current; setConflict(null); void flush().catch(() => {}); }}>{t('Save copy')}</button></div>}</section>{historyOpen && <HistoryDialog entityType='item' entity={item} onClose={() => setHistoryOpen(false)} />}</>;
 }
 
 function WindowContent({ item, onRegisterClose }) {
