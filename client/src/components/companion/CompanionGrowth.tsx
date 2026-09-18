@@ -11,7 +11,7 @@ export default function CompanionGrowth({ companion }: { companion: PublicCompan
     <progress aria-label={t('Experience to next level')} value={levelXp} max={80} />
     <small>{t('Next evolution at level {level}', { level: nextEvolution })}</small>
     <p className='companion-form-label'>{t(companion.growthStage)}</p>
-    <p>{t('Care +8 EXP · Chat +4 EXP. The way you care shapes their next body and movement.')}</p>
+    <p>{t('Meaningful care +8 EXP, fulfilled request +4, chat +4. Daily care 40 · chat 12. The way you care shapes their next body and movement.')}</p>
     {evolution && <details><summary>{t('Evolution history')}</summary>{[...companion.evolutions].reverse().map((entry) => <p key={entry.level}>{t('Level')} {entry.level} · {t(entry.species)} · {t(entry.path)}</p>)}</details>}
   </section>;
 }

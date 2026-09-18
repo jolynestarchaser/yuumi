@@ -177,11 +177,11 @@
 .spark-a { left:20px; top:40px; }.spark-b { right:15px; top:60px; }.spark-c { right:40px; bottom:30px; color:#ffb5cf; }
 .style-pixel .companion-egg { shape-rendering:crispEdges; animation-timing-function:steps(3,end); }
 .companion-care-reaction { position:absolute; top:15px; right:35px; color:#ffc4e6; font:bold 30px 'DM Mono',monospace; animation:care-float 1.3s ease-out 2; pointer-events:none; }
-.reaction-play .companion-avatar-motion { animation:care-hop .55s ease-in-out 4; }
-.reaction-feed .companion-avatar-motion { animation:care-nibble .45s ease-in-out 5; }
-.reaction-cuddle .companion-avatar-motion { animation:care-sway .9s ease-in-out 3; }
-.reaction-rest .companion-avatar-motion { animation:care-sleep 2.6s ease-in-out; }
-.reaction-explore .companion-avatar-motion { animation:care-look 1.3s ease-in-out 2; }
+.companion-avatar.reaction-play .companion-avatar-motion { animation:care-hop .55s ease-in-out 4; }
+.companion-avatar.reaction-feed .companion-avatar-motion { animation:care-nibble .45s ease-in-out 5; }
+.companion-avatar.reaction-cuddle .companion-avatar-motion { animation:care-sway .9s ease-in-out 3; }
+.companion-avatar.reaction-rest .companion-avatar-motion { animation:care-sleep 2.6s ease-in-out; }
+.companion-avatar.reaction-explore .companion-avatar-motion { animation:care-look 1.3s ease-in-out 2; }
 .style-pixel[class*='reaction-'] .companion-avatar-motion { animation-timing-function:steps(4,end); }
 .companion-birth.motion-paused * { animation:none !important; }
 @keyframes egg-wobble { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-7deg); } 75% { transform:rotate(7deg); } }

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import Companion from '../models/Companion.js';
 import CompanionFamily from '../models/CompanionFamily.js';
 import { evolveCompanion } from '../services/companionEvolution.js';
-import { ACTIONS, COMPANION_FAMILY_ID, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup, validateAppearance } from '../services/companionState.js';
+import { ACTIONS, COMPANION_FAMILY_ID, COMPANION_KEY, careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup, validateAppearance } from '../services/companionState.js';
 import { ensureCompanionFamily, migrateCompanion, migrateCompanionRoster } from '../services/companionMigration.js';
 import { chatWithCompanion, companionCapabilities } from '../services/companionBrain.js';
 import type { StoredCompanion, CompanionBudget } from '../../../shared/contracts.js';
@@ -48,7 +48,7 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
   if (!state) throw fail(409, 'Your companion is busy with another moment. Please try again shortly.');
   try {
     if (state.recentOperations?.includes(operationId)) return state;
-    const changed = evolveCompanion(await change(state, token), state.xp);
+    const changed = evolveCompanion(refreshCareRequest(await change(state, token)), state.xp);
     const { _id, __v, lockToken, lockedUntil, budget, ...fields } = changed;
     const saved = await Companion.findOneAndUpdate({ _id: companionId, lockToken: token }, {
       $set: { ...fields, updatedAt: new Date(), revision: state.revision + 1, recentOperations: [...(state.recentOperations || []), operationId].slice(-60) }
@@ -176,7 +176,10 @@ export const interactWithCompanion = wrap(async (req, res) => {
       const reply = await chatWithCompanion(next, actor, text.trim());
       const id = randomUUID();
       next = remember(next, actor, 'conversation', text.trim(), new Date(), id);
-      return { ...next, mood: reply.mood, thought: reply.thought, xp: next.xp + 4,
+      const day = new Date().toISOString().slice(0, 10);
+      const budget = next.xpBudget?.day === day ? next.xpBudget : { day, care: 0, chat: 0 };
+      const chatReward = budget.chat < 12 ? 4 : 0;
+      return { ...next, mood: reply.mood, thought: reply.thought, xp: next.xp + chatReward, xpBudget: { ...budget, chat: budget.chat + chatReward },
         traits: { ...next.traits, [reply.growth || 'curiosity']: Math.min(100, next.traits[reply.growth || 'curiosity'] + 1) },
         turns: [...state.turns, { id, actor, text: text.trim(), at: new Date() }, { id, actor: 'companion', text: reply.reply, at: new Date() }].slice(-60) };
     }

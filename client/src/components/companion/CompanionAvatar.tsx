@@ -1,14 +1,14 @@
 import type { CareAction, CompanionState, PublicCompanion } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
 import PixelCompanion from './PixelCompanion.js';
-type AvatarCharacter = Pick<CompanionState, 'name' | 'form' | 'mood'> & Partial<Pick<CompanionState, 'portrait' | 'appearance' | 'evolutions'>> & Partial<Pick<PublicCompanion, 'growthStage' | 'formId'>>;
+type AvatarCharacter = Pick<CompanionState, 'name' | 'form' | 'mood'> & Partial<Pick<CompanionState, 'portrait' | 'appearance' | 'evolutions' | 'stageOutcomes'>> & Partial<Pick<PublicCompanion, 'growthStage' | 'formId'>>;
 
 export default function CompanionAvatar({ companion, small = false, reaction = '' }: { companion: AvatarCharacter; small?: boolean; reaction?: CareAction | '' }) {
   const { t } = useCompanionLanguage();
   const appearance = companion.appearance || { visualStyle: 'soft', animated: true, usePortrait: false };
   const species = companion.appearance?.species || (companion.form === 'child' ? 'child' : companion.form === 'pet' ? 'bunny' : 'spirit');
   const stage = companion.growthStage || 'hatchling';
-  const path = companion.evolutions?.at(-1)?.path || 'guardian';
+  const path = companion.stageOutcomes?.at(-1)?.branch || companion.evolutions?.at(-1)?.path || 'guardian';
   return <div className={`companion-avatar species-${species} stage-${stage} path-${path} style-${appearance.visualStyle} ${appearance.animated ? '' : 'motion-paused'} ${small ? 'small' : ''} mood-${companion?.mood || 'curious'} form-${companion?.form || 'pet'} reaction-${reaction}`} style={{ '--creature-body': companion.appearance?.bodyColor || (species === 'child' ? '#f7d8be' : '#d4c2f0'), '--creature-accent': companion.appearance?.accentColor || (species === 'spirit' ? '#c4dbbf' : '#e9d0df'), '--creature-eye': companion.appearance?.eyeColor || '#423452' }} role='img' aria-label={`${companion?.name || t('Your companion')}, ${t(companion?.mood || 'curious')}, ${t(appearance.visualStyle)}`}>
     <div className={`companion-avatar-motion face-${appearance.face || 'gentle'} silhouette-${appearance.silhouette || 'round'}`}>
     {appearance.visualStyle === 'pixel' ? <PixelCompanion species={species} face={appearance.face || 'gentle'} stage={stage} path={path} /> : <div className='companion-creature'>

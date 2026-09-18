@@ -26,6 +26,12 @@ const schema = new mongoose.Schema<StoredCompanion>({
   traits: { curiosity: bounded(50), affection: bounded(50), playfulness: bounded(50) },
   bonds: { joe: { type: Number, default: 0, min: 0 }, focus: { type: Number, default: 0, min: 0 } },
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
+  behaviorState: { type: String, enum: ['active', 'resting'], default: 'active' }, restUntil: { type: Date, default: null },
+  careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
+  careSummary: { actions: { feed: { type: Number, default: 0 }, play: { type: Number, default: 0 }, cuddle: { type: Number, default: 0 }, rest: { type: Number, default: 0 }, explore: { type: Number, default: 0 } }, caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } } },
+  xpBudget: { day: String, care: { type: Number, default: 0 }, chat: { type: Number, default: 0 } },
+  behaviorWindow: { type: [{ action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
+  stageOutcomes: { type: [{ id: String, level: Number, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown'] }, fromFormId: String, toFormId: String, branch: { type: String, enum: ['explorer', 'guardian', 'trickster'] }, rulesVersion: Number, at: Date }], default: [] },
   thought: { type: String, maxlength: 300, default: defaults.thought },
   chatColor: { type: String, match: /^#[0-9a-fA-F]{6}$/, default: defaults.chatColor },
   appearance: {

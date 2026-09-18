@@ -8,6 +8,9 @@ export const ACTIONS = Object.freeze(['feed', 'play', 'cuddle', 'rest', 'explore
 export const MOODS = Object.freeze(['curious', 'happy', 'cozy', 'sleepy', 'playful']);
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 export const displayName = (actor) => actor === 'joe' ? 'Joe' : 'Focus';
+export const growthStageForLevel = (level: number): CompanionGrowthStage => level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
+const emptyCareSummary = () => ({ actions: { feed: 0, play: 0, cuddle: 0, rest: 0, explore: 0 }, caregivers: { joe: 0, focus: 0 } });
+const dayBudget = (budget: StoredCompanion['xpBudget'], now: Date) => budget?.day === now.toISOString().slice(0, 10) ? budget : { day: now.toISOString().slice(0, 10), care: 0, chat: 0 };
 
 export function initialCompanion(): StoredCompanion {
   const now = new Date();
@@ -18,6 +21,7 @@ export function initialCompanion(): StoredCompanion {
     needs: { fullness: 75, energy: 80, joy: 75, comfort: 75 },
     traits: { curiosity: 50, affection: 50, playfulness: 50 }, bonds: { joe: 0, focus: 0 },
     xp: 0, mood: 'curious', thought: 'I wonder what our first little adventure will be.', chatColor: '#cdb2ea',
+    behaviorState: 'active', restUntil: null, careRequest: null, careSummary: emptyCareSummary(), xpBudget: dayBudget(undefined, now), behaviorWindow: [], stageOutcomes: [],
     appearance: { visualStyle: 'soft', animated: true, usePortrait: false },
     memories: [], turns: [], portrait: null, revision: 0
   };
@@ -26,6 +30,8 @@ export function initialCompanion(): StoredCompanion {
 export function settledState(state: StoredCompanion, now = new Date()): StoredCompanion {
   const clock = state.needsUpdatedAt || state.updatedAt;
   const hours = clamp((now.getTime() - new Date(clock).getTime()) / 3_600_000, 0, 24);
+  const resting = state.behaviorState === 'resting' && state.restUntil && new Date(state.restUntil).getTime() > now.getTime();
+  const waking = state.behaviorState === 'resting' && !resting;
   return {
     ...state,
     // Portraits remain in old records for backwards-compatible data reads, but
@@ -34,11 +40,26 @@ export function settledState(state: StoredCompanion, now = new Date()): StoredCo
     needsUpdatedAt: now,
     needs: {
       fullness: clamp(state.needs.fullness - hours * 3, 20),
-      energy: clamp(state.needs.energy - hours * 2, 20),
+      energy: clamp(state.needs.energy + hours * (resting ? 12 : -2), 20),
       joy: clamp(state.needs.joy - hours * 2, 25),
       comfort: clamp((state.needs.comfort ?? 75) - hours * 1.5, 25)
-    }
+    },
+    behaviorState: waking ? 'active' : state.behaviorState || 'active',
+    restUntil: waking ? null : state.restUntil || null,
+    mood: waking ? 'cozy' : state.mood
   };
+}
+
+export function refreshCareRequest(state: StoredCompanion, now = new Date()): StoredCompanion {
+  const next = settledState(state, now);
+  const current = next.careRequest;
+  const value = (action: CareAction) => action === 'feed' ? next.needs.fullness : action === 'play' ? next.needs.joy : action === 'cuddle' ? next.needs.comfort : action === 'rest' ? next.needs.energy : next.needs.joy;
+  if (current?.state === 'active' && value(current.action) < 60) return next;
+  if (current?.state === 'active') next.careRequest = { ...current, state: 'resolved', fulfilledAt: now };
+  const candidates: [CareAction, number][] = [['feed', next.needs.fullness], ['play', next.needs.joy], ['rest', next.needs.energy], ['cuddle', next.needs.comfort]];
+  const urgent = candidates.filter(([, score]) => score < 45).sort((a, b) => a[1] - b[1])[0];
+  if (urgent) next.careRequest = { id: randomUUID(), action: urgent[0], state: 'active', createdAt: now };
+  return next;
 }
 
 export function remember(state: StoredCompanion, actor: Profile, kind: string, text: string, now = new Date(), id: string = randomUUID()): StoredCompanion {
@@ -50,7 +71,7 @@ export function careFor(state: StoredCompanion, actor: Profile, action: CareActi
   const next = settledState(state, now);
   next.traits = { ...state.traits };
   next.bonds = { ...state.bonds, [actor]: state.bonds[actor] + 1 };
-  next.xp = state.xp + 8;
+  const budget = dayBudget(state.xpBudget, now);
   const person = displayName(actor);
   const effects: Record<CareAction, [number, number, number, number, CompanionMood, keyof StoredCompanion['traits'], string]> = {
     feed: [24, 0, 4, 3, 'cozy', 'affection', `${person} brought me a snack. I saved a tiny imaginary bite for later.`],
@@ -64,7 +85,21 @@ export function careFor(state: StoredCompanion, actor: Profile, action: CareActi
   next.traits[trait] = clamp(next.traits[trait] + 2);
   next.mood = mood;
   next.thought = thought;
-  return remember(next, actor, action, `${person} chose to ${action} with me.`, now);
+  if (action === 'rest') { next.behaviorState = 'resting'; next.restUntil = new Date(now.getTime() + 45 * 60_000); }
+  const primaryBefore = action === 'feed' ? state.needs.fullness : action === 'play' || action === 'explore' ? state.needs.joy : action === 'cuddle' ? (state.needs.comfort ?? 75) : state.needs.energy;
+  const meaningful = primaryBefore < 85;
+  let reward = meaningful && budget.care < 40 ? 8 : 0;
+  const request = state.careRequest;
+  if (request?.state === 'active' && request.action === action && primaryBefore < 60) {
+    next.careRequest = { ...request, state: 'fulfilled', fulfilledAt: now, fulfilledBy: actor };
+    if (budget.care + reward <= 36) reward += 4;
+  }
+  next.xp = state.xp + reward;
+  next.xpBudget = { ...budget, care: budget.care + reward };
+  const summary = state.careSummary || emptyCareSummary();
+  next.careSummary = { actions: { ...summary.actions, [action]: (summary.actions[action] || 0) + 1 }, caregivers: { ...summary.caregivers, [actor]: (summary.caregivers[actor] || 0) + 1 } };
+  next.behaviorWindow = [...(state.behaviorWindow || []), { action, actor, at: now }].slice(-24);
+  return refreshCareRequest(remember(next, actor, action, `${person} chose to ${action} with me.`, now), now);
 }
 
 export function forgetMemory(state: StoredCompanion, id: string): StoredCompanion {
@@ -115,15 +150,13 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const needs = Object.fromEntries(Object.entries(safe.needs).map(([key, value]) => [key, Math.round(value)])) as CompanionState['needs'];
   const level = Math.floor(safe.xp / 80) + 1;
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
-  const growthStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
+  const growthStage = growthStageForLevel(level);
   const species = safe.appearance?.species || (safe.form === 'child' ? 'child' : safe.form === 'pet' ? 'bunny' : 'spirit');
-  const path = safe.evolutions?.at(-1)?.path || 'guardian';
-  const formId = `${species}-${growthStage}-${path}`;
+  const path = safe.stageOutcomes?.at(-1)?.branch || safe.evolutions?.at(-1)?.path || 'guardian';
+  const formId = safe.stageOutcomes?.at(-1)?.toFormId || `${species}-${growthStage}-${path}`;
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : 'Grown companion';
-  const request = needs.fullness <= 38 ? { action: 'feed' as const, text: 'Could we have a little snack together?', urgency: 'soon' as const }
-    : needs.joy <= 44 ? { action: 'play' as const, text: 'Will you play a tiny game with me?', urgency: 'gentle' as const }
-    : needs.energy <= 42 ? { action: 'rest' as const, text: 'I think a cozy nap would help me recharge.', urgency: 'gentle' as const }
-    : needs.comfort <= 45 ? { action: 'cuddle' as const, text: 'Can I have a little cuddle?', urgency: 'gentle' as const }
-    : { action: 'explore' as const, text: 'Want to look for a small adventure together?', urgency: 'gentle' as const };
+  const active = safe.careRequest?.state === 'active' ? safe.careRequest : undefined;
+  const request = active ? { id: active.id, action: active.action, state: active.state, text: active.action === 'feed' ? 'Could we have a little snack together?' : active.action === 'play' ? 'Will you play a tiny game with me?' : active.action === 'rest' ? 'I think a cozy nap would help me recharge.' : 'Can I have a little cuddle?', urgency: active.action === 'feed' ? 'soon' as const : 'gentle' as const }
+    : { id: 'explore', action: 'explore' as const, state: 'resolved' as const, text: 'Want to look for a small adventure together?', urgency: 'gentle' as const };
   return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request };
 }

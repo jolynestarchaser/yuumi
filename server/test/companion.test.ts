@@ -8,8 +8,9 @@ import CompanionFamily from '../src/models/CompanionFamily.js';
 import companionRoutes from '../src/routes/companions.js';
 import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
 import { brainContext, generateContent, parseBrainReply } from '../src/services/companionBrain.js';
-import { careFor, forgetMemory, initialCompanion, publicCompanion, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
+import { careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
 import { companionMigrationPatch } from '../src/services/companionMigration.js';
+import { evolveCompanion } from '../src/services/companionEvolution.js';
 
 test('time away preserves safe needs and relationships; repeated reads do not compound decay', () => {
   const state = { ...initialCompanion(), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
@@ -47,6 +48,40 @@ test('brain context includes the companion current need without private desktop 
   const state = initialCompanion();
   state.needs.fullness = 30;
   assert.match(brainContext(state, 'joe', 'Hello'), /"currentNeed":"snack"/);
+});
+
+test('care requests have stable identity, resolve with hysteresis, and reward once', () => {
+  const now = new Date('2026-09-18T10:00:00Z');
+  const hungry = { ...initialCompanion(), needs: { fullness: 35, energy: 80, joy: 75, comfort: 75 }, needsUpdatedAt: now };
+  const requested = refreshCareRequest(hungry, now);
+  assert.equal(requested.careRequest?.action, 'feed');
+  assert.equal(refreshCareRequest(requested, now).careRequest?.id, requested.careRequest?.id);
+  const cared = careFor(requested, 'joe', 'feed', now);
+  assert.equal(cared.careRequest?.state, 'fulfilled');
+  assert.equal(cared.xp, 12);
+  assert.equal(cared.xpBudget?.care, 12);
+  assert.equal(cared.careSummary?.actions.feed, 1);
+  assert.equal(careFor(cared, 'focus', 'feed', now).xp, 20);
+});
+
+test('care XP caps while rest has a real wake condition', () => {
+  const now = new Date('2026-09-18T10:00:00Z');
+  const state = { ...initialCompanion(), xp: 20, xpBudget: { day: '2026-09-18', care: 40, chat: 0 }, needs: { fullness: 40, energy: 30, joy: 40, comfort: 40 }, needsUpdatedAt: now };
+  const capped = careFor(state, 'joe', 'rest', now);
+  assert.equal(capped.xp, 20);
+  assert.equal(capped.behaviorState, 'resting');
+  const awake = settledState(capped, new Date(now.getTime() + 46 * 60_000));
+  assert.equal(awake.behaviorState, 'active');
+  assert.equal(awake.restUntil, null);
+});
+
+test('evolution persists three real stage outcomes at levels 3, 6, and 10', () => {
+  const state = initialCompanion();
+  state.appearance = { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon' };
+  state.xp = 9 * 80;
+  const grown = evolveCompanion({ ...state, xp: 10 * 80 }, 0, () => .2, new Date('2026-09-18'));
+  assert.deepEqual(grown.stageOutcomes?.map((entry) => entry.level), [3, 6, 10]);
+  assert.equal(grown.stageOutcomes?.at(-1)?.toFormId, 'dragon-grown-explorer-v2');
 });
 
 test('character creation validates its fields and seeds personality from the chosen temperament', () => {

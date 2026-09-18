@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { MOODS } from './companionState.js';
+import { growthStageForLevel, MOODS } from './companionState.js';
 import type { UploadApiResponse } from 'cloudinary';
 import type { StoredCompanion, Profile, BrainReply, CompanionPortrait } from '../../../shared/contracts.js';
 
@@ -14,16 +14,20 @@ export function companionCapabilities() {
 
 export function brainContext(state: StoredCompanion, actor: Profile, message: string) {
   const level = Math.floor(state.xp / 80) + 1;
-  const growthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
-  const currentNeed = state.needs.fullness <= 38 ? 'snack' : state.needs.joy <= 44 ? 'play' : state.needs.energy <= 42 ? 'rest' : state.traits.affection <= 42 ? 'cuddle' : 'explore';
-  return JSON.stringify({
+  const growthStage = growthStageForLevel(level);
+  const currentNeed = state.careRequest?.state === 'active' ? state.careRequest.action : state.needs.fullness <= 38 ? 'snack' : state.needs.joy <= 44 ? 'play' : state.needs.energy <= 42 ? 'rest' : state.needs.comfort <= 45 ? 'cuddle' : 'explore';
+  const memories = state.memories.slice(-12).map(({ actor: author, kind, text }) => ({ author, kind, text: text.slice(0, 600) }));
+  const recentConversation = state.turns.slice(-12).map(({ actor: author, text }) => ({ author, text: text.slice(0, 700) }));
+  const build = () => JSON.stringify({
     character: { name: state.name, form: state.form, appearance: state.seed, design: characterDesign(state), level, growthStage, evolutionPath: state.evolutions?.at(-1)?.path || null, inspirations: state.inspirations, traits: state.traits, mood: state.mood, needs: state.needs, currentNeed },
     // Only deliberately shared companion data enters this context. Never read
     // the couple's letters, calendar, files, or credentials.
-    memories: state.memories.map(({ actor: author, kind, text }) => ({ author, kind, text })),
-    recentConversation: state.turns.slice(-20).map(({ actor: author, text }) => ({ author, text })),
-    speaker: actor, message, evolution: state.evolutions?.at(-1) || null
+    memories, recentConversation,
+    speaker: actor, message: message.slice(0, 1000), evolution: state.stageOutcomes?.at(-1) || state.evolutions?.at(-1) || null
   });
+  while (Buffer.byteLength(build(), 'utf8') > 16_000 && memories.length) memories.shift();
+  while (Buffer.byteLength(build(), 'utf8') > 16_000 && recentConversation.length) recentConversation.shift();
+  return build();
 }
 
 export function characterDesign(state: StoredCompanion) {

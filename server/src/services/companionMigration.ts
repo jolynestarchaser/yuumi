@@ -10,6 +10,13 @@ export function companionMigrationPatch(state: Partial<StoredCompanion>, now = n
   if (state.archivedAt === undefined) patch.archivedAt = null;
   if (!state.needsUpdatedAt) patch.needsUpdatedAt = state.updatedAt || now;
   if (state.needs?.comfort === undefined) patch['needs.comfort'] = 75;
+  if (!state.behaviorState) patch.behaviorState = 'active';
+  if (state.restUntil === undefined) patch.restUntil = null;
+  if (state.careRequest === undefined) patch.careRequest = null;
+  if (!state.careSummary) patch.careSummary = { actions: { feed: 0, play: 0, cuddle: 0, rest: 0, explore: 0 }, caregivers: { joe: 0, focus: 0 } };
+  if (!state.xpBudget) patch.xpBudget = { day: now.toISOString().slice(0, 10), care: 0, chat: 0 };
+  if (!state.behaviorWindow) patch.behaviorWindow = [];
+  if (!state.stageOutcomes) patch.stageOutcomes = [];
   return patch;
 }
 

@@ -80,6 +80,11 @@ export interface CompanionAppearance {
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
 export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
+export type CareRequestState = 'active' | 'fulfilled' | 'resolved' | 'superseded';
+export interface CompanionCareRequest { id: string; action: CareAction; state: CareRequestState; createdAt: Timestamp; fulfilledAt?: Timestamp; fulfilledBy?: Profile }
+export interface CompanionCareSummary { actions: Record<CareAction, number>; caregivers: Record<Profile, number> }
+export interface CompanionXpBudget { day: string; care: number; chat: number }
+export interface CompanionStageOutcome { id: string; level: number; stage: CompanionGrowthStage; fromFormId: string; toFormId: string; branch: 'explorer' | 'guardian' | 'trickster'; rulesVersion: number; at: Timestamp }
 export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
@@ -94,6 +99,10 @@ export interface CompanionState {
   chatColor: string;
   appearance?: CompanionAppearance;
   evolutions?: CompanionEvolution[];
+  behaviorState?: 'active' | 'resting'; restUntil?: Timestamp | null;
+  careRequest?: CompanionCareRequest | null; careSummary?: CompanionCareSummary;
+  xpBudget?: CompanionXpBudget; behaviorWindow?: { action: CareAction; actor: Profile; at: Timestamp }[];
+  stageOutcomes?: CompanionStageOutcome[];
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -102,7 +111,7 @@ export interface StoredCompanion extends CompanionState {
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
   familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
 }
-export interface CompanionRequest { action: CareAction; text: string; urgency: 'gentle' | 'soon' }
+export interface CompanionRequest { id: string; action: CareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
 export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
 export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
