@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import type { ApiResponse, CompanionSnapshot, CompanionAction } from '../../../shared/contracts.js';
+import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionAppearance, CompanionForm, CompanionMood } from '../../../shared/contracts.js';
 import type { CompanionActionValues } from '../components/companion/types.js';
 
 export default function useCompanion() {
   const [data, setData] = useState<CompanionSnapshot | null>(null);
+  const [roster, setRoster] = useState<{ id: string; name: string; bornAt: string | Date | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }[]>([]);
+  const [companionId, setCompanionId] = useState(() => localStorage.getItem('yuu-mi:active-companion') || 'joe-and-focus');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
   const alive = useRef(true);
@@ -16,13 +18,17 @@ export default function useCompanion() {
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     try {
-      const response = await api.get<ApiResponse<CompanionSnapshot>>('/companions', { signal });
+      const [response, rosterResponse] = await Promise.all([
+        api.get<ApiResponse<CompanionSnapshot>>('/companions', { params: { id: companionId }, signal }),
+        api.get<ApiResponse<{ companions: typeof roster }>>('/companions/roster', { signal })
+      ]);
       apply(response.data.data);
+      if (alive.current) setRoster(rosterResponse.data.data.companions);
       if (alive.current && !inFlight.current) setError('');
     } catch (err) {
       if (alive.current && err.code !== 'ERR_CANCELED') setError(err.response?.data?.error?.message || 'Could not reach your companion. Try refreshing.');
     }
-  }, [apply]);
+  }, [apply, companionId]);
 
   useEffect(() => {
     alive.current = true;
@@ -42,7 +48,7 @@ export default function useCompanion() {
     const signature = JSON.stringify({ action, ...values });
     if (pendingOperation.current?.signature !== signature) pendingOperation.current = { signature, id: crypto.randomUUID() };
     try {
-      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { action, ...values, operationId: pendingOperation.current.id });
+      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { action, ...values, companionId, operationId: pendingOperation.current.id });
       apply(response.data.data);
       pendingOperation.current = null;
       return true;
@@ -54,5 +60,6 @@ export default function useCompanion() {
       if (alive.current) setBusy('');
     }
   }
-  return { ...data, error, busy, act, refresh };
+  const selectCompanion = (id: string) => { localStorage.setItem('yuu-mi:active-companion', id); setCompanionId(id); };
+  return { ...data, roster, companionId, selectCompanion, error, busy, act, refresh };
 }

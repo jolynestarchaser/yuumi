@@ -121,7 +121,7 @@ export default function CompanionWidget({ onClose, onGoOut }: { onClose: () => v
 function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: () => void }) {
   const { t, language } = useCompanionLanguage();
   const profile = useAuthStore((state) => state.profile);
-  const { companion, capabilities, error, busy, act, refresh } = useCompanion();
+  const { companion, capabilities, roster, companionId, selectCompanion, error, busy, act, refresh } = useCompanion();
   const [tab, setTab] = useState('chat');
   const [reaction, setReaction] = useState<CareAction | ''>('');
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -138,6 +138,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
     {error && <div className='companion-error' role='alert'><span>{t(error)}</span><button type='button' aria-label={t('Refresh companion')} onClick={() => refresh()}><RefreshCw size={16} /></button></div>}
     {!companion ? <p className='companion-loading' role='status'>{t('Opening their little world…')}</p> : !companion.bornAt ? <HatchCompanion busy={busy} act={act} /> : <div className='companion-layout' lang={language}>
       <section className='companion-home' aria-label={t('Home of {name}', { name: companion.name })}>
+        {roster.length > 1 && <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{t('Level')} {entry.level}</small></button>)}</div>}
         <div className='companion-home-top'><span className='companion-kicker'>{t('OUR LITTLE WORLD')}</span><span className='companion-mood'>{t(companion.mood)}</span></div>
         <CompanionAvatar companion={companion} reaction={reaction} />
         {onGoOut && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}
