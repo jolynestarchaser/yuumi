@@ -13,11 +13,11 @@ import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
 
 test('time away preserves safe needs and relationships; repeated reads do not compound decay', () => {
-  const state = { ...initialCompanion(), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
+  const state = { ...initialCompanion(), bornAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), lastEngagementAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
   const later = new Date('2027-01-01');
   const settled = settledState(state, later);
   assert.deepEqual(settledState(settled, later), settled);
-  assert.deepEqual(settled.needs, { fullness: 20, energy: 32, joy: 27, comfort: 39 });
+  assert.deepEqual(settled.needs, { fullness: 3, energy: 32, joy: 27, comfort: 39, hygiene: 52 });
   assert.deepEqual(settledState(state, later).bonds, state.bonds);
   assert.equal(state.needs.fullness, 75);
 });
@@ -52,7 +52,7 @@ test('brain context includes the companion current need without private desktop 
 
 test('care requests have stable identity, resolve with hysteresis, and reward once', () => {
   const now = new Date('2026-09-18T10:00:00Z');
-  const hungry = { ...initialCompanion(), needs: { fullness: 35, energy: 80, joy: 75, comfort: 75 }, needsUpdatedAt: now };
+  const hungry = { ...initialCompanion(), needs: { fullness: 35, energy: 80, joy: 75, comfort: 75, hygiene: 100 }, needsUpdatedAt: now };
   const requested = refreshCareRequest(hungry, now);
   assert.equal(requested.careRequest?.action, 'feed');
   assert.equal(refreshCareRequest(requested, now).careRequest?.id, requested.careRequest?.id);
@@ -64,11 +64,11 @@ test('care requests have stable identity, resolve with hysteresis, and reward on
   assert.equal(careFor(cared, 'focus', 'feed', now).xp, 20);
 });
 
-test('care XP caps while rest has a real wake condition', () => {
+test('care rewards with unlimited XP while rest has a real wake condition', () => {
   const now = new Date('2026-09-18T10:00:00Z');
-  const state = { ...initialCompanion(), xp: 20, xpBudget: { day: '2026-09-18', care: 40, chat: 0 }, needs: { fullness: 40, energy: 30, joy: 40, comfort: 40 }, needsUpdatedAt: now };
+  const state = { ...initialCompanion(), xp: 20, needs: { fullness: 40, energy: 30, joy: 40, comfort: 40, hygiene: 100 }, needsUpdatedAt: now };
   const capped = careFor(state, 'joe', 'rest', now);
-  assert.equal(capped.xp, 20);
+  assert.equal(capped.xp, 28);
   assert.equal(capped.behaviorState, 'resting');
   const awake = settledState(capped, new Date(now.getTime() + 46 * 60_000));
   assert.equal(awake.behaviorState, 'active');
@@ -99,11 +99,13 @@ test('public state omits leases, retry IDs, and usage metadata', () => {
 
 test('legacy companion migration is explicit and idempotent', () => {
   const updatedAt = new Date('2026-01-01T00:00:00Z');
-  const legacy = { ...initialCompanion(), familyId: undefined, schemaVersion: undefined, archivedAt: undefined, needsUpdatedAt: undefined, updatedAt, needs: { fullness: 60, energy: 50, joy: 40 } };
-  const patch = companionMigrationPatch(legacy as never);
-  assert.deepEqual(patch, { familyId: 'joe-and-focus', schemaVersion: 2, archivedAt: null, needsUpdatedAt: updatedAt, 'needs.comfort': 75 });
-  const migrated = { ...legacy, ...patch, needs: { ...legacy.needs, comfort: patch['needs.comfort'] } };
-  assert.deepEqual(companionMigrationPatch(migrated), {});
+  const legacy = { ...initialCompanion(), familyId: undefined, schemaVersion: undefined, archivedAt: undefined, needsUpdatedAt: undefined, updatedAt, needs: { fullness: 60, energy: 50, joy: 40, comfort: 75, hygiene: 100 } };
+  const patch = companionMigrationPatch(legacy as never, updatedAt);
+  assert.equal(patch.familyId, 'joe-and-focus');
+  assert.equal(patch.schemaVersion, 3);
+  assert.equal(patch.archivedAt, null);
+  const migrated = { ...legacy, ...patch, needs: { ...legacy.needs } };
+  assert.deepEqual(companionMigrationPatch(migrated, updatedAt), {});
 });
 
 test('legacy companions use the authored soft form when appearance settings are absent', () => {

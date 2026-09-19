@@ -120,6 +120,9 @@
 .form-creature .creature-ear { background: #c4dbbf; border-color: #99bda5; border-radius: 4px 80% 4px 80%; }
 .form-child .creature-ear { top: 17px; height: 38px; background: #8c6ba9; border-color: #8c6ba9; }.form-child .creature-body { background: #f7d8be; box-shadow: inset -10px -8px #e3bba1, inset 9px 4px #ffe6d0; border-color: #dab69e; }
 .creature-star { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); color: #fff6c0; font-size: 25px; text-shadow: 0 2px #b98dc3; }
+.creature-crown { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); color: #ffd700; font-size: 20px; text-shadow: 0 0 6px #ffea7888; }
+.creature-elder-crown { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); color: #e2d4f8; font-size: 24px; text-shadow: 0 0 8px #d4b8ff; }
+.creature-markings { position: absolute; top: 22px; right: 14px; color: var(--creature-accent, #c4dbbf); font-size: 13px; opacity: 0.8; }
 .creature-face { position: absolute; top: 50px; left: 25px; right: 25px; display: flex; align-items: center; justify-content: space-between; }
 .creature-face i { width: 8px; height: 12px; border-radius: 4px; background: #423452; animation: companion-blink 5.5s infinite; }
 .creature-face b { width: 12px; height: 7px; margin-top: 13px; border: 2px solid #604766; border-top: 0; border-radius: 0 0 10px 10px; }
@@ -130,7 +133,7 @@
 .companion-thought { padding: 12px 14px; border: 1px solid #d8c5ee25; border-radius: 12px; background: #bda8df0a; }.companion-thought > span { color: #d5bded; font: 9px 'DM Mono', monospace; letter-spacing: .1em; }.companion-thought p { margin: 6px 0 0; font-size: 12px; line-height: 1.7; color: #ded8eb; overflow-wrap: anywhere; }
 .companion-needs { display: grid; gap: 11px; margin: 18px 0; }.companion-needs label > span, .companion-traits label > span { display: flex; justify-content: space-between; font-size: 10px; text-transform: capitalize; }.companion-needs b, .companion-traits b { font-weight: 500; color: #aeb3cb; }
 .companion-dialog progress { display: block; appearance: none; width: 100%; height: 5px; overflow: hidden; border: 0; border-radius: 3px; background: #ffffff12; }.companion-dialog progress::-webkit-progress-bar { background: #ffffff12; }.companion-dialog progress::-webkit-progress-value { border-radius: 3px; background: #c8afef; }.companion-dialog progress::-moz-progress-bar { background: #c8afef; }.companion-needs label:nth-child(2) progress::-webkit-progress-value { background: #a7cbb1; }.companion-needs label:nth-child(3) progress::-webkit-progress-value { background: #e7c497; }
-.companion-care { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }.companion-care button { display: grid; justify-items: center; gap: 8px; min-height: 58px; padding: 9px 2px; border: 1px solid #cfbfea22; border-radius: 10px; color: #d8c8eb; background: #d0b7f10c; }.companion-care span { font-size: 9px; }.companion-care button:hover:not(:disabled) { background: #d0b7f124; transform: translateY(-2px); }
+.companion-care { display: grid; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); gap: 5px; }.companion-care button { display: grid; justify-items: center; gap: 8px; min-height: 58px; padding: 9px 2px; border: 1px solid #cfbfea22; border-radius: 10px; color: #d8c8eb; background: #d0b7f10c; }.companion-care span { font-size: 9px; }.companion-care button:hover:not(:disabled) { background: #d0b7f124; transform: translateY(-2px); }
 .companion-bonds { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 15px; color: #a6a1bb; font-size: 9px; }.companion-bonds span { display: flex; align-items: center; gap: 4px; }.companion-bonds i { width: 5px; height: 5px; border-radius: 50%; }.companion-bonds .joe { background: #b6ff00; }.companion-bonds .focus { background: #839aff; }
 .companion-wish { display: flex; align-items: flex-start; gap: 7px; margin-top: 17px; color: #b9cabc; }.companion-wish svg { flex-shrink: 0; margin-top: 2px; }.companion-wish p { margin: 0; font-size: 11px; line-height: 1.6; }
 .companion-inner { min-width: 0; }.companion-tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid #b2a4dd1a; border-radius: 12px; background: #070d1c66; }.companion-tabs button { display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; min-height: 38px; padding: 6px; border: 0; border-radius: 8px; color: #a9a4c2; background: transparent; font-size: 11px; }.companion-tabs button[aria-pressed='true'] { color: #e6daf8; background: #c3a4ed22; }
@@ -269,3 +272,61 @@
   .companion-creation-editor .companion-design-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .companion-hatch > .companion-creation-actions { width:100%; }
 }
+
+/* Health & illness */
+.companion-health-meter { display: grid; gap: 6px; margin: 10px 0 6px; padding: 8px 12px; border: 1px solid #cfbfea20; border-radius: 10px; background: #ffffff05; }
+.companion-health-label { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 11px; color: #d4c8eb; }
+.companion-health-label span { flex: 1; text-align: left; }
+.companion-health-label b { font-size: 11px; font-weight: 600; color: #e4d8fb; }
+.companion-health-bar { height: 6px; }
+.companion-health-bar.well::-webkit-progress-value { background: #7cd992; }
+.companion-health-bar.well::-moz-progress-bar { background: #7cd992; }
+.companion-health-bar.ill::-webkit-progress-value { background: #f26666; }
+.companion-health-bar.ill::-moz-progress-bar { background: #f26666; }
+
+.companion-illness-alert { display: flex; align-items: center; gap: 8px; margin: 8px 0; padding: 10px 12px; border: 1px solid #f8717144; border-radius: 10px; background: #7f1d1d33; color: #fca5a5; font-size: 11px; }
+.companion-illness-text { flex: 1; display: grid; gap: 2px; text-align: left; }
+.companion-illness-text strong { font-size: 11px; color: #fecaca; }
+.companion-illness-text p { margin: 0; font-size: 10px; color: #fca5a5cc; line-height: 1.4; }
+.companion-medicine-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border: 1px solid #f8717166; border-radius: 8px; background: #dc262644; color: #fff; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.companion-medicine-btn:hover:not(:disabled) { background: #dc262688; }
+
+/* Elder retirement & modal */
+.companion-elder-retirement { display: grid; gap: 6px; margin: 8px 0; padding: 10px 12px; border: 1px solid #fbbf2440; border-radius: 10px; background: #78350f22; text-align: center; }
+.companion-elder-retirement p { margin: 0; font-size: 11px; color: #fde68a; line-height: 1.5; }
+.companion-retire-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 12px; border: 1px solid #f59e0b55; border-radius: 8px; background: #b4530933; color: #fef3c7; font-size: 11px; cursor: pointer; }
+.companion-retire-btn:hover:not(:disabled) { background: #b4530966; }
+
+.companion-modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: rgba(10, 8, 20, 0.7); backdrop-filter: blur(4px); padding: 16px; }
+.companion-modal-card { width: min(100%, 420px); padding: 22px; border: 1px solid #cbb0ee40; border-radius: 16px; background: #1f1b2e; color: #f4ebff; text-align: center; display: grid; gap: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); }
+.companion-modal-icon { margin: 0 auto; color: #f59e0b; }
+.companion-modal-card h3 { margin: 0; font-size: 18px; color: #fff; }
+.companion-modal-card p { margin: 0; font-size: 13px; color: #c4b5d6; line-height: 1.6; }
+.companion-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+.companion-retire-confirm-btn { background: #b45309; border-color: #f59e0b; }
+.companion-retire-confirm-btn:hover:not(:disabled) { background: #d97706; }
+
+/* Successor badge & memorial */
+.companion-successor-badge { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 12px; margin-bottom: 8px; border: 1px solid #a78bfa44; border-radius: 20px; background: #6d28d933; color: #ddd6fe; font-size: 11px; font-weight: 600; }
+
+.companion-memorial { display: grid; gap: 18px; padding: 24px; text-align: center; border: 1px solid #cbb0ee22; border-radius: 16px; background: radial-gradient(ellipse at 50% 20%, #4a3e6840, transparent 70%), #181a2e88; }
+.companion-memorial-layout { grid-template-columns: 1fr !important; }
+.companion-memorial-hero { display: grid; justify-items: center; gap: 10px; }
+.companion-memorial-hero h2 { margin: 0; font-size: 26px; color: #fdf8ff; font-weight: 700; }
+.companion-memorial-lineage { margin: 0; font-size: 12px; color: #cdb2ea; letter-spacing: 0.05em; font-family: 'DM Mono', monospace; }
+.companion-memorial-status { margin: 4px 0 0; font-size: 13px; color: #ded6ed; line-height: 1.7; max-width: 480px; }
+.companion-memorial-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0; }
+.companion-memorial-stat-card { display: grid; justify-items: center; gap: 4px; padding: 12px 8px; border: 1px solid #cfbfea1a; border-radius: 12px; background: #ffffff06; color: #cdb2ea; }
+.companion-memorial-stat-card strong { font-size: 20px; color: #fff; }
+.companion-memorial-stat-card span { font-size: 10px; color: #b2a4c7; text-transform: uppercase; letter-spacing: 0.05em; }
+.companion-memorial-memories { display: grid; gap: 10px; text-align: left; }
+.companion-memorial-memories h3 { margin: 0; font-size: 13px; color: #e4d8fb; font-weight: 600; }
+.companion-memorial-memory-list { display: grid; gap: 8px; max-height: 220px; overflow-y: auto; }
+.companion-memorial-memory-item { padding: 10px 12px; border: 1px solid #cfbfea18; border-radius: 10px; background: #ffffff05; }
+.companion-memorial-memory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.companion-memorial-memory-header small { font-size: 10px; color: #a596bb; font-weight: 600; text-transform: uppercase; }
+.companion-memorial-forget-btn { border: none; background: transparent; color: #9d8db3; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 4px; border-radius: 4px; }
+.companion-memorial-forget-btn:hover:not(:disabled) { color: #f87171; background: #ef44441a; }
+.companion-memorial-memory-item p { margin: 0; font-size: 12px; color: #d8cde9; line-height: 1.6; }
+.companion-memorial-actions { display: flex; justify-content: center; margin-top: 8px; }
+.companion-successor-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; border-radius: 12px; }

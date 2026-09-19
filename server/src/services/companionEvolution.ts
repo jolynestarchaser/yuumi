@@ -7,7 +7,7 @@ const raceBias: Record<CompanionSpecies, [number, number, number]> = {
   dragon: [8, 4, 0], robot: [8, 0, 4], child: [4, 4, 4], custom: [4, 4, 4]
 };
 const paths: CompanionEvolution['path'][] = ['explorer', 'guardian', 'trickster'];
-const transitionLevels: Record<Exclude<CompanionGrowthStage, 'hatchling'>, number> = { child: 3, juvenile: 6, grown: 10 };
+const transitionLevels: Record<'child' | 'juvenile' | 'grown', number> = { child: 3, juvenile: 6, grown: 10 };
 
 export function formIdFor(species: CompanionSpecies, stage: CompanionGrowthStage, branch: CompanionEvolution['path']) {
   return `${species}-${stage}-${branch}-v2`;

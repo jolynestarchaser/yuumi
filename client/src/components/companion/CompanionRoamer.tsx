@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Apple, Heart, Home, Leaf, MessageCircle, Moon, Pause, Play, Star, Volume2 } from 'lucide-react';
+import { Apple, Droplets, Heart, HeartPulse, Home, Leaf, MessageCircle, Moon, Pause, Play, Star, Volume2 } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
 import useCompanion from '../../hooks/useCompanion.js';
 import CompanionAvatar from './CompanionAvatar.js';
@@ -12,7 +12,9 @@ const careIcons: Record<CareAction, typeof Apple> = {
   play: Star,
   cuddle: Heart,
   rest: Moon,
-  explore: Leaf
+  explore: Leaf,
+  clean: Droplets,
+  medicine: HeartPulse
 };
 
 function roamingWords(companion: PublicCompanion, turn: number) {
@@ -46,7 +48,9 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
   }, [moving]);
   useEffect(() => () => { if (reactionTimer.current) clearTimeout(reactionTimer.current); }, []);
   useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setTurn(0); }, [companion?.id]);
-  if (!companion?.bornAt) return error ? <aside className='companion-roamer' style={{ left: 16 }}><button onClick={onHome}>{t('Return home')}</button><p>{t(error)}</p></aside> : null;
+  if (!companion?.bornAt || companion.lifeStatus !== 'alive' || companion.isPaused) {
+    return error ? <aside className='companion-roamer' style={{ left: 16 }}><button onClick={onHome}>{t('Return home')}</button><p>{t(error)}</p></aside> : null;
+  }
   const words = t(roamingWords(companion, turn));
   const voice = { ...(companion.appearance?.voice || defaultVoice), language: language === 'th' ? 'th-TH' as const : 'en-US' as const };
   const requestAction = companion.request.action;

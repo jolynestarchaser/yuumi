@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/services/companionRules.ts",
+    "src/services/companionSimulation.ts",
+    "src/services/companionRewards.ts",
+    "src/services/companionLifecycle.ts",
+    "src/services/companionPersona.ts",
+    "src/services/companionPrompt.ts",
+    "src/services/companionReplyValidation.ts",
+    "../shared/contracts.d.ts"
+  ]
+}

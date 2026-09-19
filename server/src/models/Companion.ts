@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { initialCompanion, MOODS } from '../services/companionState.js';
+import { initialCompanion, MOODS, ACTIONS } from '../services/companionState.js';
 import type { StoredCompanion } from '../../../shared/contracts.js';
 
-const bounded = (value) => ({ type: Number, min: 0, max: 100, default: value });
+const bounded = (value: number) => ({ type: Number, min: 0, max: 100, default: value });
 const memorySchema = new mongoose.Schema({
   id: { type: String, required: true }, actor: { type: String, enum: ['joe', 'focus'], required: true },
   kind: { type: String, required: true }, text: { type: String, maxlength: 1000, required: true }, at: Date
@@ -14,7 +14,7 @@ const defaults = initialCompanion();
 const schema = new mongoose.Schema<StoredCompanion>({
   _id: String,
   familyId: { type: String, required: true, default: 'joe-and-focus', index: true },
-  schemaVersion: { type: Number, default: 2, min: 2 },
+  schemaVersion: { type: Number, default: 3, min: 2 },
   archivedAt: { type: Date, default: null, index: true },
   createdOperationId: { type: String, maxlength: 80, sparse: true, unique: true },
   name: { type: String, required: true, maxlength: 32, default: defaults.name },
@@ -22,16 +22,57 @@ const schema = new mongoose.Schema<StoredCompanion>({
   seed: { type: String, maxlength: 500, default: defaults.seed },
   inspirations: { joe: { type: String, maxlength: 300, default: '' }, focus: { type: String, maxlength: 300, default: '' } },
   bornAt: { type: Date, default: null }, updatedAt: { type: Date, default: Date.now }, needsUpdatedAt: { type: Date, default: Date.now },
-  needs: { fullness: bounded(75), energy: bounded(80), joy: bounded(75), comfort: bounded(75) },
+  simulatedAt: { type: Date, default: Date.now },
+  lastEngagementAt: { type: Date, default: Date.now },
+  protectionUntil: { type: Date, default: null },
+  health: bounded(100),
+  hygiene: bounded(100),
+  lifeStatus: { type: String, enum: ['alive', 'retired', 'deceased'], default: 'alive' },
+  healthCondition: { type: String, enum: ['well', 'ill'], default: 'well' },
+  simulatedAgeHours: { type: Number, default: 0, min: 0 },
+  lowNeedExposureHours: { type: Number, default: 0, min: 0 },
+  stageCareCount: { type: Number, default: 0, min: 0 },
+  lineageId: { type: String, default: 'lineage-primary' },
+  generation: { type: Number, default: 1, min: 1 },
+  predecessorId: { type: String, sparse: true, unique: true },
+  deceasedAt: { type: Date, default: null },
+  deathReason: { type: String, enum: ['natural', 'illness'], default: null },
+  retiredAt: { type: Date, default: null },
+  lastMedicineAt: { type: Date, default: null },
+  needs: {
+    fullness: bounded(75),
+    energy: bounded(80),
+    joy: bounded(75),
+    comfort: bounded(75),
+    hygiene: bounded(100),
+  },
   traits: { curiosity: bounded(50), affection: bounded(50), playfulness: bounded(50) },
   bonds: { joe: { type: Number, default: 0, min: 0 }, focus: { type: Number, default: 0, min: 0 } },
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
   behaviorState: { type: String, enum: ['active', 'resting'], default: 'active' }, restUntil: { type: Date, default: null },
-  careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
-  careSummary: { actions: { feed: { type: Number, default: 0 }, play: { type: Number, default: 0 }, cuddle: { type: Number, default: 0 }, rest: { type: Number, default: 0 }, explore: { type: Number, default: 0 } }, caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } } },
+  careRequest: {
+    id: String,
+    action: { type: String, enum: ACTIONS },
+    state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] },
+    createdAt: Date,
+    fulfilledAt: Date,
+    fulfilledBy: { type: String, enum: ['joe', 'focus'] }
+  },
+  careSummary: {
+    actions: {
+      feed: { type: Number, default: 0 },
+      play: { type: Number, default: 0 },
+      cuddle: { type: Number, default: 0 },
+      rest: { type: Number, default: 0 },
+      explore: { type: Number, default: 0 },
+      clean: { type: Number, default: 0 },
+      medicine: { type: Number, default: 0 },
+    },
+    caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } }
+  },
   xpBudget: { day: String, care: { type: Number, default: 0 }, chat: { type: Number, default: 0 } },
-  behaviorWindow: { type: [{ action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
-  stageOutcomes: { type: [{ id: String, level: Number, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown'] }, fromFormId: String, toFormId: String, branch: { type: String, enum: ['explorer', 'guardian', 'trickster'] }, rulesVersion: Number, at: Date }], default: [] },
+  behaviorWindow: { type: [{ action: { type: String, enum: ACTIONS }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
+  stageOutcomes: { type: [{ id: String, level: Number, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown', 'elder'] }, fromFormId: String, toFormId: String, branch: { type: String, enum: ['explorer', 'guardian', 'trickster'] }, rulesVersion: Number, at: Date }], default: [] },
   thought: { type: String, maxlength: 300, default: defaults.thought },
   chatColor: { type: String, match: /^#[0-9a-fA-F]{6}$/, default: defaults.chatColor },
   appearance: {
@@ -52,14 +93,14 @@ const schema = new mongoose.Schema<StoredCompanion>({
     }, { _id: false }),
     default: undefined
   },
-  memories: { type: [memorySchema], default: [], validate: (rows) => rows.length <= 80 },
-  turns: { type: [turnSchema], default: [], validate: (rows) => rows.length <= 60 },
+  memories: { type: [memorySchema], default: [], validate: (rows: unknown[]) => rows.length <= 80 },
+  turns: { type: [turnSchema], default: [], validate: (rows: unknown[]) => rows.length <= 60 },
   evolutions: { type: [new mongoose.Schema({
     level: { type: Number, min: 3, required: true },
     species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'], required: true },
     path: { type: String, enum: ['explorer', 'guardian', 'trickster'], required: true },
     at: { type: Date, required: true }
-  }, { _id: false })], default: [], validate: (rows) => rows.length <= 40 },
+  }, { _id: false })], default: [], validate: (rows: unknown[]) => rows.length <= 40 },
   portrait: { url: String, publicId: String, createdAt: Date },
   revision: { type: Number, default: 0 },
   budget: { day: String, chats: { type: Number, default: 0 }, portraits: { type: Number, default: 0 }, lastChat: Date, lastPortrait: Date },
@@ -68,4 +109,4 @@ const schema = new mongoose.Schema<StoredCompanion>({
   lockToken: String, lockedUntil: { type: Date, default: () => new Date(0) }
 }, { minimize: false });
 
-export default mongoose.model('Companion', schema);
+export default mongoose.model<StoredCompanion>('Companion', schema);

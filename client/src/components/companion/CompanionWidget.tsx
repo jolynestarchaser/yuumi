@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
-import { Apple, BookHeart, Heart, Leaf, MessageCircle, Moon, PawPrint, RefreshCw, Send, Settings2, Sparkles, Star, Volume2 } from 'lucide-react';
+import { Apple, BookHeart, Droplets, Heart, HeartPulse, Leaf, MessageCircle, Moon, PawPrint, RefreshCw, Send, Settings2, ShieldAlert, Sparkles, Star, Sun, Volume2 } from 'lucide-react';
 import GlassDialog from '../GlassDialog.js';
 import { useAuthStore } from '../../store/authStore.js';
 import useCompanion from '../../hooks/useCompanion.js';
 import CompanionAvatar from './CompanionAvatar.js';
+import CompanionMemorial from './CompanionMemorial.js';
 import CompanionJournal from './CompanionJournal.js';
 import CompanionAppearancePicker, { defaultAppearance } from './CompanionAppearancePicker.js';
 import { CompanionLanguageProvider, useCompanionLanguage } from './companionLanguage.js';
@@ -16,21 +17,43 @@ import CompanionEgg from './CompanionEgg.js';
 import { useCompanionVoice } from './useCompanionVoice.js';
 import './companion.css';
 import type { CompanionPanelProps } from './types.js';
-import type { CareAction, CompanionForm, Temperament } from '../../../../shared/contracts.js';
+import type { CareAction, CompanionForm, PublicCompanion, Temperament } from '../../../../shared/contracts.js';
 import type { LucideIcon } from 'lucide-react';
 
-const careActions: [CareAction, LucideIcon, string][] = [['feed', Apple, 'Snack'], ['play', Star, 'Play'], ['cuddle', Heart, 'Cuddle'], ['rest', Moon, 'Nap'], ['explore', Leaf, 'Explore']];
+const careActions: [CareAction, LucideIcon, string][] = [
+  ['feed', Apple, 'Snack'],
+  ['play', Star, 'Play'],
+  ['cuddle', Heart, 'Cuddle'],
+  ['rest', Moon, 'Nap'],
+  ['explore', Leaf, 'Explore'],
+  ['clean', Droplets, 'Clean'],
+  ['medicine', HeartPulse, 'Medicine'],
+];
 const pages: [string, LucideIcon, string][] = [['chat', MessageCircle, 'Chat'], ['memories', BookHeart, 'Memories'], ['design', Settings2, 'Appearance'], ['personality', Sparkles, 'Personality']];
 const seeds = { pet: 'A tiny moon creature with soft ears and a star on its forehead.', child: 'A cheerful fictional storybook child with star pajamas and a love of little adventures.', creature: 'A round little forest spirit with leaf ears, soft lavender fur, and a curious smile.' };
 
-function HatchCompanion({ busy, act, onCreate }: Pick<CompanionPanelProps, 'busy' | 'act'> & { onCreate?: (setup: { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance: import('../../../../shared/contracts.js').CompanionAppearance }) => Promise<boolean> }) {
+function HatchCompanion({
+  busy,
+  act,
+  onCreate,
+  predecessorId,
+  initialAppearance,
+  initialForm,
+  onCancel,
+}: Pick<CompanionPanelProps, 'busy' | 'act'> & {
+  onCreate?: (setup: { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance: import('../../../../shared/contracts.js').CompanionAppearance; predecessorId?: string }) => Promise<boolean>;
+  predecessorId?: string;
+  initialAppearance?: import('../../../../shared/contracts.js').CompanionAppearance;
+  initialForm?: CompanionForm;
+  onCancel?: () => void;
+}) {
   const { t } = useCompanionLanguage();
-  const [name, setName] = useState('Mochi');
-  const [form, setForm] = useState<CompanionForm>('creature');
-  const [seed, setSeed] = useState(t(seeds.creature));
+  const [name, setName] = useState(predecessorId ? 'Mochi Jr.' : 'Mochi');
+  const [form, setForm] = useState<CompanionForm>(initialForm || 'creature');
+  const [seed, setSeed] = useState(t(seeds[initialForm || 'creature']));
   const [temperament, setTemperament] = useState<Temperament>('curious');
   const [step, setStep] = useState(0);
-  const [appearance, setAppearance] = useState(defaultAppearance);
+  const [appearance, setAppearance] = useState(initialAppearance || defaultAppearance);
   const [hatching, setHatching] = useState(false);
   const hatchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hatchStarted = useRef(false);
@@ -42,13 +65,14 @@ function HatchCompanion({ busy, act, onCreate }: Pick<CompanionPanelProps, 'busy
     hatchStarted.current = true;
     setHatching(true);
     hatchTimer.current = setTimeout(async () => {
-      const setup = { name, form, seed: appearance.species === 'custom' ? appearance.customDescription || '' : seed, temperament, appearance };
+      const setup = { name, form, seed: appearance.species === 'custom' ? appearance.customDescription || '' : seed, temperament, appearance, predecessorId };
       const saved = onCreate ? await onCreate(setup) : await act('adopt', setup);
       if (!saved && mounted.current) { hatchStarted.current = false; setHatching(false); }
     }, reduceMotion || !appearance.animated ? 0 : 1800);
   }
   if (hatching) return <CompanionEgg name={name} appearance={appearance} />;
   return <form className='companion-hatch' onSubmit={(event) => { event.preventDefault(); if (step < 2) setStep(step + 1); else hatch(); }}>
+    {predecessorId && <div className='companion-successor-badge'><Sparkles size={16} /><span>{t('Hatching Successor Generation')}</span></div>}
     <ol className='companion-creation-steps' aria-label={t('Character creation')}>{['Imagine', 'Personality', 'Welcome'].map((label, index) => <li key={label} aria-current={step === index ? 'step' : undefined}><b>{index + 1}</b>{t(label)}</li>)}</ol>
     <div className='companion-creation-layout'>
     <aside className='companion-creation-preview'>
@@ -69,13 +93,13 @@ function HatchCompanion({ busy, act, onCreate }: Pick<CompanionPanelProps, 'busy
     {step === 1 && appearance.species !== 'custom' && <label>{t('Species, colors, and special features')}<textarea required maxLength={500} placeholder={t('A tiny teal dragon with peach wings, star freckles, and a leaf hat…')} value={seed} onChange={(event) => setSeed(event.target.value)} /></label>}
     {step === 2 && <><p>{t('Your shared {form}, starting {temperament}. Both of you will help them become someone a little different.', { form: t(form), temperament: t(temperament) })}</p><div className='companion-character-summary'><b>{t('Our character')}</b><p>{appearance.species === 'custom' ? appearance.customDescription : seed}</p><small>{t('The creature above is their hatchling form. Caring for them changes their built-in soft and pixel-art bodies as they grow.')}</small></div></>}
     </section></div>
-    <div className='companion-creation-actions'>{step > 0 && <button className='companion-secondary' type='button' disabled={Boolean(busy)} onClick={() => setStep(step - 1)}>{t('Back')}</button>}<button className='companion-primary' type='submit' disabled={Boolean(busy) || !name.trim() || !seed.trim() || (appearance.species === 'custom' && !appearance.customDescription?.trim())}><Sparkles size={17} />{t(busy ? 'Hatching…' : step < 2 ? 'Continue' : 'Welcome to our world')}</button></div>
+    <div className='companion-creation-actions'>{step > 0 ? <button className='companion-secondary' type='button' disabled={Boolean(busy)} onClick={() => setStep(step - 1)}>{t('Back')}</button> : onCancel ? <button className='companion-secondary' type='button' disabled={Boolean(busy)} onClick={onCancel}>{t('Cancel')}</button> : null}<button className='companion-primary' type='submit' disabled={Boolean(busy) || !name.trim() || !seed.trim() || (appearance.species === 'custom' && !appearance.customDescription?.trim())}><Sparkles size={17} />{t(busy ? 'Hatching…' : step < 2 ? 'Continue' : 'Welcome to our world')}</button></div>
     <small>{t('One shared companion · Saved for both of you · You can care for them without AI connected')}</small>
   </form>;
 }
 
 function CompanionChat({ companion, capabilities, profile, busy, act }: CompanionPanelProps) {
-  const { t } = useCompanionLanguage();
+  const { t, language } = useCompanionLanguage();
   const { speak, stop, speaking, supported, voiceError } = useCompanionVoice();
   const [draft, setDraft] = useState('');
   const end = useRef<HTMLDivElement>(null);
@@ -90,7 +114,7 @@ function CompanionChat({ companion, capabilities, profile, busy, act }: Companio
     </div>
     {voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}
     {!capabilities.chat && <p className='companion-offline'>{t('AI chat isn’t connected yet. You can still play, care, and make memories.')}</p>}
-    <form className='companion-chat-form' onSubmit={async (event) => { event.preventDefault(); if (await act('chat', { text: draft.trim() })) setDraft(''); }}>
+    <form className='companion-chat-form' onSubmit={async (event) => { event.preventDefault(); if (await act('chat', { text: draft.trim(), language: language === 'th' ? 'th' : 'en' })) setDraft(''); }}>
       <textarea aria-label={t('Tell {name} something…', { name: companion.name })} value={draft} maxLength={1000} placeholder={t('Tell {name} something…', { name: companion.name })} onChange={(event) => setDraft(event.target.value)} disabled={Boolean(busy)} />
       <button type='submit' aria-label={t('Send message')} disabled={Boolean(busy) || !capabilities.chat || !draft.trim()}><Send size={18} /></button>
     </form>
@@ -125,6 +149,8 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   const { companion, capabilities, roster, companionId, selectCompanion, createCompanion, error, busy, act, refresh } = useCompanion();
   const [tab, setTab] = useState('chat');
   const [creating, setCreating] = useState(false);
+  const [successorPredecessor, setSuccessorPredecessor] = useState<PublicCompanion | null>(null);
+  const [showRetireModal, setShowRetireModal] = useState(false);
   const [reaction, setReaction] = useState<CareAction | ''>('');
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const active = useRef(true);
@@ -139,15 +165,31 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   }
   return <GlassDialog className='companion-dialog' title={<><PawPrint size={19} /> {t('Our little companion')}</>} eyebrow={t('JOE + FOCUS · A WORLD OF OUR OWN')} onClose={onClose}>
     {error && <div className='companion-error' role='alert'><span>{t(error)}</span><button type='button' aria-label={t('Refresh companion')} onClick={() => refresh()}><RefreshCw size={16} /></button></div>}
-    {!companion ? <p className='companion-loading' role='status'>{t('Opening their little world…')}</p> : creating ? <HatchCompanion busy={busy} act={act} onCreate={async (setup) => { const created = await createCompanion(setup); if (created) setCreating(false); return created; }} /> : !companion.bornAt ? <HatchCompanion busy={busy} act={act} /> : <div className='companion-layout' lang={language}>
+    {!companion ? <p className='companion-loading' role='status'>{t('Opening their little world…')}</p> : creating ? <HatchCompanion busy={busy} act={act} predecessorId={successorPredecessor?.id} initialAppearance={successorPredecessor?.appearance} initialForm={successorPredecessor?.form} onCancel={roster.length > 0 ? () => { setCreating(false); setSuccessorPredecessor(null); } : undefined} onCreate={async (setup) => { const created = await createCompanion(setup); if (created) { setCreating(false); setSuccessorPredecessor(null); } return created; }} /> : !companion.bornAt ? <HatchCompanion busy={busy} act={act} /> : companion.lifeStatus === 'retired' || companion.lifeStatus === 'deceased' ? <div className='companion-layout companion-memorial-layout' lang={language}>
+      <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{entry.lifeStatus === 'retired' ? t('Retired') : entry.lifeStatus === 'deceased' ? t('Memorial') : `${t('Level')} ${entry.level}`}</small></button>)}<button type='button' className='companion-add' onClick={() => { setSuccessorPredecessor(null); setCreating(true); }} disabled={Boolean(busy)}>{t('Add companion')}</button></div>
+      <CompanionMemorial companion={companion} busy={busy} act={act} onStartSuccessor={() => { setSuccessorPredecessor(companion); setCreating(true); }} />
+    </div> : <div className='companion-layout' lang={language}>
       <section className='companion-home' aria-label={t('Home of {name}', { name: companion.name })}>
-        <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{t('Level')} {entry.level}</small></button>)}<button type='button' className='companion-add' onClick={() => setCreating(true)} disabled={Boolean(busy)}>{t('Add companion')}</button></div>
+        <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{entry.lifeStatus === 'retired' ? t('Retired') : entry.lifeStatus === 'deceased' ? t('Memorial') : `${t('Level')} ${entry.level}`}</small></button>)}<button type='button' className='companion-add' onClick={() => { setSuccessorPredecessor(null); setCreating(true); }} disabled={Boolean(busy)}>{t('Add companion')}</button></div>
         <div className='companion-home-top'><span className='companion-kicker'>{t('OUR LITTLE WORLD')}</span><span className='companion-mood'>{t(companion.mood)}</span></div>
         <CompanionAvatar companion={companion} reaction={reaction} />
         {onGoOut && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}
         <CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy)} onChange={(appearance) => { void act('appearance', { appearance }); }} />
         <h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p>
         <CompanionGrowth companion={companion} />
+        {companion.stage === 'elder' && companion.lifeStatus === 'alive' && <div className='companion-elder-retirement'>
+          <p>{t('Elder stage: Peaceful retirement is available in the memorial garden.')}</p>
+          <button type='button' className='companion-secondary companion-retire-btn' disabled={Boolean(busy)} onClick={() => setShowRetireModal(true)}><Sun size={16} />{t('Peacefully retire to sunlit garden')}</button>
+        </div>}
+        <div className='companion-health-meter' data-condition={companion.healthCondition}>
+          <div className='companion-health-label'><HeartPulse size={15} /><span>{t('Health')}</span><b>{companion.health}%</b></div>
+          <progress value={companion.health} max={100} className={`companion-health-bar ${companion.healthCondition}`} />
+        </div>
+        {companion.healthCondition === 'ill' && <div className='companion-illness-alert' role='alert'>
+          <ShieldAlert size={16} />
+          <div className='companion-illness-text'><strong>{t('{name} is feeling unwell', { name: companion.name })}</strong><p>{t('Health is low. Administer medicine to help them recover.')}</p></div>
+          <button type='button' className='companion-medicine-btn' disabled={Boolean(busy)} onClick={() => care('medicine')}><HeartPulse size={14} />{t('Give medicine')}</button>
+        </div>}
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>
         <div className='companion-needs'>{Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}</div>
         <button type='button' className={`companion-request ${companion.request.urgency}`} disabled={Boolean(busy)} onClick={() => care(companion.request.action)}><span>{t('I need')}</span><strong>{t(companion.request.text)}</strong><small>{t(careActions.find(([action]) => action === companion.request.action)?.[2] || 'Explore')}</small></button>
@@ -162,6 +204,17 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         {tab === 'design' && <CompanionCustomizer key={companion.id} companion={companion} busy={busy} act={act} />}
         {tab === 'personality' && <CompanionPersonality key={companion.id} companion={companion} capabilities={capabilities} profile={profile} busy={busy} act={act} />}
       </section>
+    </div>}
+    {showRetireModal && companion && <div className='companion-modal-backdrop' role='dialog' aria-modal='true' aria-labelledby='retire-modal-title'>
+      <div className='companion-modal-card'>
+        <Sun size={28} className='companion-modal-icon' />
+        <h3 id='retire-modal-title'>{t('Confirm retirement')}</h3>
+        <p>{t('Retire {name} to the peaceful memorial garden? You can hatch a successor generation to continue their lineage.', { name: companion.name })}</p>
+        <div className='companion-modal-actions'>
+          <button type='button' className='companion-secondary' disabled={Boolean(busy)} onClick={() => setShowRetireModal(false)}>{t('Cancel')}</button>
+          <button type='button' className='companion-primary companion-retire-confirm-btn' disabled={Boolean(busy)} onClick={async () => { const ok = await act('retire', { expectedRevision: companion.revision }); if (ok) setShowRetireModal(false); }}>{t('Confirm retirement')}</button>
+        </div>
+      </div>
     </div>}
   </GlassDialog>;
 }

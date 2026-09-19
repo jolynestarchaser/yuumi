@@ -54,15 +54,34 @@ export default function useCompanion() {
     }
   }, [apply, selectCompanion]);
 
+  const lastVisitAt = useRef(0);
+
+  const visit = useCallback(() => {
+    const targetId = selectedId.current;
+    const currentSnapshot = snapshots[targetId];
+    if (currentSnapshot?.companion?.bornAt && currentSnapshot.companion.lifeStatus === 'alive') {
+      const now = Date.now();
+      if (now - lastVisitAt.current > 30000 && !inFlight.current.has(targetId)) {
+        lastVisitAt.current = now;
+        void act('visit');
+      }
+    }
+  }, [act, snapshots]);
+
   useEffect(() => () => { mounted.current = false; }, []);
   useEffect(() => {
     const controller = new AbortController();
-    void refresh(controller.signal);
+    void refresh(controller.signal).then(() => visit());
     const timer = setInterval(() => { if (!document.hidden && !inFlight.current.has(companionId)) void refresh(controller.signal); }, 12000);
-    const onVisible = () => { if (!document.hidden && !inFlight.current.has(companionId)) void refresh(controller.signal); };
+    const onVisible = () => {
+      if (!document.hidden && !inFlight.current.has(companionId)) {
+        void refresh(controller.signal);
+        visit();
+      }
+    };
     document.addEventListener('visibilitychange', onVisible);
     return () => { controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
-  }, [companionId, refresh]);
+  }, [companionId, refresh, visit]);
 
   async function act(action: CompanionAction['action'], values: CompanionActionValues = {}) {
     const targetId = selectedId.current;
@@ -89,7 +108,7 @@ export default function useCompanion() {
     }
   }
 
-  async function createCompanion(setup: CompanionSetup) {
+  async function createCompanion(setup: CompanionSetup & { predecessorId?: string }) {
     const createKey = '__create__';
     if (inFlight.current.has(createKey)) return false;
     inFlight.current.add(createKey);

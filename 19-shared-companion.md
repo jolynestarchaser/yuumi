@@ -10,37 +10,32 @@ The dock opens a game-like companion home with an animated starter illustration,
 needs, care actions, imagined thoughts, daily wishes, shared chat, a memory journal,
 and personality/inspiration controls. Both people can care for the same character.
 
-- Feed, play, cuddle, rest, and explore shape different traits and award experience.
-- Time away gently changes needs, with safe lower bounds and automatic rest.
-- No death, relationship penalties, guilt, or streak loss.
-- Dialogue uses Gemini. The model chooses text, mood, and an imagined thought,
-  never arbitrary state changes, tools, or unsourced factual memories.
+- Feed, play, cuddle, rest, explore, clean, and medicine shape different traits, needs, and health.
+- Time away gently changes needs via piecewise stepping; after 24 hours of absence, simulation auto-pauses.
+- Upon return after auto-pause, the absence gap is discarded and a 24-hour return protection window activates (health is clamped >= 1 against neglect death).
+- Lifespan & aging: companions reach the elder stage at 60 days (1440 hours) and have a 90-day natural lifespan.
+- Illness & healthcare: 6 continuous hours with one or more needs below 20 triggers illness, causing health to drain at 5 points/hour. Recovery requires all critical needs >= 40 plus a medicine action (6-hour wall-clock cooldown). Clean action restores hygiene. Neglect death occurs only if unprotected health reaches 0.
+- Unlimited XP: daily XP caps (formerly 40 care / 12 chat) are completely removed. Meaningful care (<85 need) awards 8 XP; fulfilled care requests award a +4 XP bonus; saved chat awards 4 XP.
+- Generations & lineage: retired or deceased companions are preserved in a memorial garden (with lifetime stats and cherished memories) and do not occupy active slots (up to 6 active companions). Successor generations can be hatched, inheriting generation increment (Gen N+1) and lineage tracking.
+- Dialogue uses Gemini 2.5 Flash-Lite by default. The model chooses text, mood, and an imagined thought within a 16KB UTF-8 4-layered prompt, strictly validated and stripping unauthorized state mutations.
 - The most recent 80 care/chat memories and 60 conversation turns persist in MongoDB.
   Caregiver identity comes from the authenticated session, never the request body.
-- Each caregiver can add their own inspiration. Both are included in dialogue and portraits.
+- Each caregiver can add their own inspiration. Both are included in dialogue.
 - Forgetting a memory removes it and clears recent chat/thought context that may repeat it.
-  Existing images and numerical growth are not reversed. Provider retention is separate.
-- Portraits use Gemini image generation with a pixel-art prompt, stored as 256 × 256 PNGs
-  in Cloudinary and rendered with `image-rendering: pixelated`. Generated artwork may vary;
-  exact sprite consistency is not guaranteed. The starter illustration is not a preview
-  of the custom portrait. No image binaries are persisted in MongoDB.
+  Existing visual growth is not reversed. Provider retention is separate.
+- Portrait generation has been retired in favor of rich procedural built-in animated forms and pixel art across hatchling, child, juvenile, grown, and elder stages.
 
 ## Switchable appearance
 
 - During creation and in the companion home, choose Soft or Pixel art and toggle animation.
 - Save `appearance: { visualStyle, animated, usePortrait }` with adoption or the authenticated
   `appearance` action. Both profiles see the setting through the existing snapshot polling.
-- Existing companions without this field keep their previous look: pixel if they have a
-  portrait, soft otherwise. Switching does not delete or regenerate their saved portrait.
-- Soft uses the original rounded character; pixel uses a crisp 32-cell starter on a
-  256 × 256 canvas. Both starters blink, rest with closed eyes, and move with their mood.
-- Pixel mode can display the saved Gemini portrait or the starter sprite. A generated
-  portrait moves as one image; it is not a generated animated sprite sheet. Broken images
-  fall back to the pixel starter. Neither switching nor animation makes paid AI calls.
+- Both Soft and Pixel art styles fully support all life stages including hatchling, child, juvenile, grown, and elder (adorned with wisdom crowns).
+- Soft uses rounded procedural characters; pixel uses crisp retro pixel-art sprites.
+  Both starters blink, rest with closed eyes, and move with their mood.
 - The animation toggle and the browser's reduced-motion preference stop all avatar motion.
 
-Manual checks: switch styles during creation; hatch and refresh; switch back with a saved
-portrait; pause motion; test reduced motion, mobile layout, and both profile snapshots.
+Manual checks: switch styles during creation; hatch and refresh; verify elder stage visuals; pause motion; test reduced motion, mobile layout, and both profile snapshots.
 
 ## Desktop roaming, design, voice, and growth
 
@@ -82,9 +77,9 @@ portrait; pause motion; test reduced motion, mobile layout, and both profile sna
 - Hatching shows a colored egg wobbling and cracking before saving the character.
   Leaving before the animation completes cancels the pending creation; failed saves
   return to the review step with the draft intact. No paid call or extra XP is triggered.
-- Successful care triggers snack, hop, cuddle, sleep, or explore reactions. Failed
+- Successful care triggers snack, hop, cuddle, sleep, explore, clean, or medicine reactions. Failed
   actions do not celebrate. Both styles support reactions; reduced motion and the
-  animation switch disable movement. Generated portraits move as a single image.
+  animation switch disable movement.
 
 ## Provider configuration
 
@@ -92,33 +87,31 @@ Set only on the backend (Railway service variables or an uncommitted `server/.en
 
 ```text
 GEMINI_API_KEY=<your server-side key>
-GEMINI_CHAT_MODEL=gemini-2.5-flash
-GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
+GEMINI_CHAT_MODEL=gemini-2.5-flash-lite
 ```
 
-Model names are configurable; select models available to your Gemini project.
-Image generation also requires the existing Cloudinary credentials. Never use a
-`VITE_` variable for the Gemini key. No keys are collected in the browser.
-Care and creation work without Gemini; chat/image buttons report unavailable configuration.
+Model names are configurable; `gemini-2.5-flash-lite` is the default. Portrait generation has been retired.
+Never use a `VITE_` variable for the Gemini key. No keys are collected in the browser.
+Care, growth, and creation work completely without Gemini; chat reports unavailable configuration when no key is set.
 Model access, quota and billing must be configured in the Google project.
 
-Uses the official [GenerateContent REST API](https://ai.google.dev/api/generate-content)
-and [Gemini image generation](https://ai.google.dev/gemini-api/docs/image-generation).
-Only companion settings, memories, and conversations are sent to Gemini; existing
-letters, calendars, files, and credentials are not part of the prompt.
+Uses the official [GenerateContent REST API](https://ai.google.dev/api/generate-content).
+Only companion settings, memories, and conversations are sent to Gemini within a strictly validated 16KB prompt; existing
+letters, calendars, files, and credentials are never part of the prompt.
 
 ## API and concurrency
 
 - `GET /api/companions`: protected shared snapshot and configuration capabilities.
-- `POST /api/companions/actions`: validated adopt/care/chat/inspiration/portrait/forget.
+- `GET /api/companions/roster`: returns companion roster including alive, retired, and memorial entries.
+- `POST /api/companions/roster`: hatches a new companion or successor generation with predecessor lineage tracking.
+- `POST /api/companions/actions`: validated adopt, care (feed, play, cuddle, rest, explore, clean, medicine), visit, chat, inspiration, retire, and forget.
 - A MongoDB lease serializes writers across processes; expired locks recover after 3 minutes.
-- The latest 60 operation IDs deduplicate retries. Concurrent adoption is rejected.
-- Server-side daily limits: 60 chat attempts and 5 portrait attempts, shared by both
-  people, reset at UTC midnight. Failed provider requests count because they may incur cost.
-- Care has a 5-second per-person cooldown; chat 5 seconds; portrait generation 60 seconds.
-- Gemini text requests time out after 45 seconds; image requests after 60 seconds.
+- Durable receipts uniquely indexed by family, companion, and operation ID deduplicate retries. Concurrent adoption is rejected.
+- Unlimited XP applies across all care actions and chat; server-side rate limits protect provider quota (60 chat attempts shared daily).
+- Care has a 5-second per-person cooldown; medicine has a 6-hour cooldown; chat 5 seconds.
+- Gemini text requests time out after 45 seconds.
 - Client polls every 12 seconds while the widget is visible and refreshes on returning
-  to the tab. No new Socket.IO protocol or background paid generation is introduced.
+  to the tab. Explicit visits settle simulation when entering or switching to the tab.
 
 ## Login update alert
 

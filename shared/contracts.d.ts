@@ -80,7 +80,9 @@ export interface CompanionAppearance {
 }
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
-export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
+export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore' | 'clean' | 'medicine';
+export type LifeStatus = 'alive' | 'retired' | 'deceased';
+export type HealthCondition = 'well' | 'ill';
 export type CareRequestState = 'active' | 'fulfilled' | 'resolved' | 'superseded';
 export interface CompanionCareRequest { id: string; action: CareAction; state: CareRequestState; createdAt: Timestamp; fulfilledAt?: Timestamp; fulfilledBy?: Profile }
 export interface CompanionCareSummary { actions: Record<CareAction, number>; caregivers: Record<Profile, number> }
@@ -90,11 +92,38 @@ export interface CompanionMemory { id: string; actor: Profile; kind: string; tex
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
 export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
-export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown';
+export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown' | 'elder';
+export interface CompanionNeeds {
+  fullness: number;
+  energy: number;
+  joy: number;
+  comfort: number;
+  hygiene: number;
+}
+export interface NextStageRequirement {
+  minAgeDays: number;
+  requiredCareCount: number;
+  currentCareCount: number;
+}
 export interface CompanionState {
   name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
   bornAt: Timestamp | null; updatedAt: Timestamp;
-  needs: { fullness: number; energy: number; joy: number; comfort: number };
+  needs: CompanionNeeds;
+  health: number;
+  hygiene: number;
+  lifeStatus?: LifeStatus;
+  healthCondition?: HealthCondition;
+  simulatedAgeHours?: number;
+  lowNeedExposureHours?: number;
+  lastEngagementAt?: Timestamp;
+  protectionUntil?: Timestamp | null;
+  lineageId?: string;
+  generation?: number;
+  predecessorId?: string | null;
+  stageCareCount?: number;
+  deceasedAt?: Timestamp | null;
+  deathReason?: 'natural' | 'illness' | null;
+  retiredAt?: Timestamp | null;
   traits: { curiosity: number; affection: number; playfulness: number };
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
   chatColor: string;
@@ -111,21 +140,63 @@ export interface StoredCompanion extends CompanionState {
   _id?: string; __v?: number; budget?: CompanionBudget;
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
   familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
+  simulatedAt?: Timestamp; lastMedicineAt?: Timestamp | null;
 }
 export interface CompanionRequest { id: string; action: CareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
-export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
-export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
+export interface PublicCompanion extends CompanionState {
+  id: string;
+  archivedAt?: Timestamp | null;
+  level: number;
+  stage: string;
+  growthStage: CompanionGrowthStage;
+  lifecycleStage: CompanionGrowthStage;
+  lifeStatus: LifeStatus;
+  healthCondition: HealthCondition;
+  health: number;
+  hygiene: number;
+  simulatedAgeDays: number;
+  simulatedAgeHours: number;
+  generation: number;
+  lineageId: string;
+  predecessorId?: string | null;
+  deceasedAt?: Timestamp | null;
+  deathReason?: 'natural' | 'illness' | null;
+  retiredAt?: Timestamp | null;
+  isProtected: boolean;
+  protectionUntil: Timestamp | null;
+  isPaused: boolean;
+  allowedActions: string[];
+  nextStageRequirement: NextStageRequirement | null;
+  formId: string;
+  wish: string;
+  request: CompanionRequest | null;
+}
+export interface CompanionRosterSummary {
+  id: string;
+  name: string;
+  bornAt: Timestamp | null;
+  archivedAt?: Timestamp | null;
+  mood: CompanionMood;
+  level: number;
+  form: CompanionForm;
+  appearance?: CompanionAppearance;
+  revision: number;
+  lifeStatus?: LifeStatus;
+  generation?: number;
+}
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
-export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }
-export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance?: CompanionAppearance }
+export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' | 'none'; gesture?: string }
+export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance?: CompanionAppearance; predecessorId?: string }
 export type CompanionAction =
   | ({ action: 'adopt' } & CompanionSetup)
   | { action: CareAction | 'portrait' }
-  | { action: 'chat'; text: string }
+  | { action: 'chat'; text: string; language?: 'th' | 'en' }
   | { action: 'chatColor'; color: string }
   | { action: 'appearance'; appearance: CompanionAppearance }
   | { action: 'customize'; name: string; form: CompanionForm; seed: string; appearance: CompanionAppearance; expectedRevision: number }
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string }
-  | { action: 'archive' | 'restore' };
+  | { action: 'archive' | 'restore' }
+  | { action: 'visit' }
+  | { action: 'retire'; expectedRevision: number };
