@@ -92,7 +92,8 @@ export function remember(state: StoredCompanion, actor: Profile, kind: string, t
 
 export function careFor(state: StoredCompanion, actor: Profile, action: CareAction, now = new Date()): StoredCompanion {
   if (!ACTIONS.includes(action) || !['joe', 'focus'].includes(actor)) throw new Error('Invalid care action.');
-  const next = settledState(state, now);
+  const settled = settledState(state, now);
+  const next = { ...settled, traits: { ...settled.traits }, bonds: { ...settled.bonds }, needs: { ...settled.needs }, careSummary: settled.careSummary ? { actions: { ...settled.careSummary.actions }, caregivers: { ...settled.careSummary.caregivers } } : settled.careSummary };
   if (action === 'rest' && next.behaviorState === 'resting' && next.restUntil && new Date(next.restUntil).getTime() > now.getTime()) return next;
   next.bonds = { ...next.bonds, [actor]: next.bonds[actor] + 1 };
   const budget = dayBudget(state.xpBudget, now);
