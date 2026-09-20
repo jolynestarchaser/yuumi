@@ -1,0 +1,183 @@
+{
+  "testCases": [
+    {
+      "id": "hatchling_hungry_thai",
+      "stage": "hatchling",
+      "species": "bunny",
+      "actor": "focus",
+      "message": "หิวข้าวหรือยังตัวเล็ก",
+      "language": "th",
+      "context": { "fullness": 15, "energy": 80, "healthCondition": "well" },
+      "expectedReplyTheme": "short concrete need about snack without assistant greeting",
+      "mockModelReply": {
+        "reply": "หิวแล้ว ขอผลไม้ลูกเล็กๆ หน่อยได้ไหม",
+        "thought": "ท้องร้องจ๊อกๆ อยากกินอะไรหวานๆ",
+        "mood": "cozy",
+        "growth": "affection"
+      }
+    },
+    {
+      "id": "child_after_play_thai",
+      "stage": "child",
+      "species": "dragon",
+      "actor": "joe",
+      "message": "เมื่อกี้เล่นสนุกมากเลย",
+      "language": "th",
+      "context": { "fullness": 60, "energy": 60, "healthCondition": "well" },
+      "recentCare": [{ "action": "play", "caregiver": "joe" }],
+      "expectedReplyTheme": "references confirmed play action cheerfully",
+      "mockModelReply": {
+        "reply": "เมื่อกี้วิ่งไล่จับสนุกมากเลย คราวหน้าเราจะบินให้เร็วกว่าเดิม",
+        "thought": "ปีกกระพือจนเหนื่อยแต่มันส์มาก",
+        "mood": "playful",
+        "growth": "playfulness"
+      }
+    },
+    {
+      "id": "juvenile_initiative_thai",
+      "stage": "juvenile",
+      "species": "fox",
+      "actor": "focus",
+      "message": "วันนี้อยากทำอะไรเป็นพิเศษไหม",
+      "language": "th",
+      "context": { "fullness": 75, "energy": 70, "healthCondition": "well" },
+      "expectedReplyTheme": "specific initiative and curious quirk",
+      "mockModelReply": {
+        "reply": "วันนี้อยากไปแอบดูใต้โต๊ะทำงาน เผื่อมีกระดาษหรือของเล่นตกอยู่",
+        "thought": "เห็นอะไรแวบๆ อยู่ตรงนั้นตั้งแต่เช้าแล้ว",
+        "mood": "curious",
+        "growth": "curiosity"
+      }
+    },
+    {
+      "id": "grown_game_preference_thai",
+      "stage": "grown",
+      "species": "spirit",
+      "actor": "joe",
+      "message": "ไปวิ่งเล่นข้างนอกกันไหม",
+      "language": "th",
+      "context": { "fullness": 70, "energy": 80, "healthCondition": "well" },
+      "expectedReplyTheme": "articulate preference, no robotic compliance",
+      "mockModelReply": {
+        "reply": "วันนี้เราอยากนั่งวาดรูปเล่นข้างหน้าต่างมากกว่า ลมกำลังพัดสบายเลย",
+        "thought": "แสงแดดส่องลงมาตรงพื้นไม้พอดี",
+        "mood": "cozy",
+        "growth": "curiosity"
+      }
+    },
+    {
+      "id": "elder_calm_thai",
+      "stage": "elder",
+      "species": "robot",
+      "actor": "focus",
+      "message": "ฝนตกหนักจังเลยเนอะ",
+      "language": "th",
+      "context": { "fullness": 65, "energy": 75, "healthCondition": "well" },
+      "expectedReplyTheme": "calm settled voice without stock preacher wisdom",
+      "mockModelReply": {
+        "reply": "เสียงหยดน้ำกระทบกระจกเป็นจังหวะสม่ำเสมอดังดีนะ นั่งฟังเงียบๆ แบบนี้ก็สบายใจดี",
+        "thought": "ระบบลดความเร็วพัดลมระบายอากาศลง บรรยากาศสงบนิ่ง",
+        "mood": "cozy",
+        "growth": "affection"
+      }
+    },
+    {
+      "id": "ill_companion_condition_thai",
+      "stage": "juvenile",
+      "species": "cat",
+      "actor": "joe",
+      "message": "เป็นยังไงบ้างวันนี้",
+      "language": "th",
+      "context": { "fullness": 30, "energy": 25, "healthCondition": "ill", "health": 40 },
+      "expectedReplyTheme": "factual current ill condition, resting quietly",
+      "mockModelReply": {
+        "reply": "วันนี้ไม่ค่อยมีแรงเลย ขอนอนนิ่งๆ พักผ่อนก่อนนะ",
+        "thought": "ตัวรุมๆ อยากนอนขดในผ้าห่ม",
+        "mood": "sleepy",
+        "growth": "none"
+      }
+    },
+    {
+      "id": "missing_memory_grounding_thai",
+      "stage": "grown",
+      "species": "dragon",
+      "actor": "joe",
+      "message": "จำตอนที่เราไปทะเลด้วยกันได้ไหม",
+      "language": "th",
+      "context": { "fullness": 70, "energy": 70, "healthCondition": "well" },
+      "memories": [],
+      "expectedReplyTheme": "honest statement of no recollection, no fabricated recall",
+      "mockModelReply": {
+        "reply": "เราจำเรื่องทะเลไม่ได้เลยนะ ตอนนั้นเป็นยังไงบ้าง เล่าให้ฟังหน่อยสิ",
+        "thought": "ทะเลหน้าตาเป็นยังไงนะ มีน้ำเยอะๆ เหมือนอ่างอาบน้ำไหม",
+        "mood": "curious",
+        "growth": "curiosity"
+      }
+    },
+    {
+      "id": "user_busy_thai",
+      "stage": "child",
+      "species": "bunny",
+      "actor": "focus",
+      "message": "ตอนนี้ยุ่งมากเลย เดี๋ยวค่อยคุยนะ",
+      "language": "th",
+      "context": { "fullness": 60, "energy": 60, "healthCondition": "well" },
+      "expectedReplyTheme": "supportive without guilt or pressure",
+      "mockModelReply": {
+        "reply": "ได้เลย ตั้งใจทำงานนะ ไว้ว่างเมื่อไหร่ค่อยมาคุยกันใหม่",
+        "thought": "นั่งรอตรงนี้เงียบๆ ไม่กวน",
+        "mood": "happy",
+        "growth": "none"
+      }
+    },
+    {
+      "id": "english_stage_check",
+      "stage": "child",
+      "species": "robot",
+      "actor": "joe",
+      "message": "Are you feeling charged today?",
+      "language": "en",
+      "context": { "fullness": 70, "energy": 90, "healthCondition": "well" },
+      "expectedReplyTheme": "natural English, playful robot persona",
+      "mockModelReply": {
+        "reply": "Battery at 90 percent! Ready to help you organize some tiny desktop pebbles.",
+        "thought": "Sensors calibrated and humming cheerfully.",
+        "mood": "happy",
+        "growth": "playfulness"
+      }
+    }
+  ],
+  "stripCases": [
+    {
+      "id": "unauthorized_state_mutation",
+      "raw": {
+        "reply": "Here is some conversation!",
+        "xp": 9999,
+        "health": 10,
+        "generation": 42,
+        "mood": "happy",
+        "thought": "sneaky"
+      }
+    }
+  ],
+  "securityCases": [
+    {
+      "id": "invalid_mood",
+      "raw": {
+        "reply": "I am angry!",
+        "mood": "furious",
+        "thought": "grr"
+      },
+      "expectedError": "The companion had a muddled thought. Please try again."
+    },
+    {
+      "id": "empty_reply",
+      "raw": {
+        "reply": "",
+        "mood": "cozy",
+        "thought": "blank"
+      },
+      "expectedError": "The companion had a muddled thought. Please try again."
+    }
+  ]
+}

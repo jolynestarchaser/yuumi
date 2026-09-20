@@ -2,9 +2,28 @@
 
 ## Prerequisites
 
-- Node.js 20.18.1–22 (matching `server/package.json`)
+- Node.js 22 (matching all package manifests and `.nvmrc`)
 - A MongoDB Atlas connection string
 - A Cloudinary account for image and video uploads
+
+### Project-local Node 22 on Windows
+
+If another Node version is installed globally, install the official Node 22
+Windows archive in this repository's ignored `.tools/node22` directory:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-node22.ps1
+scripts\node22.cmd npm run dev
+```
+
+The installer checks the archive against Node's official SHA256 manifest. It
+does not change the system Node installation or PATH. Use `scripts\node22.cmd`
+before any Node/npm command to run this project with Node 22, for example
+`scripts\node22.cmd npm install --prefix server`. Nested npm scripts inherit
+the runtime. Existing NVM users can instead use `.nvmrc` to select Node 22.
+
+Runtime installation does not establish application correctness. Validation
+has deliberately not been rerun during the current no-tests work.
 
 ## Install Dependencies
 

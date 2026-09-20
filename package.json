@@ -2,6 +2,7 @@
   "name": "yuuandmi-project",
   "private": true,
   "version": "1.0.0",
+  "engines": { "node": "22.x" },
   "scripts": {
     "start": "concurrently --kill-others-on-fail --names client,server --prefix-colors cyan,magenta \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
     "dev": "npm run start",

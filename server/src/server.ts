@@ -20,6 +20,7 @@ import translationRoutes from './routes/translations.js';
 import { setupRealtime } from './realtime.js';
 import { authenticateDesktopToken } from './middleware/auth.js';
 import { errorHandler, notFound } from './middleware/error.js';
+import { deploymentRevision } from './services/deploymentRevision.js';
 
 const app = express();
 const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map((value) => value.trim()).filter(Boolean);
@@ -37,6 +38,10 @@ io.use(async (socket, next) => {
 app.use(cors({ origin }));
 app.use(express.json({ limit: '1mb' }));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.get('/api/revision', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(deploymentRevision());
+});
 app.set('io', io);
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
