@@ -4,6 +4,9 @@ import { COMPANION_FAMILY_ID, COMPANION_SCHEMA_VERSION } from './companionState.
 import type { StoredCompanion } from '../../../shared/contracts.js';
 
 export function companionMigrationPatch(state: Partial<StoredCompanion>, now = new Date()) {
+  if (typeof state.schemaVersion === 'number' && state.schemaVersion > COMPANION_SCHEMA_VERSION) {
+    throw new Error(`Companion schema ${state.schemaVersion} is newer than supported schema ${COMPANION_SCHEMA_VERSION}.`);
+  }
   const patch: Record<string, unknown> = {};
   if (!state.familyId) patch.familyId = COMPANION_FAMILY_ID;
   if (state.schemaVersion !== COMPANION_SCHEMA_VERSION) patch.schemaVersion = COMPANION_SCHEMA_VERSION;

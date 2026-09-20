@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import { mergeCompanionSnapshot, operationKey, readRememberedCompanion, rememberCompanion, resolveCompanionId, type CompanionSnapshots } from '../lib/companionState.js';
+import { mergeCompanionSnapshot, operationKey, readCompanionRoster, readCompanionSnapshot, readRememberedCompanion, rememberCompanion, resolveCompanionId, type CompanionSnapshots } from '../lib/companionState.js';
 import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionRosterSummary, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
 import type { CompanionActionValues } from '../components/companion/types.js';
 
@@ -14,12 +14,14 @@ export default function useCompanion() {
   const [roster, setRoster] = useState<CompanionRosterSummary[]>([]);
   const [companionId, setCompanionId] = useState(() => readRememberedCompanion(browserStorage()));
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [rosterError, setRosterError] = useState('');
   const [busyById, setBusyById] = useState<Record<string, string>>({});
   const mounted = useRef(true);
   const inFlight = useRef(new Set<string>());
   const pendingOperations = useRef(new Map<string, PendingOperation>());
   const pendingCreate = useRef<PendingOperation | null>(null);
   const selectedId = useRef(companionId);
+  const refreshSequence = useRef(0);
   selectedId.current = companionId;
 
   const apply = useCallback((requestedId: string, next: CompanionSnapshot) => {
@@ -34,27 +36,50 @@ export default function useCompanion() {
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     const requestedId = selectedId.current;
-    try {
-      const [response, rosterResponse] = await Promise.all([
-        api.get<ApiResponse<CompanionSnapshot>>('/companions', { params: { id: requestedId }, signal }),
-        api.get<ApiResponse<{ companions: CompanionRosterSummary[] }>>('/companions/roster', { signal }),
-      ]);
-      if (!mounted.current) return;
-      apply(requestedId, response.data.data);
-      const nextRoster = rosterResponse.data.data.companions;
-      setRoster(nextRoster);
-      const resolvedId = resolveCompanionId(selectedId.current, nextRoster);
-      if (resolvedId !== selectedId.current) selectCompanion(resolvedId);
-      if (!inFlight.current.has(requestedId)) setErrors((current) => ({ ...current, [requestedId]: '' }));
-    } catch (err) {
-      const requestError = err as { code?: string; response?: { data?: { error?: { message?: string } } } };
-      if (mounted.current && requestError.code !== 'ERR_CANCELED') {
+    const sequence = ++refreshSequence.current;
+    const [detailResult, rosterResult] = await Promise.allSettled([
+      api.get<ApiResponse<CompanionSnapshot>>('/companions', { params: { id: requestedId }, signal }),
+      api.get<ApiResponse<{ companions: CompanionRosterSummary[] }>>('/companions/roster', { signal }),
+    ]);
+    if (!mounted.current) return;
+
+    if (detailResult.status === 'fulfilled') {
+      const snapshot = readCompanionSnapshot(detailResult.value.data.data);
+      if (snapshot) {
+        apply(requestedId, snapshot);
+        if (!inFlight.current.has(requestedId)) setErrors((current) => ({ ...current, [requestedId]: '' }));
+      } else if (sequence === refreshSequence.current) {
+        setErrors((current) => ({ ...current, [requestedId]: 'The companion response was incomplete. Try refreshing.' }));
+      }
+    } else {
+      const requestError = detailResult.reason as { code?: string; response?: { data?: { error?: { message?: string } } } };
+      if (sequence === refreshSequence.current && requestError.code !== 'ERR_CANCELED') {
         setErrors((current) => ({ ...current, [requestedId]: requestError.response?.data?.error?.message || 'Could not reach your companion. Try refreshing.' }));
       }
     }
+
+    if (rosterResult.status === 'fulfilled') {
+      const nextRoster = readCompanionRoster(rosterResult.value.data.data);
+      if (nextRoster && sequence === refreshSequence.current) {
+        setRoster(nextRoster);
+        setRosterError('');
+        if (selectedId.current === requestedId) {
+          const resolvedId = resolveCompanionId(requestedId, nextRoster);
+          if (resolvedId !== requestedId) selectCompanion(resolvedId);
+        }
+      } else if (!nextRoster && sequence === refreshSequence.current) {
+        setRosterError('Could not refresh the companion list.');
+      }
+    } else {
+      const requestError = rosterResult.reason as { code?: string };
+      if (sequence === refreshSequence.current && requestError.code !== 'ERR_CANCELED') setRosterError('Could not refresh the companion list.');
+    }
   }, [apply, selectCompanion]);
 
-  useEffect(() => () => { mounted.current = false; }, []);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     void refresh(controller.signal);
@@ -116,5 +141,5 @@ export default function useCompanion() {
   const data = snapshots[companionId] || null;
   const busy = busyById[companionId] || busyById.__create__ || '';
   const error = errors[companionId] || errors.__create__ || '';
-  return { ...data, roster, companionId, selectCompanion, createCompanion, error, busy, act, refresh };
+  return { ...data, roster, rosterError, companionId, selectCompanion, createCompanion, error, busy, act, refresh };
 }

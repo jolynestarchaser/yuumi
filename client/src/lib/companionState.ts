@@ -2,6 +2,24 @@ import type { CompanionRosterSummary, CompanionSnapshot } from '../../../shared/
 
 export type CompanionSnapshots = Record<string, CompanionSnapshot>;
 
+const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
+
+export function readCompanionSnapshot(value: unknown): CompanionSnapshot | null {
+  if (!record(value) || !record(value.companion) || !record(value.capabilities)) return null;
+  if (typeof value.companion.id !== 'string' || !Number.isSafeInteger(value.companion.revision)) return null;
+  if (typeof value.capabilities.chat !== 'boolean' || typeof value.capabilities.portraits !== 'boolean') return null;
+  return value as unknown as CompanionSnapshot;
+}
+
+export function readCompanionRoster(value: unknown): CompanionRosterSummary[] | null {
+  if (!record(value) || !Array.isArray(value.companions)) return null;
+  if (value.companions.some((entry) => !record(entry)
+    || typeof entry.id !== 'string'
+    || typeof entry.name !== 'string'
+    || !Number.isSafeInteger(entry.revision))) return null;
+  return value.companions as CompanionRosterSummary[];
+}
+
 export function readRememberedCompanion(storage: Pick<Storage, 'getItem'> | undefined): string {
   try {
     return storage?.getItem('yuu-mi:active-companion') || 'joe-and-focus';

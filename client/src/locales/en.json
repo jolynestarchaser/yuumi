@@ -168,6 +168,8 @@
   "contain": "contain",
   "Continue": "Continue",
   "Could not reach your companion. Try refreshing.": "Could not reach your companion. Try refreshing.",
+  "The companion response was incomplete. Try refreshing.": "The companion response was incomplete. Try refreshing.",
+  "Could not refresh the companion list.": "Could not refresh the companion list.",
   "Could not save this moment. Try again; your draft is still here.": "Could not save this moment. Try again; your draft is still here.",
   "Could not save this note.": "Could not save this note.",
   "Could we make up a tiny adventure together?": "Could we make up a tiny adventure together?",

@@ -122,7 +122,7 @@ export default function CompanionWidget({ onClose, onGoOut }: { onClose: () => v
 function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: () => void }) {
   const { t, language } = useCompanionLanguage();
   const profile = useAuthStore((state) => state.profile);
-  const { companion, capabilities, roster, companionId, selectCompanion, createCompanion, error, busy, act, refresh } = useCompanion();
+  const { companion, capabilities, roster, rosterError, companionId, selectCompanion, createCompanion, error, busy, act, refresh } = useCompanion();
   const [tab, setTab] = useState('chat');
   const [creating, setCreating] = useState(false);
   const [reaction, setReaction] = useState<CareAction | ''>('');
@@ -139,6 +139,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   }
   return <GlassDialog className='companion-dialog' title={<><PawPrint size={19} /> {t('Our little companion')}</>} eyebrow={t('JOE + FOCUS · A WORLD OF OUR OWN')} onClose={onClose}>
     {error && <div className='companion-error' role='alert'><span>{t(error)}</span><button type='button' aria-label={t('Refresh companion')} onClick={() => refresh()}><RefreshCw size={16} /></button></div>}
+    {rosterError && companion && <div className='companion-error' role='status'><span>{t(rosterError)}</span><button type='button' aria-label={t('Refresh companion')} onClick={() => refresh()}><RefreshCw size={16} /></button></div>}
     {!companion ? <p className='companion-loading' role='status'>{t('Opening their little world…')}</p> : creating ? <HatchCompanion busy={busy} act={act} onCreate={async (setup) => { const created = await createCompanion(setup); if (created) setCreating(false); return created; }} /> : !companion.bornAt ? <HatchCompanion busy={busy} act={act} /> : <div className='companion-layout' lang={language}>
       <section className='companion-home' aria-label={t('Home of {name}', { name: companion.name })}>
         <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{t('Level')} {entry.level}</small></button>)}<button type='button' className='companion-add' onClick={() => setCreating(true)} disabled={Boolean(busy)}>{t('Add companion')}</button></div>

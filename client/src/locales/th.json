@@ -168,6 +168,8 @@
   "contain": "พอดีภาพ",
   "Continue": "ถัดไป",
   "Could not reach your companion. Try refreshing.": "ติดต่อน้องไม่ได้ ลองโหลดข้อมูลใหม่อีกครั้ง",
+  "The companion response was incomplete. Try refreshing.": "ข้อมูลของน้องมาไม่ครบ ลองโหลดใหม่อีกครั้ง",
+  "Could not refresh the companion list.": "โหลดรายชื่อน้องไม่ได้",
   "Could not save this moment. Try again; your draft is still here.": "บันทึกช่วงเวลานี้ไม่สำเร็จ ลองอีกครั้งได้ ฉบับร่างยังอยู่",
   "Could not save this note.": "บันทึกโน้ตไม่สำเร็จ",
   "Could we make up a tiny adventure together?": "เรามาคิดการผจญภัยเล็ก ๆ ด้วยกันไหม",

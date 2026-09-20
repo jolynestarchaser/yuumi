@@ -10,7 +10,8 @@ import type { StoredCompanion, CompanionBudget } from '../../../shared/contracts
 const ACTIVE_COMPANION_LIMIT = 6;
 const OPERATION_ID = /^[a-zA-Z0-9-]{10,80}$/;
 const fail = (status, message) => Object.assign(new Error(message), { status });
-const respond = (res, state) => res.json({ success: true, data: { companion: publicCompanion(state), capabilities: companionCapabilities() } });
+const privateNoStore = (res) => res.set('Cache-Control', 'private, no-store');
+const respond = (res, state) => privateNoStore(res).json({ success: true, data: { companion: publicCompanion(state), capabilities: companionCapabilities() } });
 const wrap = (handler) => async (req, res) => {
   try { await handler(req, res); }
   catch (error) { res.status(error.status || 500).json({ success: false, error: { code: 'COMPANION_ERROR', message: error.status ? error.message : 'Could not save your companion. Please try again.' } }); }
@@ -101,7 +102,7 @@ export const getCompanionRoster = wrap(async (req, res) => {
   await migrateCompanionRoster();
   const includeArchived = req.query.archived === 'true';
   const companions = await Companion.find({ familyId: COMPANION_FAMILY_ID, ...(includeArchived ? {} : { archivedAt: null }) }, { _id: 1, name: 1, bornAt: 1, archivedAt: 1, mood: 1, xp: 1, appearance: 1, form: 1, revision: 1 }).sort({ bornAt: 1 }).lean();
-  res.json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, archivedAt: companion.archivedAt, mood: companion.mood, level: Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })), activeLimit: ACTIVE_COMPANION_LIMIT } });
+  privateNoStore(res).json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, archivedAt: companion.archivedAt, mood: companion.mood, level: Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })), activeLimit: ACTIVE_COMPANION_LIMIT } });
 });
 
 export const createCompanion = wrap(async (req, res) => {
@@ -137,21 +138,27 @@ export const interactWithCompanion = wrap(async (req, res) => {
   if (action === 'portrait') throw fail(410, 'Portrait generation has been retired. Your companion now grows through built-in animated forms.');
   if (action === 'forget' && (typeof memoryId !== 'string' || memoryId.length > 80)) throw fail(400, 'Choose a valid memory.');
   const saved = await withCompanionLock(operationId, async (state) => {
-    let next = settledState(state);
+    const commandNow = new Date();
+    let next = settledState(state, commandNow);
     if (action === 'adopt') {
       if (state.bornAt) throw fail(409, 'Your shared companion has already hatched. Reopen the widget to meet them.');
       return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), appearance: req.body.appearance || next.appearance, bornAt: new Date() };
     }
     if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
     if (state.archivedAt && action !== 'restore') throw fail(409, 'Restore this companion before sharing another moment.');
-    if (action === 'archive') return { ...next, archivedAt: new Date() };
+    if (action === 'archive') return { ...next, archivedAt: commandNow };
     if (action === 'restore') {
       if (!state.archivedAt) return next;
       await withFamilyLock(async () => {
         await migrateCompanionRoster();
         if (await Companion.countDocuments(activeFilter) >= ACTIVE_COMPANION_LIMIT) throw fail(409, 'Your companion family already has six active companions. Archive one before restoring another.');
       });
-      return { ...next, archivedAt: null };
+      const archivedAtMs = new Date(state.archivedAt).getTime();
+      const restUntilMs = state.restUntil ? new Date(state.restUntil).getTime() : Number.NaN;
+      const remainingRestMs = state.behaviorState === 'resting' && Number.isFinite(restUntilMs) && Number.isFinite(archivedAtMs)
+        ? Math.max(0, restUntilMs - archivedAtMs)
+        : 0;
+      return { ...next, archivedAt: null, needsUpdatedAt: commandNow, restUntil: remainingRestMs ? new Date(commandNow.getTime() + remainingRestMs) : null, behaviorState: remainingRestMs ? 'resting' : 'active' };
     }
     if (action === 'customize') {
       if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
@@ -169,7 +176,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
     }
     if (ACTIONS.includes(action)) {
       if (state.lastCare?.[actor] && Date.now() - new Date(state.lastCare[actor]).getTime() < 5000) throw fail(429, 'Let your companion enjoy this moment. Try again in a few seconds.');
-      return { ...careFor(state, actor, action), lastCare: { ...state.lastCare, [actor]: new Date() } };
+      return { ...careFor(state, actor, action, commandNow), lastCare: { ...state.lastCare, [actor]: commandNow } };
     }
     if (action === 'chat') {
       await reserveGeneration(operationId, 'chats');

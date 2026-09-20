@@ -29,8 +29,19 @@ export function initialCompanion(): StoredCompanion {
 
 export function settledState(state: StoredCompanion, now = new Date()): StoredCompanion {
   const clock = state.needsUpdatedAt || state.updatedAt;
-  const hours = clamp((now.getTime() - new Date(clock).getTime()) / 3_600_000, 0, 24);
-  const resting = state.behaviorState === 'resting' && state.restUntil && new Date(state.restUntil).getTime() > now.getTime();
+  const nowMs = now.getTime();
+  const clockMs = new Date(clock).getTime();
+  if (!Number.isFinite(nowMs) || !Number.isFinite(clockMs)) throw new Error('Companion clock is invalid.');
+  if (nowMs < clockMs) return { ...state, appearance: state.appearance || { visualStyle: 'soft', animated: true, usePortrait: false } };
+  if (state.archivedAt) return { ...state, appearance: state.appearance || { visualStyle: 'soft', animated: true, usePortrait: false } };
+  const elapsedMs = Math.min(nowMs - clockMs, 24 * 3_600_000);
+  const hours = elapsedMs / 3_600_000;
+  const intervalEndMs = clockMs + elapsedMs;
+  const restUntilMs = state.behaviorState === 'resting' && state.restUntil ? new Date(state.restUntil).getTime() : Number.NaN;
+  if (state.behaviorState === 'resting' && state.restUntil && !Number.isFinite(restUntilMs)) throw new Error('Companion rest clock is invalid.');
+  const restHours = Number.isFinite(restUntilMs) ? Math.max(0, Math.min(intervalEndMs, restUntilMs) - clockMs) / 3_600_000 : 0;
+  const awakeHours = hours - restHours;
+  const resting = state.behaviorState === 'resting' && Number.isFinite(restUntilMs) && restUntilMs > nowMs;
   const waking = state.behaviorState === 'resting' && !resting;
   return {
     ...state,
@@ -40,7 +51,7 @@ export function settledState(state: StoredCompanion, now = new Date()): StoredCo
     needsUpdatedAt: now,
     needs: {
       fullness: clamp(state.needs.fullness - hours * 3, 20),
-      energy: clamp(state.needs.energy + hours * (resting ? 12 : -2), 20),
+      energy: clamp(state.needs.energy + restHours * 12 - awakeHours * 2, 20),
       joy: clamp(state.needs.joy - hours * 2, 25),
       comfort: clamp((state.needs.comfort ?? 75) - hours * 1.5, 25)
     },
@@ -69,8 +80,9 @@ export function remember(state: StoredCompanion, actor: Profile, kind: string, t
 export function careFor(state: StoredCompanion, actor: Profile, action: CareAction, now = new Date()): StoredCompanion {
   if (!ACTIONS.includes(action) || !['joe', 'focus'].includes(actor)) throw new Error('Invalid care action.');
   const next = settledState(state, now);
-  next.traits = { ...state.traits };
-  next.bonds = { ...state.bonds, [actor]: state.bonds[actor] + 1 };
+  if (action === 'rest' && next.behaviorState === 'resting' && next.restUntil && new Date(next.restUntil).getTime() > now.getTime()) return next;
+  next.traits = { ...next.traits };
+  next.bonds = { ...next.bonds, [actor]: next.bonds[actor] + 1 };
   const budget = dayBudget(state.xpBudget, now);
   const person = displayName(actor);
   const effects: Record<CareAction, [number, number, number, number, CompanionMood, keyof StoredCompanion['traits'], string]> = {
@@ -81,15 +93,16 @@ export function careFor(state: StoredCompanion, actor: Profile, action: CareActi
     explore: [-6, -10, 16, 2, 'curious', 'curiosity', `I explored with ${person} and found a pebble that looks like a moon!`]
   };
   const [food, energy, joy, comfort, mood, trait, thought] = effects[action];
+  const primaryBefore = action === 'feed' ? next.needs.fullness : action === 'play' || action === 'explore' ? next.needs.joy : action === 'cuddle' ? (next.needs.comfort ?? 75) : next.needs.energy;
   next.needs = { fullness: clamp(next.needs.fullness + food, 20), energy: clamp(next.needs.energy + energy, 20), joy: clamp(next.needs.joy + joy, 25), comfort: clamp(next.needs.comfort + comfort, 25) };
+  const primaryAfter = action === 'feed' ? next.needs.fullness : action === 'play' || action === 'explore' ? next.needs.joy : action === 'cuddle' ? next.needs.comfort : next.needs.energy;
   next.traits[trait] = clamp(next.traits[trait] + 2);
   next.mood = mood;
   next.thought = thought;
   if (action === 'rest') { next.behaviorState = 'resting'; next.restUntil = new Date(now.getTime() + 45 * 60_000); }
-  const primaryBefore = action === 'feed' ? state.needs.fullness : action === 'play' || action === 'explore' ? state.needs.joy : action === 'cuddle' ? (state.needs.comfort ?? 75) : state.needs.energy;
-  const meaningful = primaryBefore < 85;
+  const meaningful = primaryBefore < 85 && primaryAfter > primaryBefore;
   let reward = meaningful && budget.care < 40 ? 8 : 0;
-  const request = state.careRequest;
+  const request = next.careRequest;
   if (request?.state === 'active' && request.action === action && primaryBefore < 60) {
     next.careRequest = { ...request, state: 'fulfilled', fulfilledAt: now, fulfilledBy: actor };
     if (budget.care + reward <= 36) reward += 4;
