@@ -13,8 +13,12 @@ interface CompanionMemorialProps {
 
 export default function CompanionMemorial({ companion, busy, act, onStartSuccessor }: CompanionMemorialProps) {
   const { t } = useCompanionLanguage();
-  const isRetired = companion.lifeStatus === 'retired';
+  const lifecycle = companion.lifecycle;
+  const isRetired = lifecycle?.lifeStatus === 'retired';
   const totalCare = (companion.bonds?.joe || 0) + (companion.bonds?.focus || 0);
+  const generation = lifecycle?.generation ?? 1;
+  const lineageId = lifecycle?.lineageId || 'primary';
+  const simulatedAgeDays = Math.floor((lifecycle?.simulatedAgeHours || 0) / 24);
 
   const formattedDate = (timestamp?: string | Date | null) => {
     if (!timestamp) return '';
@@ -29,16 +33,16 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
   const statusText = isRetired
     ? t('{name} peacefully retired to the sunlit garden on {date}.', {
         name: companion.name,
-        date: formattedDate(companion.retiredAt) || t('an enduring afternoon'),
+        date: formattedDate(lifecycle?.terminalAt) || t('an enduring afternoon'),
       })
-    : companion.deathReason === 'natural'
+    : lifecycle?.terminalReason === 'natural'
     ? t('{name} lived a full, wonderful life and peacefully passed on {date}.', {
         name: companion.name,
-        date: formattedDate(companion.deceasedAt) || t('a quiet evening'),
+        date: formattedDate(lifecycle?.terminalAt) || t('a quiet evening'),
       })
     : t('{name} fell ill and peacefully passed on {date}.', {
         name: companion.name,
-        date: formattedDate(companion.deceasedAt) || t('a quiet evening'),
+        date: formattedDate(lifecycle?.terminalAt) || t('a quiet evening'),
       });
 
   return (
@@ -49,8 +53,8 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
         <h2>{companion.name}</h2>
         <p className='companion-memorial-lineage'>
           {t('Generation {gen} · Lineage {lineage}', {
-            gen: companion.generation,
-            lineage: companion.lineageId || 'primary',
+            gen: generation,
+            lineage: lineageId,
           })}
         </p>
         <p className='companion-memorial-status'>{statusText}</p>
@@ -59,7 +63,7 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
       <div className='companion-memorial-stats'>
         <div className='companion-memorial-stat-card'>
           <Feather size={18} />
-          <strong>{companion.simulatedAgeDays}</strong>
+          <strong>{simulatedAgeDays}</strong>
           <span>{t('Days together')}</span>
         </div>
         <div className='companion-memorial-stat-card'>
@@ -69,7 +73,7 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
         </div>
         <div className='companion-memorial-stat-card'>
           <Sparkles size={18} />
-          <strong>{companion.generation}</strong>
+          <strong>{generation}</strong>
           <span>{t('Generation')}</span>
         </div>
       </div>
@@ -88,7 +92,7 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
                     title={t('Forget this memory')}
                     aria-label={t('Forget this memory')}
                     disabled={Boolean(busy)}
-                    onClick={() => act('forget', { memoryId: mem.id })}
+                    onClick={() => act({ action: 'forget', memoryId: mem.id })}
                   >
                     &times;
                   </button>
@@ -108,7 +112,7 @@ export default function CompanionMemorial({ companion, busy, act, onStartSuccess
           onClick={() => onStartSuccessor(companion.id)}
         >
           <Egg size={18} />
-          {t('Hatch Successor Generation (Gen {nextGen})', { nextGen: companion.generation + 1 })}
+          {t('Hatch Successor Generation (Gen {nextGen})', { nextGen: generation + 1 })}
         </button>
       </div>
     </div>
