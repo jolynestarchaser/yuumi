@@ -14,7 +14,7 @@ const defaults = initialCompanion();
 const schema = new mongoose.Schema<StoredCompanion>({
   _id: String,
   familyId: { type: String, required: true, default: 'joe-and-focus', index: true },
-  schemaVersion: { type: Number, default: 2, min: 2 },
+  schemaVersion: { type: Number, default: 3, min: 2 },
   archivedAt: { type: Date, default: null, index: true },
   createdOperationId: { type: String, maxlength: 80, sparse: true, unique: true },
   name: { type: String, required: true, maxlength: 32, default: defaults.name },
@@ -22,16 +22,21 @@ const schema = new mongoose.Schema<StoredCompanion>({
   seed: { type: String, maxlength: 500, default: defaults.seed },
   inspirations: { joe: { type: String, maxlength: 300, default: '' }, focus: { type: String, maxlength: 300, default: '' } },
   bornAt: { type: Date, default: null }, updatedAt: { type: Date, default: Date.now }, needsUpdatedAt: { type: Date, default: Date.now },
-  needs: { fullness: bounded(75), energy: bounded(80), joy: bounded(75), comfort: bounded(75) },
+  needs: { fullness: bounded(75), energy: bounded(80), joy: bounded(75), comfort: bounded(75), hygiene: bounded(100), health: bounded(100) },
   traits: { curiosity: bounded(50), affection: bounded(50), playfulness: bounded(50) },
   bonds: { joe: { type: Number, default: 0, min: 0 }, focus: { type: Number, default: 0, min: 0 } },
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
   behaviorState: { type: String, enum: ['active', 'resting'], default: 'active' }, restUntil: { type: Date, default: null },
-  careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
-  careSummary: { actions: { feed: { type: Number, default: 0 }, play: { type: Number, default: 0 }, cuddle: { type: Number, default: 0 }, rest: { type: Number, default: 0 }, explore: { type: Number, default: 0 } }, caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } } },
+  careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean', 'medicine'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
+  careSummary: { actions: { feed: { type: Number, default: 0 }, play: { type: Number, default: 0 }, cuddle: { type: Number, default: 0 }, rest: { type: Number, default: 0 }, explore: { type: Number, default: 0 }, clean: { type: Number, default: 0 }, medicine: { type: Number, default: 0 } }, caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } } },
   xpBudget: { day: String, care: { type: Number, default: 0 }, chat: { type: Number, default: 0 } },
-  behaviorWindow: { type: [{ action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore'] }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
-  stageOutcomes: { type: [{ id: String, level: Number, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown'] }, fromFormId: String, toFormId: String, branch: { type: String, enum: ['explorer', 'guardian', 'trickster'] }, rulesVersion: Number, at: Date }], default: [] },
+  behaviorWindow: { type: [{ action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean', 'medicine'] }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
+  stageOutcomes: { type: [{ id: String, level: Number, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown', 'elder'] }, fromFormId: String, toFormId: String, branch: { type: String, enum: ['explorer', 'guardian', 'trickster'] }, rulesVersion: Number, at: Date }], default: [] },
+  lifecycleEvents: { type: [{ id: { type: String, required: true }, kind: { type: String, enum: ['stage', 'illness', 'recovery', 'protection', 'death', 'retirement'], required: true }, at: { type: Date, required: true }, fromStage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown', 'elder'] }, toStage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown', 'elder'] }, reason: { type: String, enum: ['natural', 'illness', 'retired'] } }], default: [], validate: (rows) => rows.length <= 200 },
+  lifecycle: {
+    type: new mongoose.Schema({ rulesVersion: { type: Number, required: true, default: 3 }, lifeStatus: { type: String, enum: ['alive', 'retired', 'deceased'], required: true }, healthCondition: { type: String, enum: ['well', 'ill'], required: true }, stage: { type: String, enum: ['hatchling', 'child', 'juvenile', 'grown', 'elder'], required: true }, simulatedAgeHours: { type: Number, min: 0, required: true }, stageCareCount: { type: Number, min: 0, required: true }, lowNeedExposureHours: { type: Number, min: 0, required: true }, simulationAt: { type: Date, required: true }, lastEngagementAt: { type: Date, required: true }, protectionUntil: Date, lastMedicineAt: Date, terminalAt: Date, terminalReason: { type: String, enum: ['natural', 'illness', 'retired', null] }, generation: { type: Number, min: 1, required: true }, lineageId: { type: String, required: true }, predecessorId: { type: String, default: null } }, { _id: false }),
+    default: () => initialCompanion().lifecycle
+  },
   thought: { type: String, maxlength: 300, default: defaults.thought },
   chatColor: { type: String, match: /^#[0-9a-fA-F]{6}$/, default: defaults.chatColor },
   appearance: {
@@ -67,5 +72,8 @@ const schema = new mongoose.Schema<StoredCompanion>({
   recentOperations: { type: [String], default: [] },
   lockToken: String, lockedUntil: { type: Date, default: () => new Date(0) }
 }, { minimize: false });
+
+schema.index({ 'lifecycle.predecessorId': 1 }, { unique: true, partialFilterExpression: { 'lifecycle.predecessorId': { $type: 'string' } } });
+schema.index({ 'lifecycle.lineageId': 1, 'lifecycle.generation': 1 });
 
 export default mongoose.model('Companion', schema);

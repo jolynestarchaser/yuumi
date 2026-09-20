@@ -1,25 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api.js';
-import { mergeCompanionSnapshot, operationKey, readRememberedCompanion, rememberCompanion, resolveCompanionId, type CompanionSnapshots } from '../lib/companionState.js';
+import { mergeCompanionSnapshot, operationKey, readCompanionRoster, readCompanionSnapshot, readRememberedCompanion, rememberCompanion, resolveCompanionId, type CompanionSnapshots } from '../lib/companionState.js';
 import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionRosterSummary, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
-import type { CompanionActionValues } from '../components/companion/types.js';
 
 type PendingOperation = { signature: string; id: string };
 const browserStorage = () => {
   try { return globalThis.localStorage; } catch { return undefined; }
 };
 
-export default function useCompanion() {
+export default function useCompanion({ engage = false }: { engage?: boolean } = {}) {
   const [snapshots, setSnapshots] = useState<CompanionSnapshots>({});
   const [roster, setRoster] = useState<CompanionRosterSummary[]>([]);
   const [companionId, setCompanionId] = useState(() => readRememberedCompanion(browserStorage()));
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [rosterError, setRosterError] = useState('');
   const [busyById, setBusyById] = useState<Record<string, string>>({});
   const mounted = useRef(true);
   const inFlight = useRef(new Set<string>());
   const pendingOperations = useRef(new Map<string, PendingOperation>());
   const pendingCreate = useRef<PendingOperation | null>(null);
   const selectedId = useRef(companionId);
+  const refreshSequence = useRef(0);
+  const visited = useRef(new Set<string>());
   selectedId.current = companionId;
 
   const apply = useCallback((requestedId: string, next: CompanionSnapshot) => {
@@ -34,37 +36,81 @@ export default function useCompanion() {
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     const requestedId = selectedId.current;
-    try {
-      const [response, rosterResponse] = await Promise.all([
-        api.get<ApiResponse<CompanionSnapshot>>('/companions', { params: { id: requestedId }, signal }),
-        api.get<ApiResponse<{ companions: CompanionRosterSummary[] }>>('/companions/roster', { signal }),
-      ]);
+    const sequence = ++refreshSequence.current;
+    const detailPromise = api.get<ApiResponse<CompanionSnapshot>>('/companions', { params: { id: requestedId }, signal });
+    const rosterPromise = api.get<ApiResponse<{ companions: CompanionRosterSummary[] }>>('/companions/roster', { signal });
+    void detailPromise.then((result) => {
       if (!mounted.current) return;
-      apply(requestedId, response.data.data);
-      const nextRoster = rosterResponse.data.data.companions;
-      setRoster(nextRoster);
-      const resolvedId = resolveCompanionId(selectedId.current, nextRoster);
-      if (resolvedId !== selectedId.current) selectCompanion(resolvedId);
-      if (!inFlight.current.has(requestedId)) setErrors((current) => ({ ...current, [requestedId]: '' }));
-    } catch (err) {
-      const requestError = err as { code?: string; response?: { data?: { error?: { message?: string } } } };
-      if (mounted.current && requestError.code !== 'ERR_CANCELED') {
+      const snapshot = readCompanionSnapshot(result.data.data);
+      if (snapshot) {
+        apply(requestedId, snapshot);
+        if (!inFlight.current.has(requestedId)) setErrors((current) => ({ ...current, [requestedId]: '' }));
+      } else if (sequence === refreshSequence.current) {
+        setErrors((current) => ({ ...current, [requestedId]: 'The companion response was incomplete. Try refreshing.' }));
+      }
+    }).catch((reason) => {
+      if (!mounted.current) return;
+      const requestError = reason as { code?: string; response?: { data?: { error?: { message?: string } } } };
+      if (sequence === refreshSequence.current && requestError.code !== 'ERR_CANCELED') {
         setErrors((current) => ({ ...current, [requestedId]: requestError.response?.data?.error?.message || 'Could not reach your companion. Try refreshing.' }));
       }
-    }
+    });
+    void rosterPromise.then((result) => {
+      if (!mounted.current) return;
+      const nextRoster = readCompanionRoster(result.data.data);
+      if (nextRoster && sequence === refreshSequence.current) {
+        setRoster(nextRoster);
+        setRosterError('');
+        if (selectedId.current === requestedId) {
+          const resolvedId = resolveCompanionId(requestedId, nextRoster);
+          if (resolvedId !== requestedId) selectCompanion(resolvedId);
+        }
+      } else if (!nextRoster && sequence === refreshSequence.current) {
+        setRosterError('Could not refresh the companion list.');
+      }
+    }).catch((reason) => {
+      if (!mounted.current) return;
+      const requestError = reason as { code?: string };
+      if (sequence === refreshSequence.current && requestError.code !== 'ERR_CANCELED') setRosterError('Could not refresh the companion list.');
+    });
   }, [apply, selectCompanion]);
 
-  useEffect(() => () => { mounted.current = false; }, []);
+  const sendVisit = useCallback(async () => {
+    const targetId = selectedId.current;
+    if (inFlight.current.has(targetId)) return;
+    inFlight.current.add(targetId);
+    try {
+      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { action: 'visit', companionId: targetId, operationId: crypto.randomUUID() });
+      apply(targetId, response.data.data);
+    } catch {
+      // A visit only advances the authoritative clock. A failed visit must not
+      // replace a useful detail/roster error or block the habitat UI.
+    } finally { inFlight.current.delete(targetId); }
+  }, [apply]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
+    if (engage && !visited.current.has(companionId)) {
+      visited.current.add(companionId);
+      void sendVisit();
+    }
     void refresh(controller.signal);
     const timer = setInterval(() => { if (!document.hidden && !inFlight.current.has(companionId)) void refresh(controller.signal); }, 12000);
-    const onVisible = () => { if (!document.hidden && !inFlight.current.has(companionId)) void refresh(controller.signal); };
+    const onVisible = () => {
+      if (document.hidden || inFlight.current.has(companionId)) return;
+      if (engage) void sendVisit();
+      void refresh(controller.signal);
+    };
     document.addEventListener('visibilitychange', onVisible);
     return () => { controller.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
-  }, [companionId, refresh]);
+  }, [companionId, engage, refresh, sendVisit]);
 
-  async function act(action: CompanionAction['action'], values: CompanionActionValues = {}) {
+  async function act(command: CompanionAction) {
+    const { action, ...values } = command;
     const targetId = selectedId.current;
     if (inFlight.current.has(targetId)) return false;
     inFlight.current.add(targetId);
@@ -75,7 +121,7 @@ export default function useCompanion() {
     if (previous?.signature !== signature) pendingOperations.current.set(targetId, { signature, id: crypto.randomUUID() });
     const pending = pendingOperations.current.get(targetId)!;
     try {
-      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { action, ...values, companionId: targetId, operationId: pending.id });
+      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { ...command, companionId: targetId, operationId: pending.id });
       apply(targetId, response.data.data);
       if (pendingOperations.current.get(targetId)?.id === pending.id) pendingOperations.current.delete(targetId);
       return true;
@@ -89,15 +135,15 @@ export default function useCompanion() {
     }
   }
 
-  async function createCompanion(setup: CompanionSetup) {
+  async function createCompanion(setup: CompanionSetup, predecessorId?: string) {
     const createKey = '__create__';
     if (inFlight.current.has(createKey)) return false;
     inFlight.current.add(createKey);
     setBusyById((current) => ({ ...current, [createKey]: 'create' }));
-    const signature = JSON.stringify(setup);
+    const signature = JSON.stringify({ setup, predecessorId });
     if (pendingCreate.current?.signature !== signature) pendingCreate.current = { signature, id: crypto.randomUUID() };
     try {
-      const response = await api.post<ApiResponse<{ id: string; companion: PublicCompanion }>>('/companions/roster', { ...setup, operationId: pendingCreate.current.id });
+      const response = await api.post<ApiResponse<{ id: string; companion: PublicCompanion }>>('/companions/roster', { ...setup, predecessorId, operationId: pendingCreate.current.id });
       const id = response.data.data.id;
       apply(id, { companion: response.data.data.companion, capabilities: snapshots[companionId]?.capabilities || { chat: false, portraits: false } });
       selectCompanion(id);
@@ -116,5 +162,5 @@ export default function useCompanion() {
   const data = snapshots[companionId] || null;
   const busy = busyById[companionId] || busyById.__create__ || '';
   const error = errors[companionId] || errors.__create__ || '';
-  return { ...data, roster, companionId, selectCompanion, createCompanion, error, busy, act, refresh };
+  return { ...data, roster, rosterError, companionId, selectCompanion, createCompanion, error, busy, act, refresh };
 }

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true
+  },
+  "include": [
+    "../shared/contracts.d.ts",
+    "src/services/companionRules.ts",
+    "src/services/companionSimulation.ts",
+    "src/services/companionRewards.ts",
+    "src/services/companionLifecycle.ts"
+  ]
+}

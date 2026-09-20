@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { CompanionSnapshot } from '../../../shared/contracts.js';
-import { mergeCompanionSnapshot, operationKey, readRememberedCompanion, rememberCompanion, resolveCompanionId } from './companionState.js';
+import { mergeCompanionSnapshot, operationKey, readCompanionRoster, readCompanionSnapshot, readRememberedCompanion, rememberCompanion, resolveCompanionId } from './companionState.js';
 
 const snapshot = (id: string, revision: number) => ({ companion: { id, revision }, capabilities: {} }) as CompanionSnapshot;
 
@@ -43,4 +43,12 @@ test('blocked browser storage falls back without throwing', () => {
   const blocked = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); } };
   assert.equal(readRememberedCompanion(blocked), 'joe-and-focus');
   assert.doesNotThrow(() => rememberCompanion(blocked, 'safe'));
+});
+
+test('companion API readers reject malformed detail and roster payloads', () => {
+  assert.equal(readCompanionSnapshot({ companion: { id: 'pet', revision: 1 }, capabilities: { chat: true, portraits: false } })?.companion.id, 'pet');
+  assert.equal(readCompanionSnapshot({ companion: { id: 'pet' }, capabilities: {} }), null);
+  assert.deepEqual(readCompanionRoster({ companions: [{ id: 'pet', name: 'Pip', revision: 0 }] })?.map((entry) => entry.id), ['pet']);
+  assert.equal(readCompanionRoster([]), null);
+  assert.equal(readCompanionRoster({ companions: [null] }), null);
 });

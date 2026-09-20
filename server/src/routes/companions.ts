@@ -14,4 +14,8 @@ router.get('/v2', getCompanion);
 router.get('/v2/roster', getCompanionRoster);
 router.post('/v2/roster', createCompanion);
 router.post('/v2/actions', interactWithCompanion);
+router.get('/v3', getCompanion);
+router.get('/v3/roster', getCompanionRoster);
+router.post('/v3/roster', createCompanion);
+router.post('/v3/actions', interactWithCompanion);
 export default router;

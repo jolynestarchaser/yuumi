@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { Apple, Heart, Home, Leaf, MessageCircle, Moon, Pause, Play, Star, Volume2 } from 'lucide-react';
+import { Apple, Droplets, Heart, Home, Leaf, MessageCircle, Moon, Pause, Pill, Play, Star, Volume2 } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
 import useCompanion from '../../hooks/useCompanion.js';
 import CompanionAvatar from './CompanionAvatar.js';
 import { CompanionLanguageProvider, useCompanionLanguage } from './companionLanguage.js';
 import { defaultVoice, useCompanionVoice } from './useCompanionVoice.js';
-import type { CareAction, PublicCompanion } from '../../../../shared/contracts.js';
+import type { LifecycleCareAction, PublicCompanion } from '../../../../shared/contracts.js';
 
-const careIcons: Record<CareAction, typeof Apple> = {
+const careIcons: Record<LifecycleCareAction, typeof Apple> = {
   feed: Apple,
   play: Star,
   cuddle: Heart,
   rest: Moon,
-  explore: Leaf
+  explore: Leaf,
+  clean: Droplets,
+  medicine: Pill,
 };
 
 function roamingWords(companion: PublicCompanion, turn: number) {
@@ -29,7 +31,7 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
   const [x, setX] = useState(16);
   const [paused, setPaused] = useState(false);
   const [turn, setTurn] = useState(0);
-  const [reaction, setReaction] = useState<CareAction | ''>('');
+  const [reaction, setReaction] = useState<LifecycleCareAction | ''>('');
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useReducedMotion();
   const { speak, stop, speaking, supported, voiceError } = useCompanionVoice();
@@ -46,19 +48,21 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
   }, [moving]);
   useEffect(() => () => { if (reactionTimer.current) clearTimeout(reactionTimer.current); }, []);
   useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setTurn(0); }, [companion?.id]);
+  useEffect(() => { if (companion?.lifecycle?.lifeStatus && companion.lifecycle.lifeStatus !== 'alive') onHome(); }, [companion?.lifecycle?.lifeStatus, onHome]);
   if (!companion?.bornAt) return error ? <aside className='companion-roamer' style={{ left: 16 }}><button onClick={onHome}>{t('Return home')}</button><p>{t(error)}</p></aside> : null;
+  if (companion.lifecycle?.lifeStatus && companion.lifecycle.lifeStatus !== 'alive') return null;
   const words = t(roamingWords(companion, turn));
   const voice = { ...(companion.appearance?.voice || defaultVoice), language: language === 'th' ? 'th-TH' as const : 'en-US' as const };
-  const requestAction = companion.request.action;
+  const requestAction = companion.request?.action || 'explore';
   const CareIcon = careIcons[requestAction];
   async function careHere() {
-    if (busy || !await act(requestAction)) return;
+    if (busy || !companion.allowedActions?.includes(requestAction) || !await act({ action: requestAction })) return;
     if (reactionTimer.current) clearTimeout(reactionTimer.current);
     setReaction(requestAction);
     reactionTimer.current = setTimeout(() => setReaction(''), 2600);
   }
   return <aside className={`companion-roamer ${moving ? 'walking' : ''}`} style={{ left: x }} aria-label={companion.name} lang={language}>
-    <div className='companion-speech'><strong>{companion.name}</strong><p>{words}</p><button className='companion-roamer-care' type='button' onClick={() => void careHere()} disabled={Boolean(busy)} aria-label={t('Care for {name}', { name: companion.name })}><CareIcon size={14} /><span>{t(companion.request.text)}</span></button>{voice.enabled && supported && <button type='button' onClick={() => speaking ? stop() : speak(words, voice)} aria-label={t(speaking ? 'Stop voice' : 'Listen')}><Volume2 size={14} />{t(speaking ? 'Stop voice' : 'Listen')}</button>}{voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}</div>
+    <div className='companion-speech'><strong>{companion.name}</strong><p>{words}</p>{companion.request && <button className='companion-roamer-care' type='button' onClick={() => void careHere()} disabled={Boolean(busy) || !companion.allowedActions?.includes(requestAction)} aria-label={t('Care for {name}', { name: companion.name })}><CareIcon size={14} /><span>{t(companion.request.text)}</span></button>}{voice.enabled && supported && <button type='button' onClick={() => speaking ? stop() : speak(words, voice)} aria-label={t(speaking ? 'Stop voice' : 'Listen')}><Volume2 size={14} />{t(speaking ? 'Stop voice' : 'Listen')}</button>}{voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}</div>
     <button className='companion-roamer-pet' type='button' onClick={onOpen} aria-label={t('Chat')}><CompanionAvatar companion={companion} small reaction={reaction} /></button>
     <div className='companion-roamer-actions'>
       <button type='button' onClick={() => setPaused(!paused)} aria-label={t(paused ? 'Walk' : 'Pause walking')}>{paused ? <Play size={15} /> : <Pause size={15} />}</button>

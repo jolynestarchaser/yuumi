@@ -7,7 +7,7 @@ const raceBias: Record<CompanionSpecies, [number, number, number]> = {
   dragon: [8, 4, 0], robot: [8, 0, 4], child: [4, 4, 4], custom: [4, 4, 4]
 };
 const paths: CompanionEvolution['path'][] = ['explorer', 'guardian', 'trickster'];
-const transitionLevels: Record<Exclude<CompanionGrowthStage, 'hatchling'>, number> = { child: 3, juvenile: 6, grown: 10 };
+const transitionLevels: Record<Exclude<CompanionGrowthStage, 'hatchling' | 'elder'>, number> = { child: 3, juvenile: 6, grown: 10 };
 
 export function formIdFor(species: CompanionSpecies, stage: CompanionGrowthStage, branch: CompanionEvolution['path']) {
   return `${species}-${stage}-${branch}-v2`;
@@ -24,7 +24,7 @@ export function evolveCompanion(state: StoredCompanion, previousXp: number, rand
   const weights = traits.map((value, index) => 1 + (Math.max(0, Math.min(100, value)) / 25) ** 2 + raceBias[species][index]);
   const evolutions = [...(state.evolutions || [])];
   const outcomes = [...(state.stageOutcomes || [])];
-  for (const [stage, milestone] of Object.entries(transitionLevels) as [Exclude<CompanionGrowthStage, 'hatchling'>, number][]) {
+  for (const [stage, milestone] of Object.entries(transitionLevels) as [Exclude<CompanionGrowthStage, 'hatchling' | 'elder'>, number][]) {
     if (milestone <= previousLevel || milestone > level || outcomes.some((entry) => entry.level === milestone)) continue;
     let roll = random() * weights.reduce((sum, weight) => sum + weight, 0);
     let selected = paths.at(-1);

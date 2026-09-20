@@ -11,7 +11,7 @@ export default function CompanionJournal({ companion, busy, act }: Pick<Companio
     <div className='companion-section-heading'><BookHeart size={18} /><div><h3>{t('Little things I remember')}</h3><p>{t('Our latest 80 shared moments, kept between visits.')}</p></div></div>
     {forgetId && <div className='companion-forget-box' role='alert'>
       <p>{t('Forget this memory? Recent chat and the current thought will also clear so they can’t repeat it. Growth stays.')}</p>
-      <button type='button' disabled={Boolean(busy)} onClick={async () => { if (await act('forget', { memoryId: forgetId })) setForgetId(null); }}>{t('Forget this moment')}</button>
+      <button type='button' disabled={Boolean(busy)} onClick={async () => { if (await act({ action: 'forget', memoryId: forgetId })) setForgetId(null); }}>{t('Forget this moment')}</button>
       <button type='button' onClick={() => setForgetId(null)}>{t('Keep it')}</button>
     </div>}
     <div className='companion-memory-list'>{[...companion.memories].reverse().map((memory) => <article key={memory.id}>

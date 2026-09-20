@@ -44,11 +44,11 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 ## Optional shared AI companion
 
 Set `GEMINI_API_KEY` on the Railway backend only. Optional model overrides are
-`GEMINI_CHAT_MODEL` (default `gemini-2.5-flash`) and `GEMINI_IMAGE_MODEL`
+`GEMINI_CHAT_MODEL` (default `gemini-2.5-flash-lite`) and `GEMINI_IMAGE_MODEL`
 (default `gemini-2.5-flash-image`). Portraits also use the existing Cloudinary variables.
 Never put the Gemini key in Vercel frontend or `VITE_` variables. See
 [the companion specification](19-shared-companion.md) for limits, memory behavior, and checks.
 
 ## Rollback procedure
 
-Use Vercel's previous deployment promotion and Railway's deployment rollback. After either rollback, recheck `/api/health`, then create a temporary note and verify it appears in a second session.
+Companion schema v3 requires a MongoDB replica set for transaction-backed mutations. Before rollout, back up the companion collections and rehearse `npm run migrate:companions -- --dry-run`; run the write migration only after reviewing the count. Deploy a v3-compatible server before or together with the lifecycle client. Do not roll back to a writer that strips lifecycle fields or changes terminal companions back to alive. For unrelated changes, use Vercel's previous deployment promotion and Railway's deployment rollback, then recheck `/api/health` and cross-session persistence.

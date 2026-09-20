@@ -41,6 +41,10 @@ app.get('/api/auth/session', (req, res) => send(res, { profile: req.headers.auth
 app.post('/api/auth/logout', (_req, res) => send(res, {}));
 app.use('/api/companions', (req, _res, next) => { req.desktop = { tokenId: 'fixture', payload: {}, profile: req.headers.authorization?.includes('focus') ? 'focus' : 'joe' }; next(); });
 app.get('/api/companions', getCompanion);
+app.get('/api/companions/roster', (_req, res) => {
+  res.set('Cache-Control', 'private, no-store');
+  send(res, { companions: state ? [{ id: state._id || 'joe-and-focus', name: state.name, bornAt: state.bornAt, archivedAt: state.archivedAt, mood: state.mood, level: Math.floor(state.xp / 80) + 1, form: state.form, appearance: state.appearance, revision: state.revision }] : [] });
+});
 app.post('/api/companions/actions', interactWithCompanion);
 app.get('/api/settings/desktop', (_req, res) => send(res, settings));
 app.get('/api/spotify/status', (_req, res) => send(res, { configured: false, connected: false }));

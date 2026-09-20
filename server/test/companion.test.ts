@@ -22,6 +22,35 @@ test('time away preserves safe needs and relationships; repeated reads do not co
   assert.equal(state.needs.fullness, 75);
 });
 
+test('settlement integrates rest and awake time piecewise and freezes archives', () => {
+  const start = new Date('2026-01-01T00:00:00Z');
+  const state = { ...initialCompanion(), needsUpdatedAt: start, behaviorState: 'resting' as const, restUntil: new Date('2026-01-01T00:45:00Z'), needs: { fullness: 75, energy: 40, joy: 75, comfort: 75 } };
+  const long = settledState(state, new Date('2026-01-01T02:00:00Z'));
+  const short = settledState(settledState(state, new Date('2026-01-01T00:45:00Z')), new Date('2026-01-01T02:00:00Z'));
+  assert.deepEqual(long.needs, short.needs);
+  assert.equal(long.needs.energy, 46.5);
+  const archived = { ...state, archivedAt: start };
+  assert.deepEqual(settledState(archived, new Date('2026-02-01T00:00:00Z')).needs, archived.needs);
+  assert.equal(new Date(settledState(archived, new Date('2026-02-01T00:00:00Z')).needsUpdatedAt).getTime(), start.getTime());
+});
+
+test('meaningful care eligibility uses settled values and requires improvement', () => {
+  const now = new Date('2026-01-01T03:00:00Z');
+  const state = { ...initialCompanion(), needsUpdatedAt: new Date('2026-01-01T00:00:00Z'), needs: { fullness: 90, energy: 80, joy: 75, comfort: 75 }, xpBudget: { day: '2026-01-01', care: 0, chat: 0 } };
+  assert.equal(careFor(state, 'joe', 'feed', now).xp, 8);
+  assert.equal(careFor({ ...state, needsUpdatedAt: now, needs: { ...state.needs, fullness: 100 } }, 'joe', 'feed', now).xp, 0);
+});
+
+test('repeated rest does not extend an active nap or grant rewards', () => {
+  const now = new Date('2026-01-01T00:05:00Z');
+  const restUntil = new Date('2026-01-01T00:45:00Z');
+  const state = { ...initialCompanion(), xp: 8, behaviorState: 'resting' as const, restUntil, needsUpdatedAt: new Date('2026-01-01T00:00:00Z') };
+  const repeated = careFor(state, 'joe', 'rest', now);
+  assert.equal(repeated.xp, 8);
+  assert.equal(new Date(repeated.restUntil).getTime(), restUntil.getTime());
+  assert.equal(repeated.memories.length, 0);
+});
+
 test('care changes specific traits, identifies the caregiver, and does not mutate prior state', () => {
   const original = initialCompanion();
   const cared = careFor(original, 'focus', 'explore');
@@ -104,6 +133,7 @@ test('legacy companion migration is explicit and idempotent', () => {
   assert.deepEqual(patch, { familyId: 'joe-and-focus', schemaVersion: 2, archivedAt: null, needsUpdatedAt: updatedAt, 'needs.comfort': 75 });
   const migrated = { ...legacy, ...patch, needs: { ...legacy.needs, comfort: patch['needs.comfort'] } };
   assert.deepEqual(companionMigrationPatch(migrated), {});
+  assert.throws(() => companionMigrationPatch({ ...migrated, schemaVersion: 3 }), /newer than supported/);
 });
 
 test('legacy companions use the authored soft form when appearance settings are absent', () => {
@@ -242,7 +272,7 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
   } }));
   let serial = 0;
   const request = async (actor, action, values = {}) => {
-    const response = { code: 200, body: undefined as ApiResponse<CompanionSnapshot>, status(code) { this.code = code; return this; }, json(body) { this.body = body; } };
+    const response = { code: 200, body: undefined as ApiResponse<CompanionSnapshot>, set() { return this; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; } };
     await interactWithCompanion({ desktop: { profile: actor }, body: { action, operationId: `operation-${++serial}`, ...values } }, response);
     return response;
   };

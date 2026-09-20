@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
+    "typecheck:companion-domain": "tsc -p tsconfig.companion-domain.json",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seed.ts",

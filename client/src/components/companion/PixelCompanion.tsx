@@ -30,6 +30,7 @@ export default function PixelCompanion({ species, face, stage = 'hatchling', pat
     <g fill='color-mix(in srgb,var(--creature-body) 65%,var(--creature-eye))'><path d='M7 26h6v4H7zM19 26h6v4h-6z' /></g>
     <g fill='var(--creature-body)'><path d='M8 26h4v3H8zM20 26h4v3h-4z' /></g>
     {stage === 'juvenile' && <path fill='var(--creature-eye)' d='M5 11h3v2H5zM24 11h3v2h-3z' />}
-    {stage === 'grown' && <><path fill='var(--creature-accent)' d='M4 8h3V4h2v6H4zM23 4h2v4h3v2h-5z' /><path fill='var(--creature-eye)' d='M5 27h7v2H5zM20 27h7v2h-7z' /></>}
+    {(stage === 'grown' || stage === 'elder') && <><path fill='var(--creature-accent)' d='M4 8h3V4h2v6H4zM23 4h2v4h3v2h-5z' /><path fill='var(--creature-eye)' d='M5 27h7v2H5zM20 27h7v2h-7z' /></>}
+    {stage === 'elder' && <path fill='color-mix(in srgb,var(--creature-accent) 70%,white)' d='M10 12h2v1h-2zM20 12h2v1h-2zM14 26h4v1h-4z' />}
   </svg>;
 }
