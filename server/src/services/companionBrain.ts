@@ -16,7 +16,9 @@ export function companionCapabilities() {
 
 export function brainContext(state: StoredCompanion, actor: Profile, message: string) {
   const language = /[\u0E00-\u0E7F]/.test(message) ? 'th' : 'en';
-  return JSON.stringify(companionPrompt(state, actor, message, language));
+  const prompt = companionPrompt(state, actor, message, language);
+  const currentNeed = state.needs.fullness < 50 ? 'snack' : state.needs.energy < 50 ? 'rest' : state.needs.joy < 50 ? 'play' : 'company';
+  return JSON.stringify({ ...prompt, character: { design: characterDesign(state), currentNeed } });
 }
 
 export function characterDesign(state: StoredCompanion) {

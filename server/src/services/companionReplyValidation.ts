@@ -11,3 +11,5 @@ export function validateCompanionReply(value: unknown): BrainReply {
   }
   return { reply: reply.reply.trim(), thought: reply.thought.trim(), mood: reply.mood as BrainReply['mood'], ...(reply.growth ? { growth: reply.growth as BrainReply['growth'] } : {}), ...(reply.gesture ? { gesture: reply.gesture as BrainReply['gesture'] } : {}) };
 }
+
+export const validateBrainReply = validateCompanionReply;

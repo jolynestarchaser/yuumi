@@ -67,7 +67,8 @@ export function settledState(state: StoredCompanion, now = new Date()): StoredCo
 }
 
 export function refreshCareRequest(state: StoredCompanion, now = new Date()): StoredCompanion {
-  const next = settledState(state, now);
+  const settled = settledState(state, now);
+  const next = { ...settled, traits: { ...settled.traits }, bonds: { ...settled.bonds }, needs: { ...settled.needs }, careSummary: settled.careSummary ? { actions: { ...settled.careSummary.actions }, caregivers: { ...settled.careSummary.caregivers } } : settled.careSummary };
   if (next.lifecycle && next.lifecycle.lifeStatus !== 'alive') return { ...next, careRequest: null };
   const current = next.careRequest;
   const value = (action: LifecycleCareAction) => action === 'feed' ? next.needs.fullness : action === 'play' ? next.needs.joy : action === 'cuddle' ? next.needs.comfort : action === 'rest' ? next.needs.energy : action === 'clean' ? next.needs.hygiene : action === 'medicine' ? next.needs.health : next.needs.joy;
@@ -93,7 +94,6 @@ export function careFor(state: StoredCompanion, actor: Profile, action: CareActi
   if (!ACTIONS.includes(action) || !['joe', 'focus'].includes(actor)) throw new Error('Invalid care action.');
   const next = settledState(state, now);
   if (action === 'rest' && next.behaviorState === 'resting' && next.restUntil && new Date(next.restUntil).getTime() > now.getTime()) return next;
-  next.traits = { ...next.traits };
   next.bonds = { ...next.bonds, [actor]: next.bonds[actor] + 1 };
   const budget = dayBudget(state.xpBudget, now);
   const person = displayName(actor);

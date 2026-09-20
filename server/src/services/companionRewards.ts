@@ -20,6 +20,22 @@ export function addXp(current: number, reward: number): number {
   return current + reward;
 }
 
+export function addSafeXp(current: number, reward: number): number { return addXp(current, reward); }
+export function evaluateChatReward() { return { earnedXp: 4 }; }
+export function evaluateCareReward(state: StoredCompanion, action: LifecycleCareAction) {
+  const need = primaryNeed(action);
+  const meaningful = state.needs[need] < 85;
+  return { earnedXp: meaningful ? 8 : 0, isMeaningfulCare: meaningful };
+}
+export function isMedicineEligible(state: StoredCompanion, now = new Date()) {
+  const lifecycle = state.lifecycle;
+  const lastMedicineAt = lifecycle?.lastMedicineAt || (state as any).lastMedicineAt;
+  const eligible = (lifecycle?.healthCondition || (state as any).healthCondition) === 'ill'
+    && ((state.needs as any).health ?? (state as any).health ?? 100) < 100
+    && (!lastMedicineAt || now.getTime() - new Date(lastMedicineAt).getTime() >= MEDICINE_COOLDOWN_MS);
+  return { eligible };
+}
+
 export function applyLifecycleCare(input: StoredCompanion, action: LifecycleCareAction, now: Date, actor?: Profile, idFactory: () => string = randomUUID): StoredCompanion {
   const before = engageCompanion(input, now, idFactory);
   if (!before.lifecycle || before.lifecycle.lifeStatus !== 'alive') throw Object.assign(new Error('This companion cannot receive care.'), { status: 409 });

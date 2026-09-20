@@ -44,3 +44,19 @@ export function retireCompanion(state: StoredCompanion, now: Date, idFactory: ()
   if (!state.lifecycle || state.lifecycle.lifeStatus !== 'alive' || state.lifecycle.stage !== 'elder') throw Object.assign(new Error('Only a living elder companion can retire.'), { status: 409 });
   return { ...state, lifecycle: { ...state.lifecycle, lifeStatus: 'retired', terminalAt: now, terminalReason: 'retired' }, lifecycleEvents: [...(state.lifecycleEvents || []), { id: idFactory(), kind: 'retirement', reason: 'retired', at: now } as CompanionLifecycleEvent].slice(-200) };
 }
+
+export function retireElder(input: any, expectedRevision: number) {
+  if (input.revision !== expectedRevision) throw Object.assign(new Error('Companion changed. Refresh before retiring.'), { status: 409 });
+  const normalized = input.lifecycle ? input : { ...input, lifecycle: { ...input.lifecycle, lifeStatus: input.lifeStatus || 'alive', stage: input.stage || 'elder', generation: input.generation || 1, lineageId: input.lineageId || input._id, simulatedAgeHours: input.simulatedAgeHours || 0, stageCareCount: input.stageCareCount || 0, lowNeedExposureHours: input.lowNeedExposureHours || 0, simulationAt: input.simulatedAt || new Date(), lastEngagementAt: input.lastEngagementAt || new Date() } };
+  const retired = retireCompanion(normalized, new Date());
+  return { ...input, ...retired.lifecycle, lifeStatus: 'retired', retiredAt: retired.lifecycle?.terminalAt };
+}
+export function calculateNextStageRequirement(stage: CompanionGrowthStage) {
+  const next = STAGE_GATES.find((gate) => gate.stage === stage);
+  return next ? { ageHours: next.ageHours, care: next.care } : null;
+}
+export function createSuccessorState(predecessor: any, setup?: any, id?: string): any {
+  const now = new Date();
+  const next = { ...predecessor, _id: id || undefined, name: setup?.name || predecessor.name, form: setup?.form || predecessor.form, seed: setup?.seed || predecessor.seed, bornAt: now, memories: [], turns: [], xp: 0, evolutions: [], stageOutcomes: [], lifecycleEvents: [], lifecycle: { ...(predecessor.lifecycle || {}), lifeStatus: 'alive' as const, stage: 'hatchling' as const, simulatedAgeHours: 0, stageCareCount: 0, lowNeedExposureHours: 0, simulationAt: now, lastEngagementAt: now, terminalAt: null, terminalReason: null, predecessorId: predecessor._id, generation: (predecessor.lifecycle?.generation || predecessor.generation || 1) + 1, lineageId: predecessor.lifecycle?.lineageId || predecessor.lineageId || predecessor._id } };
+  return { ...next, generation: next.lifecycle.generation, predecessorId: next.lifecycle.predecessorId, lineageId: next.lifecycle.lineageId, lifeStatus: 'alive' };
+}

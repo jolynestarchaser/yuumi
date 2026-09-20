@@ -75,3 +75,39 @@ export function engageCompanion(input: StoredCompanion, now: Date, idFactory: ()
     protectionUntil: grantsProtection ? new Date(now.getTime() + RETURN_PROTECTION_HOURS * HOUR_MS) : lifecycle.protectionUntil },
     lifecycleEvents: grantsProtection ? [...(settled.state.lifecycleEvents || []), { id: idFactory(), kind: 'protection', at: now } as CompanionLifecycleEvent].slice(-200) : settled.state.lifecycleEvents };
 }
+
+function legacyState(input: any): StoredCompanion {
+  if (input.lifecycle) return input;
+  const at = input.simulatedAt || input.needsUpdatedAt || input.updatedAt || new Date(0);
+  return { ...input, needs: { ...input.needs, hygiene: input.needs?.hygiene ?? input.hygiene ?? 100, health: input.needs?.health ?? input.health ?? 100 }, lifecycle: {
+    rulesVersion: 3, lifeStatus: input.lifeStatus || 'alive', healthCondition: input.healthCondition || 'well', stage: input.stage || 'hatchling',
+    simulatedAgeHours: input.simulatedAgeHours || 0, stageCareCount: input.stageCareCount || 0, lowNeedExposureHours: input.lowNeedExposureHours || 0,
+    simulationAt: at, lastEngagementAt: input.lastEngagementAt || at, protectionUntil: input.protectionUntil || null, lastMedicineAt: input.lastMedicineAt || null,
+    terminalAt: input.terminalAt || null, terminalReason: input.deathReason || null, generation: input.generation || 1, lineageId: input.lineageId || input._id, predecessorId: input.predecessorId || null,
+  } } as StoredCompanion;
+}
+
+function legacyResult(input: any, result: SimulationResult) {
+  const state: any = result.state;
+  const lifecycle = state.lifecycle;
+  const events = (state.lifecycleEvents || []).slice((input.lifecycleEvents || []).length).map((event: any) => ({
+    type: event.kind === 'illness' ? 'illness_onset' : event.kind === 'recovery' ? 'illness_recovered' : event.kind === 'stage' ? 'stage_transition' : event.kind === 'death' ? 'death' : event.kind === 'protection' ? 'neglect_death_prevented' : event.kind,
+    details: { reason: event.reason, stage: event.toStage },
+  }));
+  const restingFinished = input.behaviorState === 'resting' && state.behaviorState === 'active';
+  if (restingFinished) events.push({ type: 'nap_finished', details: {} });
+  if (input.protectionUntil && state.needs.health === 1 && (input.health || input.needs?.health || 0) > 1) events.push({ type: 'neglect_death_prevented', details: {} });
+  return { state: { ...state, mood: restingFinished ? 'cozy' : state.mood, simulatedAt: lifecycle.simulationAt, lastEngagementAt: lifecycle.lastEngagementAt, simulatedAgeHours: lifecycle.simulatedAgeHours, stage: lifecycle.stage, stageCareCount: lifecycle.stageCareCount, lowNeedExposureHours: lifecycle.lowNeedExposureHours, lifeStatus: lifecycle.lifeStatus, healthCondition: lifecycle.healthCondition, deathReason: lifecycle.terminalReason, protectionUntil: lifecycle.protectionUntil, health: state.needs.health, hygiene: state.needs.hygiene }, events };
+}
+
+export function settleSimulation(input: any, now: Date) {
+  const currentAt = new Date(input.simulatedAt || input.needsUpdatedAt || input.updatedAt || 0).getTime();
+  if (now.getTime() <= currentAt) return { state: input, events: [] };
+  return legacyResult(input, simulateCompanion(legacyState(input), now));
+}
+
+export function applyEngagement(input: any, now: Date) {
+  const normalized = legacyState(input);
+  const engaged = engageCompanion(normalized, now);
+  return legacyResult(input, { state: engaged, automaticallyPaused: false }).state;
+}

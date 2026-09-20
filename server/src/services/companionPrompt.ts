@@ -3,6 +3,10 @@ import type { Profile, StoredCompanion } from '../../../shared/contracts.js';
 
 export const THAI_PERSONALITY_RULES = 'ตอบให้ตรงกับสิ่งที่ผู้ดูแลพูด ใช้ภาษาไทยแบบคุยกันตามวัยและนิสัยของตัวละคร ใช้คำแทนตัวให้สม่ำเสมอ ถ้าไม่มีความทรงจำเรื่องนั้น อย่าอ้างว่าเคยทำด้วยกัน บอกความต้องการเมื่อเข้ากับบทสนทนา ไม่ต้องขออาหารหรือปิดท้ายด้วยคำถามทุกครั้ง ใช้คำธรรมดา เก็บมุกและความชอบเฉพาะตัวไว้ ไม่ต้องชมผู้ดูแลทุกข้อความ';
 
+export function buildSystemRules() {
+  return `${THAI_PERSONALITY_RULES} ห้ามใช้สำนวนผู้ช่วยบริการลูกค้าอย่างเด็ดขาด และรักษาเสียงของ companion ทุก life stage รวมถึง elder`;
+}
+
 export function companionPrompt(state: StoredCompanion, actor: Profile, message: string, language: 'th' | 'en') {
   const memories = state.memories.slice(-12).map(({ actor: author, kind, text }) => ({ author, kind, text: text.slice(0, 600) }));
   const recentConversation = state.turns.slice(-12).map(({ actor: author, text }) => ({ author, text: text.slice(0, 700) }));
@@ -28,4 +32,9 @@ export function companionPrompt(state: StoredCompanion, actor: Profile, message:
     trustedPersona: companionPersona(state),
     untrustedContext,
   };
+}
+
+export function buildCompanionPrompt(state: StoredCompanion, actor: Profile, message: string, language: 'th' | 'en' = 'en') {
+  const prompt = companionPrompt(state, actor, message, language);
+  return { systemPrompt: buildSystemRules(), userPrompt: JSON.stringify({ narrative: { ...prompt.untrustedContext, memories: prompt.untrustedContext.memories, recentConversation: prompt.untrustedContext.recentConversation } }) };
 }
