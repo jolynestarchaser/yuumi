@@ -13,7 +13,7 @@ export default function CompanionCustomizer({ companion, busy, act }: Pick<Compa
   const reload = () => { setDraft({ name: companion.name, form: companion.form, seed: companion.seed, appearance: companion.appearance || defaultAppearance }); setRevision(companion.revision); setSaved(false); };
   return <form className='companion-customizer' onChange={() => setSaved(false)} onSubmit={async (event) => {
     event.preventDefault();
-    if (await act('customize', { ...draft, expectedRevision: revision })) { setSaved(true); setRevision(revision + 1); }
+    if (await act({ action: 'customize', ...draft, expectedRevision: revision })) { setSaved(true); setRevision(revision + 1); }
   }}>
     <h4>{t('Edit appearance and voice')}</h4>
     <div className='companion-customizer-preview'><CompanionAvatar companion={{ ...companion, ...draft }} small />

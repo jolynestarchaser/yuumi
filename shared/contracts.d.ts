@@ -81,20 +81,34 @@ export interface CompanionAppearance {
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
 export type CareAction = 'feed' | 'play' | 'cuddle' | 'rest' | 'explore';
+export type LifecycleCareAction = CareAction | 'clean' | 'medicine';
+export type CompanionLifeStatus = 'alive' | 'retired' | 'deceased';
+export type CompanionHealthCondition = 'well' | 'ill';
 export type CareRequestState = 'active' | 'fulfilled' | 'resolved' | 'superseded';
-export interface CompanionCareRequest { id: string; action: CareAction; state: CareRequestState; createdAt: Timestamp; fulfilledAt?: Timestamp; fulfilledBy?: Profile }
-export interface CompanionCareSummary { actions: Record<CareAction, number>; caregivers: Record<Profile, number> }
+export interface CompanionCareRequest { id: string; action: LifecycleCareAction; state: CareRequestState; createdAt: Timestamp; fulfilledAt?: Timestamp; fulfilledBy?: Profile }
+export interface CompanionCareSummary { actions: Record<LifecycleCareAction, number>; caregivers: Record<Profile, number> }
 export interface CompanionXpBudget { day: string; care: number; chat: number }
 export interface CompanionStageOutcome { id: string; level: number; stage: CompanionGrowthStage; fromFormId: string; toFormId: string; branch: 'explorer' | 'guardian' | 'trickster'; rulesVersion: number; at: Timestamp }
 export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
 export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
-export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown';
+export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown' | 'elder';
+export interface CompanionLifecycle {
+  rulesVersion: 3; lifeStatus: CompanionLifeStatus; healthCondition: CompanionHealthCondition;
+  stage: CompanionGrowthStage; simulatedAgeHours: number; stageCareCount: number; lowNeedExposureHours: number;
+  simulationAt: Timestamp; lastEngagementAt: Timestamp; protectionUntil?: Timestamp | null;
+  lastMedicineAt?: Timestamp | null; terminalAt?: Timestamp | null; terminalReason?: 'natural' | 'illness' | 'retired' | null;
+  generation: number; lineageId: string; predecessorId?: string | null;
+}
+export interface CompanionLifecycleEvent {
+  id: string; kind: 'stage' | 'illness' | 'recovery' | 'protection' | 'death' | 'retirement'; at: Timestamp;
+  fromStage?: CompanionGrowthStage; toStage?: CompanionGrowthStage; reason?: 'natural' | 'illness' | 'retired';
+}
 export interface CompanionState {
   name: string; form: CompanionForm; seed: string; inspirations: Record<Profile, string>;
   bornAt: Timestamp | null; updatedAt: Timestamp;
-  needs: { fullness: number; energy: number; joy: number; comfort: number };
+  needs: { fullness: number; energy: number; joy: number; comfort: number; hygiene: number; health: number };
   traits: { curiosity: number; affection: number; playfulness: number };
   bonds: Record<Profile, number>; xp: number; mood: CompanionMood; thought: string;
   chatColor: string;
@@ -102,8 +116,10 @@ export interface CompanionState {
   evolutions?: CompanionEvolution[];
   behaviorState?: 'active' | 'resting'; restUntil?: Timestamp | null;
   careRequest?: CompanionCareRequest | null; careSummary?: CompanionCareSummary;
-  xpBudget?: CompanionXpBudget; behaviorWindow?: { action: CareAction; actor: Profile; at: Timestamp }[];
+  xpBudget?: CompanionXpBudget; behaviorWindow?: { action: LifecycleCareAction; actor: Profile; at: Timestamp }[];
   stageOutcomes?: CompanionStageOutcome[];
+  lifecycleEvents?: CompanionLifecycleEvent[];
+  lifecycle?: CompanionLifecycle;
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -112,20 +128,21 @@ export interface StoredCompanion extends CompanionState {
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
   familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
 }
-export interface CompanionRequest { id: string; action: CareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
-export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest }
+export interface CompanionRequest { id: string; action: LifecycleCareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
+export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest | null; allowedActions?: LifecycleCareAction[]; automaticallyPaused?: boolean }
 export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }
-export interface BrainReply { reply: string; mood: CompanionMood; thought: string; growth?: 'curiosity' | 'affection' | 'playfulness' }
+export interface BrainReply { reply: string; mood: CompanionMood; thought: string; gesture?: CareAction; growth?: 'curiosity' | 'affection' | 'playfulness' | 'none' }
 export interface CompanionSetup { name: string; form: CompanionForm; seed: string; temperament: Temperament; appearance?: CompanionAppearance }
 export type CompanionAction =
   | ({ action: 'adopt' } & CompanionSetup)
-  | { action: CareAction | 'portrait' }
-  | { action: 'chat'; text: string }
+  | { action: LifecycleCareAction | 'visit' | 'portrait' }
+  | { action: 'chat'; text: string; language: 'th' | 'en' }
   | { action: 'chatColor'; color: string }
   | { action: 'appearance'; appearance: CompanionAppearance }
   | { action: 'customize'; name: string; form: CompanionForm; seed: string; appearance: CompanionAppearance; expectedRevision: number }
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string }
-  | { action: 'archive' | 'restore' };
+  | { action: 'archive' | 'restore' }
+  | { action: 'retire'; expectedRevision: number };

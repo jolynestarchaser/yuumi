@@ -1,7 +1,13 @@
 # Companion bug fixes and lifecycle implementation plan
 
-Status: in progress. Loading reliability and v2 simulation-foundation fixes are implemented locally; lifecycle v3 remains planned.
+Status: in progress. Phases 1–5 have local implementation, but static review found
+release-blocking defects; Phase 3–5 verification is intentionally pending.
 Prepared: 2026-09-20. Reviewed source baseline: `f211f39`.
+
+Follow-up: [review remediation and release plan](12-companion-review-remediation-and-release.md)
+tracks seven findings, fixes, acceptance criteria, and coordinated deployment gates.
+Production deployment has not been performed. Independent detail rendering remains
+incomplete: the current hook still waits for roster settlement before applying detail.
 
 ## Implementation progress
 
@@ -14,11 +20,13 @@ Implemented in the current working patch:
   care eligibility, no reward or extension for repeated naps, and rejection of
   unknown newer schemas.
 
-Verified locally with root typecheck, 54 server tests, 40 client tests, production
-build, and `git diff --check`. Browser automation was unavailable, so the manual
-StrictMode UI interaction remains open. Phases 3–5 require the versioned v3
-contract, database migration rehearsal, and compatible client/server release;
-they are not claimed as implemented by this progress entry.
+Phase 3–5 implementation now includes the v3 lifecycle domain, unlimited valid XP,
+health/hygiene and terminal history, durable mutation receipts and transactions,
+dry-run migration support, successor generations, lifecycle UI, explicit visits,
+elder forms, and bounded Thai/English persona prompting. At the owner's request,
+no tests, typechecks, builds, migration runs, browser checks, or paid model calls
+were run for this patch. The earlier Phase 1–2 evidence does not verify Phase 3–5,
+and no deployment or release completion is claimed.
 
 ## Scope and source of truth
 

@@ -10,9 +10,9 @@ The dock opens a game-like companion home with an animated starter illustration,
 needs, care actions, imagined thoughts, daily wishes, shared chat, a memory journal,
 and personality/inspiration controls. Both people can care for the same character.
 
-- Feed, play, cuddle, rest, and explore shape different traits and award experience.
-- Time away gently changes needs, with safe lower bounds and automatic rest.
-- No death, relationship penalties, guilt, or streak loss.
+- Feed, play, cuddle, rest, explore, and cleaning shape growth; medicine is available only while ill.
+- Schema v3 simulates at most 24 hours after a qualifying visit, then pauses until the habitat is opened again. Returning grants a bounded 24-hour health protection window.
+- Companions grow through hatchling, child, juvenile, grown, and elder stages. Elders may retire; natural or illness death creates a memorial record without deleting history. There are no relationship penalties, guilt, or streak mechanics.
 - Dialogue uses Gemini. The model chooses text, mood, and an imagined thought,
   never arbitrary state changes, tools, or unsourced factual memories.
 - The most recent 80 care/chat memories and 60 conversation turns persist in MongoDB.
@@ -20,10 +20,8 @@ and personality/inspiration controls. Both people can care for the same characte
 - Each caregiver can add their own inspiration. Both are included in dialogue and portraits.
 - Forgetting a memory removes it and clears recent chat/thought context that may repeat it.
   Existing images and numerical growth are not reversed. Provider retention is separate.
-- Portraits use Gemini image generation with a pixel-art prompt, stored as 256 × 256 PNGs
-  in Cloudinary and rendered with `image-rendering: pixelated`. Generated artwork may vary;
-  exact sprite consistency is not guaranteed. The starter illustration is not a preview
-  of the custom portrait. No image binaries are persisted in MongoDB.
+- New portrait generation is retired. Existing portrait metadata remains readable for
+  compatibility, while authored soft and pixel forms cover every lifecycle stage.
 
 ## Switchable appearance
 
@@ -34,9 +32,9 @@ and personality/inspiration controls. Both people can care for the same characte
   portrait, soft otherwise. Switching does not delete or regenerate their saved portrait.
 - Soft uses the original rounded character; pixel uses a crisp 32-cell starter on a
   256 × 256 canvas. Both starters blink, rest with closed eyes, and move with their mood.
-- Pixel mode can display the saved Gemini portrait or the starter sprite. A generated
-  portrait moves as one image; it is not a generated animated sprite sheet. Broken images
-  fall back to the pixel starter. Neither switching nor animation makes paid AI calls.
+- Legacy saved portraits remain readable, but current pixel mode uses the authored sprite
+  for new forms. Broken legacy images fall back to the pixel sprite. Neither switching nor
+  animation makes paid AI calls.
 - The animation toggle and the browser's reduced-motion preference stop all avatar motion.
 
 Manual checks: switch styles during creation; hatch and refresh; switch back with a saved
@@ -70,10 +68,11 @@ portrait; pause motion; test reduced motion, mobile layout, and both profile sna
   needs and dominant traits, with no background generation or XP rewards. Pause,
   chat, and return-home controls remain available. Hidden tabs skip wandering updates;
   reduced motion and the avatar animation setting stop walking. Roaming is session-local.
-- Care earns 8 XP and successful chat earns 4. Every 80 XP adds a level; levels 3, 6,
-  9, etc. roll an evolution path (explorer, guardian, trickster). Species bias and
-  accumulated traits weight the random choice. The result persists under the companion
-  lock and deduplicated actions cannot reroll it. The latest 40 evolutions are retained.
+- Meaningful care earns 8 XP, first completion of an active request adds 4, and a saved
+  chat reply earns 4. Valid XP rewards have no daily cap. XP level and lifecycle stage
+  are independent: child requires two simulated days plus six meaningful care actions,
+  juvenile seven days plus eighteen since child, and grown fourteen days plus thirty-six
+  since juvenile. Elder begins at day 60 and natural death at day 90 regardless of care gates.
 - Gemini supplies a validated one-trait growth signal per successful chat; the server
   caps the increment at one. Gemini never sets XP, levels, or evolution outcomes.
   Dialogue receives the latest evolution and can suggest preferences or activities.
@@ -92,14 +91,14 @@ Set only on the backend (Railway service variables or an uncommitted `server/.en
 
 ```text
 GEMINI_API_KEY=<your server-side key>
-GEMINI_CHAT_MODEL=gemini-2.5-flash
+GEMINI_CHAT_MODEL=gemini-2.5-flash-lite
 GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
 ```
 
 Model names are configurable; select models available to your Gemini project.
-Image generation also requires the existing Cloudinary credentials. Never use a
-`VITE_` variable for the Gemini key. No keys are collected in the browser.
-Care and creation work without Gemini; chat/image buttons report unavailable configuration.
+The image override and Cloudinary credentials remain only for legacy portrait records.
+Never use a `VITE_` variable for the Gemini key. No keys are collected in the browser.
+Care and creation work without Gemini; chat reports unavailable configuration.
 Model access, quota and billing must be configured in the Google project.
 
 Uses the official [GenerateContent REST API](https://ai.google.dev/api/generate-content)
@@ -110,15 +109,16 @@ letters, calendars, files, and credentials are not part of the prompt.
 ## API and concurrency
 
 - `GET /api/companions`: protected shared snapshot and configuration capabilities.
-- `POST /api/companions/actions`: validated adopt/care/chat/inspiration/portrait/forget.
-- A MongoDB lease serializes writers across processes; expired locks recover after 3 minutes.
-- The latest 60 operation IDs deduplicate retries. Concurrent adoption is rejected.
-- Server-side daily limits: 60 chat attempts and 5 portrait attempts, shared by both
-  people, reset at UTC midnight. Failed provider requests count because they may incur cost.
-- Care has a 5-second per-person cooldown; chat 5 seconds; portrait generation 60 seconds.
-- Gemini text requests time out after 45 seconds; image requests after 60 seconds.
-- Client polls every 12 seconds while the widget is visible and refreshes on returning
-  to the tab. No new Socket.IO protocol or background paid generation is introduced.
+- `POST /api/companions/actions`: validated adopt/care/chat/inspiration/visit/retire/forget.
+- `/api/companions/v3`, `/v3/roster`, and `/v3/actions` are explicit aliases for the same compatible handlers.
+- MongoDB leases serialize writers; companion state and durable operation receipts commit in one transaction. A family lease plus unique predecessor index protects the active cap and direct-successor rule.
+- Receipts bind family, companion, actor, operation ID, and canonical payload hash. A changed-payload replay is rejected even after the 60-entry compatibility buffer rotates.
+- Server-side limit: 60 chat attempts shared by both people, reset at UTC midnight.
+  Failed provider requests count because they may incur cost.
+- Care has a 5-second per-person cooldown and chat has a 5-second shared cooldown.
+- Gemini text requests time out after 45 seconds.
+- Client polls every 12 seconds while the widget is visible. Polling is read-only; an
+  explicit visit is sent only when the habitat opens or the visible tab returns.
 
 ## Login update alert
 
@@ -131,10 +131,9 @@ or companion dialog is open.
 
 ## Verification
 
-Node's built-in test runner covers need progression, traits, forgotten context, input
-validation, authenticated route rejection, sanitized provider errors, daily limits,
-concurrent profiles, retry deduplication, and release acknowledgment. No real provider
-calls are made by tests.
+Before release, Node's built-in test runner must cover simulation boundaries, migration,
+transactions, generations, prompt validation, authenticated routes, and retry deduplication.
+Provider tests must remain mocked; paid live evaluation needs separate authorization.
 
 ```text
 npm test --prefix server
@@ -144,4 +143,5 @@ npm run build --prefix client
 
 Manual production checks still require configured MongoDB, Gemini, and Cloudinary:
 create a character, care as each profile, chat in Thai and English, refresh both
-profiles, generate a portrait, forget a memory, and log in again after bumping the release.
+profiles, exercise illness/recovery and retirement on fixtures, create a successor, forget
+a memory, and log in again after bumping the release.
