@@ -9,7 +9,7 @@ import CompanionFamily from '../src/models/CompanionFamily.js';
 import CompanionOperationReceipt from '../src/models/CompanionOperationReceipt.js';
 import companionRoutes from '../src/routes/companions.js';
 import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
-import { brainContext, generateContent, parseBrainReply } from '../src/services/companionBrain.js';
+import { brainContext, generateContent, geminiFailureMessage, parseBrainReply } from '../src/services/companionBrain.js';
 import { careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
 import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
@@ -184,8 +184,15 @@ test('Gemini uses a server header and provider errors never expose the key', asy
       assert.equal(url.includes('fake-test-key'), false);
       assert.equal(new Headers(options.headers).get('x-goog-api-key'), 'fake-test-key');
       return { ok: false, status: 403, json: async () => ({}) };
-    } }), (error) => error instanceof Error && 'status' in error && error.status === 502 && !error.message.includes('fake-test-key'));
+    } }), (error) => error instanceof Error && 'status' in error && error.status === 502 && /rejected the server API key/.test(error.message) && !error.message.includes('fake-test-key'));
   } finally { if (previous === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previous; }
+});
+
+test('Gemini provider errors identify the corrective server setting without exposing secrets', () => {
+  assert.match(geminiFailureMessage(401), /API key/);
+  assert.match(geminiFailureMessage(404), /GEMINI_CHAT_MODEL/);
+  assert.match(geminiFailureMessage(429), /usage limit/);
+  assert.match(geminiFailureMessage(503), /temporarily unavailable/);
 });
 
 test('companion routes reject unauthenticated callers without reaching MongoDB', async () => {

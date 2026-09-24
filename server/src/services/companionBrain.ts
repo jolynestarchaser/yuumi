@@ -9,6 +9,14 @@ interface GeminiPart { text?: string; thought?: boolean; inlineData?: { data: st
 interface GeminiResponse { candidates?: { finishReason?: string; content?: { parts?: GeminiPart[] } }[] }
 type GeminiFetch = (url: string, options: RequestInit) => Promise<{ ok: boolean; status: number; json(): Promise<GeminiResponse> }>;
 
+export function geminiFailureMessage(status: number) {
+  if (status === 401 || status === 403) return 'Gemini rejected the server API key or this project cannot access the configured model.';
+  if (status === 404) return 'The configured Gemini model is unavailable. Update the server GEMINI_CHAT_MODEL setting.';
+  if (status === 429) return 'Gemini is at its usage limit. Please try later.';
+  if (status >= 500) return 'Gemini is temporarily unavailable. Your companion is safe; please try again.';
+  return 'Gemini rejected this request. Check the server model configuration.';
+}
+
 export function companionCapabilities() {
   const chat = Boolean(process.env.GEMINI_API_KEY);
   return { chat, portraits: false };
@@ -38,7 +46,7 @@ export async function generateContent(model: string, body: object, { fetchImpl =
   } catch {
     throw Object.assign(new Error('Gemini could not respond in time. Your companion is safe; please try again.'), { status: 502 });
   }
-  if (!response.ok) throw Object.assign(new Error(response.status === 429 ? 'Gemini is at its usage limit. Please try later.' : 'Gemini could not complete this request. Check the server API key, model access, and billing.'), { status: response.status === 429 ? 429 : 502 });
+  if (!response.ok) throw Object.assign(new Error(geminiFailureMessage(response.status)), { status: response.status === 429 ? 429 : 502 });
   const result = await response.json();
   const candidate = result.candidates?.[0];
   if (!candidate || (candidate.finishReason && candidate.finishReason !== 'STOP')) throw Object.assign(new Error('Gemini did not return a complete response. Please try a different message.'), { status: 502 });
