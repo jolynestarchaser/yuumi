@@ -10,6 +10,7 @@ import { chatWithCompanion, companionCapabilities } from '../services/companionB
 import { engageCompanion } from '../services/companionSimulation.js';
 import { applyLifecycleCare, addXp } from '../services/companionRewards.js';
 import { retireCompanion } from '../services/companionLifecycle.js';
+import { completeDailyRitual, currentDailyRitual } from '../services/companionRitual.js';
 import { assertReceiptPayload, mutationIdentity } from '../services/companionMutation.js';
 import type { StoredCompanion, CompanionBudget, Profile } from '../../../shared/contracts.js';
 
@@ -149,6 +150,17 @@ export const getCompanion = wrap(async (req, res) => {
   if (!companion) throw fail(404, 'That companion could not be found.');
   companion = await persistLifecycleTransition(companion);
   respond(res, companion);
+});
+
+export const getCompanionRitualNotice = wrap(async (req, res) => {
+  const companionId = req.query.id || COMPANION_KEY;
+  if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
+  if (companionId === COMPANION_KEY) await ensureLegacyCompanion();
+  let companion = await migrateCompanion(companionId);
+  if (!companion) throw fail(404, 'That companion could not be found.');
+  companion = await persistLifecycleTransition(companion);
+  const now = new Date();
+  privateNoStore(res).json({ success: true, data: { companionId, name: companion.name, ritual: currentDailyRitual(settledState(companion, now), now) } });
 });
 
 export const getCompanionRoster = wrap(async (req, res) => {
@@ -294,9 +306,10 @@ export const interactWithCompanion = wrap(async (req, res) => {
       if (state.lastCare?.[actor] && commandNow.getTime() - new Date(state.lastCare[actor]).getTime() < 5000) throw fail(429, 'Let your companion enjoy this moment. Try again in a few seconds.');
       if (state.lifecycle) {
         const cared = applyLifecycleCare(next, action, commandNow, actor);
-        return { ...remember(cared, actor, action, `${displayName(actor)} chose to ${action} with me.`, commandNow), bonds: { ...cared.bonds, [actor]: cared.bonds[actor] + 1 }, lastCare: { ...state.lastCare, [actor]: commandNow } };
+        const withMemory = remember(cared, actor, action, `${displayName(actor)} chose to ${action} with me.`, commandNow);
+        return { ...completeDailyRitual(withMemory, action, actor, commandNow), bonds: { ...cared.bonds, [actor]: cared.bonds[actor] + 1 }, lastCare: { ...state.lastCare, [actor]: commandNow } };
       }
-      return { ...careFor(state, actor, action, commandNow), lastCare: { ...state.lastCare, [actor]: commandNow } };
+      return { ...completeDailyRitual(careFor(state, actor, action, commandNow), action, actor, commandNow), lastCare: { ...state.lastCare, [actor]: commandNow } };
     }
     if (action === 'chat') {
       const reply = await chatWithCompanion(next, actor, text.trim(), language || 'en');

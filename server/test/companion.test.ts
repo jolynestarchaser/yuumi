@@ -203,6 +203,8 @@ test('companion routes reject unauthenticated callers without reaching MongoDB',
   try {
     const response = await fetch(`http://127.0.0.1:${(server.address() as AddressInfo).port}/api/companions`);
     assert.equal(response.status, 401);
+    const ritual = await fetch(`http://127.0.0.1:${(server.address() as AddressInfo).port}/api/companions/ritual`);
+    assert.equal(ritual.status, 401);
   } finally { await new Promise((resolve) => server.close(resolve)); }
 });
 

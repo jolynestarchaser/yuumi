@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { simulateCompanion } from './companionSimulation.js';
+import { currentDailyRitual } from './companionRitual.js';
 import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, LifecycleCareAction, CompanionSetup, Temperament, CompanionGrowthStage, CompanionState } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
@@ -188,5 +189,5 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const medicineReady = safe.lifecycle?.healthCondition === 'ill' && safe.needs.health < 100 && (!safe.lifecycle.lastMedicineAt || now.getTime() - new Date(safe.lifecycle.lastMedicineAt).getTime() >= 6 * 3_600_000);
   const resting = safe.behaviorState === 'resting' && safe.restUntil && new Date(safe.restUntil).getTime() > now.getTime();
   const allowedActions: LifecycleCareAction[] = safe.lifecycle?.lifeStatus === 'alive' ? ['feed', 'play', 'cuddle', ...(!resting ? ['rest' as const] : []), 'explore', 'clean', ...(medicineReady ? ['medicine' as const] : [])] : [];
-  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, automaticallyPaused: simulation?.automaticallyPaused || false };
+  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
 }

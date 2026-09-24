@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
-import { createCompanion, getCompanion, getCompanionRoster, interactWithCompanion } from '../controllers/companionController.js';
+import { createCompanion, getCompanion, getCompanionRitualNotice, getCompanionRoster, interactWithCompanion } from '../controllers/companionController.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
 router.get('/', getCompanion);
+router.get('/ritual', getCompanionRitualNotice);
 router.get('/roster', getCompanionRoster);
 router.post('/roster', createCompanion);
 router.post('/actions', interactWithCompanion);

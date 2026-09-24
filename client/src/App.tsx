@@ -20,6 +20,8 @@ import CompanionRoamer from './components/companion/CompanionRoamer.js';
 import WhatsNewDialog from './components/WhatsNewDialog.js';
 import { acknowledgeRelease, hasUnseenRelease } from './lib/releases.js';
 import { Button } from './components/ui/button.js';
+import { readRememberedCompanion } from './lib/companionState.js';
+import type { CompanionRitualNotice } from '../../shared/contracts.js';
 
 const minimizedIcons = { folder: Folder, image: FileImage, video: Video, audio: AudioLines, link: Link2, note: StickyNote, file: File, calendar: CalendarDays, map: Globe2 };
 
@@ -53,6 +55,7 @@ function DesktopPage() {
   const [trashOpen, setTrashOpen] = useState(false);
   const [companionOpen, setCompanionOpen] = useState(false);
   const [companionRoaming, setCompanionRoaming] = useState(false);
+  const [ritualNotice, setRitualNotice] = useState<CompanionRitualNotice | null>(null);
   const [updatesOpen, setUpdatesOpen] = useState(() => hasUnseenRelease(profile));
   const [uploads, setUploads] = useState([]);
   const [spotify, setSpotify] = useState({ configured: false, connected: false });
@@ -82,6 +85,24 @@ function DesktopPage() {
     api.get('/spotify/status').then(({ data }) => setSpotify(data.data)).catch(() => {});
     return () => s.disconnectRealtime();
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    const refreshRitual = async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const id = readRememberedCompanion(globalThis.localStorage);
+        const { data } = await api.get('/companions/ritual', { params: { id } });
+        if (active) setRitualNotice(data.data as CompanionRitualNotice);
+      } catch {
+        if (active) setRitualNotice(null);
+      }
+    };
+    void refreshRitual();
+    const timer = globalThis.setInterval(refreshRitual, 60_000);
+    document.addEventListener('visibilitychange', refreshRitual);
+    return () => { active = false; globalThis.clearInterval(timer); document.removeEventListener('visibilitychange', refreshRitual); };
+  }, [companionOpen]);
 
   async function addLink(url, position = { x: 180, y: 120 }) {
     try {
@@ -151,7 +172,7 @@ function DesktopPage() {
       <Button variant='ghost' onClick={newNote}><NotebookPen /><span>{t("Note")}</span></Button>
       <Button variant='ghost' onClick={newCalendar}><CalendarDays /><span>{t("Calendar")}</span></Button>
       <Button variant='ghost' onClick={newTravelMap}><Globe2 /><span>{t('Travel map')}</span></Button>
-      <Button variant='ghost' onClick={() => setCompanionOpen(true)}><PawPrint /><span>{t("Companion")}</span></Button>
+      <Button variant='ghost' className='dock-companion' onClick={() => setCompanionOpen(true)} aria-label={ritualNotice?.ritual && !ritualNotice.ritual.completedAt ? t('{name} has a daily ritual', { name: ritualNotice.name }) : t('Companion')}><PawPrint /><span>{t("Companion")}</span>{ritualNotice?.ritual && !ritualNotice.ritual.completedAt && <i className='dock-ritual-dot' aria-hidden='true' />}</Button>
       <Button variant='ghost' onClick={() => setLinkOpen(true)}><Link2 /><span>{t("Add URL")}</span></Button>
       <Button variant='ghost' onClick={() => fileInput.current.click()}><Upload /><span>{t("Upload")}</span></Button>
       {s.windows.filter((window) => window.minimized).map((window) => <MinimizedWindowButton key={window.itemId} window={window} item={s.items.find((row) => row._id === window.itemId)} onRestore={(value) => s.updateWindow(value, { minimized: false })} />)}

@@ -88,6 +88,10 @@ export type CareRequestState = 'active' | 'fulfilled' | 'resolved' | 'superseded
 export interface CompanionCareRequest { id: string; action: LifecycleCareAction; state: CareRequestState; createdAt: Timestamp; fulfilledAt?: Timestamp; fulfilledBy?: Profile }
 export interface CompanionCareSummary { actions: Record<LifecycleCareAction, number>; caregivers: Record<Profile, number> }
 export interface CompanionXpBudget { day: string; care: number; chat: number }
+export interface CompanionDailyRitual {
+  day: string; action: 'feed' | 'play' | 'cuddle' | 'explore' | 'clean'; thought: string;
+  completedAt?: Timestamp; completedBy?: Profile;
+}
 export interface CompanionStageOutcome { id: string; level: number; stage: CompanionGrowthStage; fromFormId: string; toFormId: string; branch: 'explorer' | 'guardian' | 'trickster'; rulesVersion: number; at: Timestamp }
 export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
@@ -120,6 +124,7 @@ export interface CompanionState {
   stageOutcomes?: CompanionStageOutcome[];
   lifecycleEvents?: CompanionLifecycleEvent[];
   lifecycle?: CompanionLifecycle;
+  dailyRitual?: CompanionDailyRitual;
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
@@ -130,6 +135,7 @@ export interface StoredCompanion extends CompanionState {
 }
 export interface CompanionRequest { id: string; action: LifecycleCareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
 export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest | null; allowedActions?: LifecycleCareAction[]; automaticallyPaused?: boolean }
+export interface CompanionRitualNotice { companionId: string; name: string; ritual: CompanionDailyRitual | null }
 export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }
 export interface CompanionSnapshot { companion: PublicCompanion; capabilities: CompanionCapabilities }

@@ -28,6 +28,13 @@ const schema = new mongoose.Schema<StoredCompanion>({
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
   behaviorState: { type: String, enum: ['active', 'resting'], default: 'active' }, restUntil: { type: Date, default: null },
   careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean', 'medicine'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
+  dailyRitual: { type: new mongoose.Schema({
+    day: { type: String, match: /^\d{4}-\d{2}-\d{2}$/, required: true },
+    action: { type: String, enum: ['feed', 'play', 'cuddle', 'explore', 'clean'], required: true },
+    thought: { type: String, maxlength: 120, required: true },
+    completedAt: Date,
+    completedBy: { type: String, enum: ['joe', 'focus'] }
+  }, { _id: false }), default: undefined },
   careSummary: { actions: { feed: { type: Number, default: 0 }, play: { type: Number, default: 0 }, cuddle: { type: Number, default: 0 }, rest: { type: Number, default: 0 }, explore: { type: Number, default: 0 }, clean: { type: Number, default: 0 }, medicine: { type: Number, default: 0 } }, caregivers: { joe: { type: Number, default: 0 }, focus: { type: Number, default: 0 } } },
   xpBudget: { day: String, care: { type: Number, default: 0 }, chat: { type: Number, default: 0 } },
   behaviorWindow: { type: [{ action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean', 'medicine'] }, actor: { type: String, enum: ['joe', 'focus'] }, at: Date }], default: [] },
