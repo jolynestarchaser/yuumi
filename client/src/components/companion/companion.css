@@ -277,3 +277,39 @@
   .companion-creation-editor .companion-design-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .companion-hatch > .companion-creation-actions { width:100%; }
 }
+
+/* Keep the shared conversation and care overview usable in one viewport. */
+@media (min-width: 900px) {
+  .glass-dialog.companion-dialog {
+    height: min(880px, calc(100dvh - 32px));
+    max-height: calc(100dvh - 32px);
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .companion-dialog > .dialog-content { min-height: 0; overflow: auto; }
+  .companion-layout { height: 100%; min-height: 0; margin-top: 0; }
+  .companion-home, .companion-inner { min-height: 0; overflow-y: auto; scrollbar-color: #77658f transparent; }
+  .companion-home { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .companion-roster, .companion-home-top, .companion-growth, .companion-needs, .companion-thought, .companion-ritual { grid-column: 1 / -1; }
+  .companion-needs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 4px 0; }
+  .companion-inner { display: flex; flex-direction: column; overflow-x: hidden; }
+  .companion-tabs { flex: none; }
+  .companion-chat { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+  .companion-conversation { flex: 1; min-height: 120px; height: auto; }
+  .companion-chat-form, .companion-privacy { flex: none; }
+}
+
+.companion-dialog .dialog-heading h2 { font-size: 20px; }
+.companion-section-heading { margin: 14px 0 12px; }
+.companion-section-heading h3 { font-size: 16px; }
+.companion-section-heading p, .companion-chat-legend { font-size: 12px; }
+.companion-thought p, .companion-bubble p { font-size: 14px; line-height: 1.6; }
+.companion-needs label > span { font-size: 12px; }
+.companion-chat-form textarea { font-size: 14px; }
+.companion-bubble small { font-size: 11px; }
+.companion-style-buttons button, .companion-tabs button { min-height: 44px; }
+
+@media (max-width: 650px) {
+  .glass-dialog.companion-dialog { padding: 15px; }
+  .companion-layout { grid-template-columns: minmax(0, 1fr); }
+}
