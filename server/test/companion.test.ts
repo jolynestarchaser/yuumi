@@ -234,7 +234,7 @@ test('roster creation is replay-safe, capped under a family lease, and unknown a
   } }));
   const response = () => ({ code: 200, body: undefined, status(code) { this.code = code; return this; }, json(body) { this.body = body; } });
   const setup = { name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'curious' };
-  const create = async (operationId) => { const res = response(); await createCompanion({ body: { ...setup, operationId } }, res); return res; };
+  const create = async (operationId) => { const res = response(); await createCompanion({ desktop: { profile: 'joe' }, body: { ...setup, operationId } }, res); return res; };
   const first = await create('create-pet-0001');
   const replay = await create('create-pet-0001');
   assert.equal(first.code, 201, JSON.stringify(first.body));
@@ -325,7 +325,7 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
   assert.deepEqual(stored.portrait, beforeCustomize.portrait);
   assert.equal((await request('joe', 'customize', customization)).code, 409);
   assert.equal((await request('focus', 'adopt', { name: 'Other', form: 'pet', seed: 'A cat', temperament: 'playful' })).code, 409);
-  const first = await request('joe', 'feed', { operationId: 'care-retry-123', actor: 'focus' });
+  const first = await request('joe', 'feed', { operationId: 'care-retry-123' });
   assert.equal(first.body.data.companion.bonds.joe, 1);
   const retry = await request('joe', 'feed', { operationId: 'care-retry-123' });
   assert.equal(retry.body.data.companion.bonds.joe, 1);
