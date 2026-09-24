@@ -5,7 +5,9 @@ import { settleSimulation, applyEngagement } from '../src/services/companionSimu
 import { evaluateCareReward, evaluateChatReward, addSafeXp, isMedicineEligible } from '../src/services/companionRewards.js';
 import { retireElder, createSuccessorState, calculateNextStageRequirement } from '../src/services/companionLifecycle.js';
 
-function createMockCompanion(overrides: Partial<StoredCompanion> = {}): StoredCompanion {
+type LegacyCompanionFixture = StoredCompanion & Record<string, unknown>;
+
+function createMockCompanion(overrides: (Partial<StoredCompanion> & Record<string, unknown>) = {}): LegacyCompanionFixture {
   const baseTime = new Date('2026-01-01T00:00:00Z');
   return {
     _id: 'companion-test-1',
@@ -22,7 +24,7 @@ function createMockCompanion(overrides: Partial<StoredCompanion> = {}): StoredCo
     simulatedAt: baseTime,
     lastEngagementAt: baseTime,
     protectionUntil: null,
-    needs: { fullness: 75, energy: 80, joy: 75, comfort: 75, hygiene: 100 },
+    needs: { fullness: 75, energy: 80, joy: 75, comfort: 75, hygiene: 100, health: 100 },
     health: 100,
     hygiene: 100,
     lifeStatus: 'alive',
@@ -51,7 +53,7 @@ function createMockCompanion(overrides: Partial<StoredCompanion> = {}): StoredCo
     portrait: null,
     revision: 0,
     ...overrides,
-  };
+  } as LegacyCompanionFixture;
 }
 
 test('simulation: backward clock or identical timestamp produces identical state and no events', () => {
@@ -69,7 +71,7 @@ test('simulation: backward clock or identical timestamp produces identical state
 
 test('simulation: need decay is piecewise and accurate over time', () => {
   const comp = createMockCompanion({
-    needs: { fullness: 100, energy: 100, joy: 100, comfort: 100, hygiene: 100 },
+    needs: { fullness: 100, energy: 100, joy: 100, comfort: 100, hygiene: 100, health: 100 },
   });
   // After 10 simulated hours awake:
   // fullness: -3 * 10 = -30 -> 70
@@ -92,7 +94,7 @@ test('simulation: rest restores energy at +12/hour for 45 minutes then wakes to 
   const start = new Date('2026-01-01T00:00:00Z');
   const restEnd = new Date('2026-01-01T00:45:00Z');
   const comp = createMockCompanion({
-    needs: { fullness: 80, energy: 40, joy: 80, comfort: 80, hygiene: 80 },
+    needs: { fullness: 80, energy: 40, joy: 80, comfort: 80, hygiene: 80, health: 100 },
     behaviorState: 'resting',
     restUntil: restEnd,
     mood: 'sleepy',
@@ -119,7 +121,7 @@ test('simulation: rest restores energy at +12/hour for 45 minutes then wakes to 
 test('simulation: 6 continuous hours of low need triggers illness', () => {
   // Start with fullness = 19 (< 20)
   const comp = createMockCompanion({
-    needs: { fullness: 19, energy: 80, joy: 80, comfort: 80, hygiene: 80 },
+    needs: { fullness: 19, energy: 80, joy: 80, comfort: 80, hygiene: 80, health: 100 },
   });
 
   // After 5 hours: not ill yet
@@ -137,7 +139,7 @@ test('simulation: 6 continuous hours of low need triggers illness', () => {
 
 test('simulation: illness drains health at 5/hour until all 3 needs >= 40', () => {
   const comp = createMockCompanion({
-    needs: { fullness: 10, energy: 10, joy: 80, comfort: 80, hygiene: 10 },
+    needs: { fullness: 10, energy: 10, joy: 80, comfort: 80, hygiene: 10, health: 100 },
     health: 100,
     healthCondition: 'ill',
     lowNeedExposureHours: 6,
@@ -152,7 +154,7 @@ test('simulation: illness drains health at 5/hour until all 3 needs >= 40', () =
 
 test('simulation: protection window clamps health at 1.0 against neglect death', () => {
   const comp = createMockCompanion({
-    needs: { fullness: 0, energy: 0, joy: 0, comfort: 0, hygiene: 0 },
+    needs: { fullness: 0, energy: 0, joy: 0, comfort: 0, hygiene: 0, health: 10 },
     health: 10,
     healthCondition: 'ill',
     protectionUntil: new Date('2026-01-02T00:00:00Z'), // 24h protection
@@ -168,7 +170,7 @@ test('simulation: protection window clamps health at 1.0 against neglect death',
 
 test('simulation: neglect death occurs at 0 health when not protected', () => {
   const comp = createMockCompanion({
-    needs: { fullness: 0, energy: 0, joy: 0, comfort: 0, hygiene: 0 },
+    needs: { fullness: 0, energy: 0, joy: 0, comfort: 0, hygiene: 0, health: 10 },
     health: 10,
     healthCondition: 'ill',
     protectionUntil: null,
@@ -236,7 +238,7 @@ test('offline & engagement: pause at 24h away, discard gap and grant 24h protect
 
 test('rewards: unlimited XP allows exceeding 40 care XP and 12 chat XP without cap', () => {
   let comp = createMockCompanion({
-    needs: { fullness: 50, energy: 50, joy: 50, comfort: 50, hygiene: 50 },
+    needs: { fullness: 50, energy: 50, joy: 50, comfort: 50, hygiene: 50, health: 100 },
     xp: 1000,
   });
 
@@ -262,7 +264,7 @@ test('rewards: unlimited XP allows exceeding 40 care XP and 12 chat XP without c
 
 test('rewards: need at 85 or above is not eligible for meaningful care XP', () => {
   const comp = createMockCompanion({
-    needs: { fullness: 85, energy: 90, joy: 90, comfort: 90, hygiene: 90 },
+    needs: { fullness: 85, energy: 90, joy: 90, comfort: 90, hygiene: 90, health: 100 },
   });
   const evalResult = evaluateCareReward(comp, 'feed');
   assert.equal(evalResult.earnedXp, 0);
@@ -270,24 +272,23 @@ test('rewards: need at 85 or above is not eligible for meaningful care XP', () =
 });
 
 test('rewards: medicine requires illness and 6-hour cooldown', () => {
-  const wellComp = createMockCompanion({ healthCondition: 'well', health: 80 });
+  const lifecycle = createMockCompanion().lifecycle!;
+  const wellComp = createMockCompanion({ lifecycle: { ...lifecycle, healthCondition: 'well' }, needs: { ...createMockCompanion().needs, health: 80 } });
   assert.equal(isMedicineEligible(wellComp).eligible, false);
 
-  const illComp = createMockCompanion({ healthCondition: 'ill', health: 80, lastMedicineAt: null });
+  const illComp = createMockCompanion({ lifecycle: { ...lifecycle, healthCondition: 'ill', lastMedicineAt: null }, needs: { ...createMockCompanion().needs, health: 80 } });
   assert.equal(isMedicineEligible(illComp).eligible, true);
 
   const now = new Date('2026-01-01T12:00:00Z');
   const recentMedComp = createMockCompanion({
-    healthCondition: 'ill',
-    health: 80,
-    lastMedicineAt: new Date('2026-01-01T10:00:00Z'), // 2 hours ago (< 6h)
+    lifecycle: { ...lifecycle, healthCondition: 'ill', lastMedicineAt: new Date('2026-01-01T10:00:00Z') },
+    needs: { ...createMockCompanion().needs, health: 80 },
   });
   assert.equal(isMedicineEligible(recentMedComp, now).eligible, false);
 
   const cooledDownComp = createMockCompanion({
-    healthCondition: 'ill',
-    health: 80,
-    lastMedicineAt: new Date('2026-01-01T05:00:00Z'), // 7 hours ago (> 6h)
+    lifecycle: { ...lifecycle, healthCondition: 'ill', lastMedicineAt: new Date('2026-01-01T05:00:00Z') },
+    needs: { ...createMockCompanion().needs, health: 80 },
   });
   assert.equal(isMedicineEligible(cooledDownComp, now).eligible, true);
 });

@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
+import mongoose from 'mongoose';
 import type { Profile, Temperament, ApiResponse, CompanionSnapshot } from '../../shared/contracts.js';
 import type { AddressInfo } from 'node:net';
 import Companion from '../src/models/Companion.js';
 import CompanionFamily from '../src/models/CompanionFamily.js';
+import CompanionOperationReceipt from '../src/models/CompanionOperationReceipt.js';
 import companionRoutes from '../src/routes/companions.js';
 import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
 import { brainContext, generateContent, parseBrainReply } from '../src/services/companionBrain.js';
@@ -13,18 +15,18 @@ import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
 
 test('time away preserves safe needs and relationships; repeated reads do not compound decay', () => {
-  const state = { ...initialCompanion(), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
+  const state = { ...initialCompanion(), lifecycle: undefined, bornAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
   const later = new Date('2027-01-01');
   const settled = settledState(state, later);
   assert.deepEqual(settledState(settled, later), settled);
-  assert.deepEqual(settled.needs, { fullness: 20, energy: 32, joy: 27, comfort: 39 });
+  assert.deepEqual(settled.needs, { fullness: 20, energy: 32, joy: 27, comfort: 39, hygiene: 100, health: 100 });
   assert.deepEqual(settledState(state, later).bonds, state.bonds);
   assert.equal(state.needs.fullness, 75);
 });
 
 test('settlement integrates rest and awake time piecewise and freezes archives', () => {
   const start = new Date('2026-01-01T00:00:00Z');
-  const state = { ...initialCompanion(), needsUpdatedAt: start, behaviorState: 'resting' as const, restUntil: new Date('2026-01-01T00:45:00Z'), needs: { fullness: 75, energy: 40, joy: 75, comfort: 75 } };
+  const state = { ...initialCompanion(), lifecycle: undefined, bornAt: start, needsUpdatedAt: start, behaviorState: 'resting' as const, restUntil: new Date('2026-01-01T00:45:00Z'), needs: { fullness: 75, energy: 40, joy: 75, comfort: 75, hygiene: 100, health: 100 } };
   const long = settledState(state, new Date('2026-01-01T02:00:00Z'));
   const short = settledState(settledState(state, new Date('2026-01-01T00:45:00Z')), new Date('2026-01-01T02:00:00Z'));
   assert.deepEqual(long.needs, short.needs);
@@ -36,7 +38,7 @@ test('settlement integrates rest and awake time piecewise and freezes archives',
 
 test('meaningful care eligibility uses settled values and requires improvement', () => {
   const now = new Date('2026-01-01T03:00:00Z');
-  const state = { ...initialCompanion(), needsUpdatedAt: new Date('2026-01-01T00:00:00Z'), needs: { fullness: 90, energy: 80, joy: 75, comfort: 75 }, xpBudget: { day: '2026-01-01', care: 0, chat: 0 } };
+  const state = { ...initialCompanion(), lifecycle: undefined, bornAt: new Date('2026-01-01T00:00:00Z'), needsUpdatedAt: new Date('2026-01-01T00:00:00Z'), needs: { fullness: 90, energy: 80, joy: 75, comfort: 75, hygiene: 100, health: 100 }, xpBudget: { day: '2026-01-01', care: 0, chat: 0 } };
   assert.equal(careFor(state, 'joe', 'feed', now).xp, 8);
   assert.equal(careFor({ ...state, needsUpdatedAt: now, needs: { ...state.needs, fullness: 100 } }, 'joe', 'feed', now).xp, 0);
 });
@@ -81,7 +83,7 @@ test('brain context includes the companion current need without private desktop 
 
 test('care requests have stable identity, resolve with hysteresis, and reward once', () => {
   const now = new Date('2026-09-18T10:00:00Z');
-  const hungry = { ...initialCompanion(), needs: { fullness: 35, energy: 80, joy: 75, comfort: 75 }, needsUpdatedAt: now };
+  const hungry = { ...initialCompanion(), needs: { fullness: 35, energy: 80, joy: 75, comfort: 75, hygiene: 100, health: 100 }, needsUpdatedAt: now };
   const requested = refreshCareRequest(hungry, now);
   assert.equal(requested.careRequest?.action, 'feed');
   assert.equal(refreshCareRequest(requested, now).careRequest?.id, requested.careRequest?.id);
@@ -95,7 +97,7 @@ test('care requests have stable identity, resolve with hysteresis, and reward on
 
 test('care XP caps while rest has a real wake condition', () => {
   const now = new Date('2026-09-18T10:00:00Z');
-  const state = { ...initialCompanion(), xp: 20, xpBudget: { day: '2026-09-18', care: 40, chat: 0 }, needs: { fullness: 40, energy: 30, joy: 40, comfort: 40 }, needsUpdatedAt: now };
+  const state = { ...initialCompanion(), lifecycle: undefined, bornAt: now, xp: 20, xpBudget: { day: '2026-09-18', care: 40, chat: 0 }, needs: { fullness: 40, energy: 30, joy: 40, comfort: 40, hygiene: 100, health: 100 }, needsUpdatedAt: now };
   const capped = careFor(state, 'joe', 'rest', now);
   assert.equal(capped.xp, 20);
   assert.equal(capped.behaviorState, 'resting');
@@ -128,16 +130,19 @@ test('public state omits leases, retry IDs, and usage metadata', () => {
 
 test('legacy companion migration is explicit and idempotent', () => {
   const updatedAt = new Date('2026-01-01T00:00:00Z');
-  const legacy = { ...initialCompanion(), familyId: undefined, schemaVersion: undefined, archivedAt: undefined, needsUpdatedAt: undefined, updatedAt, needs: { fullness: 60, energy: 50, joy: 40 } };
+  const legacy = { ...initialCompanion(), familyId: undefined, schemaVersion: undefined, archivedAt: undefined, needsUpdatedAt: undefined, updatedAt, needs: { fullness: 60, energy: 50, joy: 40, comfort: 75, hygiene: 100, health: 100 } };
   const patch = companionMigrationPatch(legacy as never);
-  assert.deepEqual(patch, { familyId: 'joe-and-focus', schemaVersion: 2, archivedAt: null, needsUpdatedAt: updatedAt, 'needs.comfort': 75 });
-  const migrated = { ...legacy, ...patch, needs: { ...legacy.needs, comfort: patch['needs.comfort'] } };
+  assert.equal(patch.familyId, 'joe-and-focus');
+  assert.equal(patch.schemaVersion, 3);
+  assert.equal(patch.archivedAt, null);
+  const migrated = { ...legacy, ...patch };
   assert.deepEqual(companionMigrationPatch(migrated), {});
-  assert.throws(() => companionMigrationPatch({ ...migrated, schemaVersion: 3 }), /newer than supported/);
+  assert.throws(() => companionMigrationPatch({ ...migrated, schemaVersion: 4 }), /newer than supported/);
 });
 
 test('legacy companions use the authored soft form when appearance settings are absent', () => {
   const legacy = initialCompanion();
+  legacy.lifecycle = undefined;
   delete legacy.appearance;
   assert.deepEqual(publicCompanion(legacy).appearance, { visualStyle: 'soft', animated: true, usePortrait: false });
   legacy.portrait = { url: 'https://example.test/pixel.png', publicId: 'original', createdAt: new Date() };
@@ -147,6 +152,7 @@ test('legacy companions use the authored soft form when appearance settings are 
 
 test('public companion derives a visible evolution form from level and care path', () => {
   const state = initialCompanion();
+  state.lifecycle = undefined;
   state.xp = 9 * 80;
   state.appearance = { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon' };
   state.evolutions = [{ level: 9, species: 'dragon', path: 'explorer', at: new Date() }];
@@ -195,17 +201,26 @@ test('companion routes reject unauthenticated callers without reaching MongoDB',
 
 test('roster creation is replay-safe, capped under a family lease, and unknown action IDs do not write', async (t) => {
   const rows = [];
+  const receipts = [];
   let family;
   const clone = (value) => structuredClone(value);
-  const familyMatches = (query) => family && (!query.lockToken || family.lockToken === query.lockToken) && (!query.lockedUntil || new Date(family.lockedUntil) <= query.lockedUntil.$lte);
+  const query = (read) => { const result = { session: () => result, lean: async () => clone(read()) }; return result; };
+  t.mock.method(mongoose, 'startSession', async () => ({ withTransaction: async (work) => work(), endSession: async () => {} }));
+  t.mock.method(CompanionOperationReceipt, 'findOne', (filter) => query(() => receipts.find((row) => row.familyId === filter.familyId && row.companionId === filter.companionId && row.operationId === filter.operationId) || null));
+  t.mock.method(CompanionOperationReceipt, 'create', async (values) => { receipts.push(...clone(values)); return values; });
+  const familyMatches = (query) => family
+    && (!query.lockToken || family.lockToken === query.lockToken)
+    && (!query.lockedUntil?.$lte || new Date(family.lockedUntil) <= query.lockedUntil.$lte)
+    && (!query.lockedUntil?.$gt || new Date(family.lockedUntil) > query.lockedUntil.$gt);
   const applyFamily = (update) => { Object.assign(family, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete family[key]; };
   t.mock.method(Companion, 'find', () => ({ lean: async () => [] }));
-  t.mock.method(Companion, 'findOne', (query) => ({ lean: async () => clone(rows.find((row) => row.familyId === query.familyId && row.createdOperationId === query.createdOperationId) || null) }));
-  t.mock.method(Companion, 'findById', (id) => ({ lean: async () => clone(rows.find((row) => row._id === id) || null) }));
-  t.mock.method(Companion, 'countDocuments', async () => rows.filter((row) => row.familyId === 'joe-and-focus' && row.archivedAt === null && row.bornAt).length);
-  t.mock.method(Companion, 'create', async (value) => {
-    rows.push(clone(value));
-    return { toObject: () => clone(value) };
+  t.mock.method(Companion, 'findOne', (filter) => query(() => rows.find((row) => row.familyId === filter.familyId && row.createdOperationId === filter.createdOperationId) || null));
+  t.mock.method(Companion, 'findById', (id) => query(() => rows.find((row) => row._id === id) || null));
+  t.mock.method(Companion, 'countDocuments', () => ({ session: async () => rows.filter((row) => row.familyId === 'joe-and-focus' && row.archivedAt === null && row.bornAt).length }));
+  t.mock.method(Companion, 'create', async (values) => {
+    const value = clone(values[0]);
+    rows.push(value);
+    return [{ toObject: () => clone(value) }];
   });
   t.mock.method(CompanionFamily, 'updateOne', async (query, update) => {
     if (update.$setOnInsert && !family) family = { _id: 'joe-and-focus', ...clone(update.$setOnInsert) };
@@ -222,7 +237,7 @@ test('roster creation is replay-safe, capped under a family lease, and unknown a
   const create = async (operationId) => { const res = response(); await createCompanion({ body: { ...setup, operationId } }, res); return res; };
   const first = await create('create-pet-0001');
   const replay = await create('create-pet-0001');
-  assert.equal(first.code, 201);
+  assert.equal(first.code, 201, JSON.stringify(first.body));
   assert.equal(replay.code, 201);
   assert.equal(first.body.data.id, replay.body.data.id);
   assert.equal(rows.length, 1);
@@ -243,7 +258,12 @@ test('roster creation is replay-safe, capped under a family lease, and unknown a
 test('shared actions serialize both caregivers, deduplicate retries, and preserve state on provider failure', async (t) => {
   let stored;
   let family;
+  const receipts = [];
   const clone = (value) => structuredClone(value);
+  const query = (read) => { const result = { session: () => result, lean: async () => clone(read()) }; return result; };
+  t.mock.method(mongoose, 'startSession', async () => ({ withTransaction: async (work) => work(), endSession: async () => {} }));
+  t.mock.method(CompanionOperationReceipt, 'findOne', (filter) => query(() => receipts.find((row) => row.familyId === filter.familyId && row.companionId === filter.companionId && row.operationId === filter.operationId) || null));
+  t.mock.method(CompanionOperationReceipt, 'create', async (values) => { receipts.push(...clone(values)); return values; });
   const matches = (query) => stored && (!query.lockToken || stored.lockToken === query.lockToken) && (!query.lockedUntil || new Date(stored.lockedUntil) <= query.lockedUntil.$lte);
   const apply = (update) => { Object.assign(stored, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete stored[key]; };
   t.mock.method(Companion, 'updateOne', async (query, update) => {
@@ -251,14 +271,17 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     else if (matches(query)) apply(update);
     return { acknowledged: true };
   });
-  t.mock.method(Companion, 'findById', (id) => ({ lean: async () => id === stored?._id ? clone(stored) : null }));
+  t.mock.method(Companion, 'findById', (id) => query(() => id === stored?._id ? stored : null));
   t.mock.method(Companion, 'find', () => ({ lean: async () => [] }));
   t.mock.method(Companion, 'findOneAndUpdate', (query, update) => ({ lean: async () => {
     if (!matches(query)) return null;
     apply(update);
     return clone(stored);
   } }));
-  const familyMatches = (query) => family && (!query.lockToken || family.lockToken === query.lockToken) && (!query.lockedUntil || new Date(family.lockedUntil) <= query.lockedUntil.$lte);
+  const familyMatches = (query) => family
+    && (!query.lockToken || family.lockToken === query.lockToken)
+    && (!query.lockedUntil?.$lte || new Date(family.lockedUntil) <= query.lockedUntil.$lte)
+    && (!query.lockedUntil?.$gt || new Date(family.lockedUntil) > query.lockedUntil.$gt);
   const applyFamily = (update) => { Object.assign(family, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete family[key]; };
   t.mock.method(CompanionFamily, 'updateOne', async (query, update) => {
     if (update.$setOnInsert && !family) family = { _id: 'joe-and-focus', ...clone(update.$setOnInsert) };
@@ -277,7 +300,7 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     return response;
   };
   const adopt = await request('joe', 'adopt', { name: 'Pip', form: 'creature', seed: 'Teal dragon', temperament: 'curious' });
-  assert.equal(adopt.code, 200);
+  assert.equal(adopt.code, 200, JSON.stringify(adopt.body));
   stored.portrait = { url: 'https://example.test/pixel.png', publicId: 'keep-me', createdAt: new Date() };
   const beforeAppearance = clone(stored);
   const appearance = { visualStyle: 'pixel', animated: false, usePortrait: false };
