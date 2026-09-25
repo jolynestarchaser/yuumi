@@ -9,7 +9,7 @@ import CompanionFamily from '../src/models/CompanionFamily.js';
 import CompanionOperationReceipt from '../src/models/CompanionOperationReceipt.js';
 import companionRoutes from '../src/routes/companions.js';
 import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
-import { brainContext, generateContent, geminiFailureMessage, parseBrainReply } from '../src/services/companionBrain.js';
+import { brainContext, chatWithCompanion, generateContent, geminiFailureMessage, parseBrainReply } from '../src/services/companionBrain.js';
 import { careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
 import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
@@ -193,6 +193,24 @@ test('Gemini provider errors identify the corrective server setting without expo
   assert.match(geminiFailureMessage(404), /GEMINI_CHAT_MODEL/);
   assert.match(geminiFailureMessage(429), /usage limit/);
   assert.match(geminiFailureMessage(503), /temporarily unavailable/);
+});
+
+test('companion chat defaults to the verified model when no override is set', async (t) => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  const previousModel = process.env.GEMINI_CHAT_MODEL;
+  process.env.GEMINI_API_KEY = 'fake-test-key';
+  delete process.env.GEMINI_CHAT_MODEL;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    assert.match(url, /\/models\/gemini-2\.5-flash:generateContent$/);
+    return { ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"reply":"Hello","mood":"curious","thought":"Hello","growth":"none"}' }] } }] }) };
+  });
+  try {
+    const reply = await chatWithCompanion(initialCompanion(), 'joe', 'Hello');
+    assert.equal(reply.reply, 'Hello');
+  } finally {
+    if (previousKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previousKey;
+    if (previousModel === undefined) delete process.env.GEMINI_CHAT_MODEL; else process.env.GEMINI_CHAT_MODEL = previousModel;
+  }
 });
 
 test('companion routes reject unauthenticated callers without reaching MongoDB', async () => {

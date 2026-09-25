@@ -91,7 +91,7 @@ Set only on the backend (Railway service variables or an uncommitted `server/.en
 
 ```text
 GEMINI_API_KEY=<your server-side key>
-GEMINI_CHAT_MODEL=gemini-2.5-flash-lite
+GEMINI_CHAT_MODEL=gemini-2.5-flash
 GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
 ```
 

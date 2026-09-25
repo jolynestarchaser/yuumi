@@ -44,7 +44,7 @@ This repository deploys as two services: the Vite frontend on Vercel and the Exp
 ## Optional shared AI companion
 
 Set `GEMINI_API_KEY` on the Railway backend only. Optional model overrides are
-`GEMINI_CHAT_MODEL` (default `gemini-2.5-flash-lite`) and `GEMINI_IMAGE_MODEL`
+`GEMINI_CHAT_MODEL` (default `gemini-2.5-flash`) and `GEMINI_IMAGE_MODEL`
 (default `gemini-2.5-flash-image`). Portraits also use the existing Cloudinary variables.
 Never put the Gemini key in Vercel frontend or `VITE_` variables. See
 [the companion specification](19-shared-companion.md) for limits, memory behavior, and checks.
