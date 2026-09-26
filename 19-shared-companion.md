@@ -117,6 +117,12 @@ letters, calendars, files, and credentials are not part of the prompt.
   Failed provider requests count because they may incur cost.
 - Care has a 5-second per-person cooldown and chat has a 5-second shared cooldown.
 - Gemini text requests time out after 45 seconds.
+- If Gemini blocks a chat, the server retries once with the same current message
+  and server-owned persona but without older memories, turns, or design narrative.
+  It never relaxes provider safety settings; a second block remains an error.
+  This can recover when unrelated stored context blocks a harmless greeting. Both
+  provider calls may count toward Gemini usage, but no chat turn or growth is
+  saved unless a validated reply succeeds.
 - Client polls every 12 seconds while the widget is visible. Polling is read-only; an
   explicit visit is sent only when the habitat opens or the visible tab returns.
 

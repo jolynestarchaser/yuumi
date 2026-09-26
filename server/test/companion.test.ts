@@ -221,6 +221,58 @@ test('companion chat defaults to the verified model when no override is set', as
   }
 });
 
+test('a blocked companion chat retries once without stored narrative, keeping the current message', async (t) => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  process.env.GEMINI_API_KEY = 'fake-test-key';
+  const state = initialCompanion();
+  state.seed = 'An old island story';
+  state.memories = [{ id: 'memory-1', actor: 'joe', kind: 'conversation', text: 'An old island story', at: new Date() }];
+  state.turns = [{ id: 'turn-1', actor: 'joe', text: 'An old island story', at: new Date() }];
+  const contexts: Array<Record<string, unknown>> = [];
+  t.mock.method(globalThis, 'fetch', async (_url: string, options: RequestInit) => {
+    const body = JSON.parse(options.body as string);
+    contexts.push(JSON.parse(body.contents[0].parts[0].text));
+    return { ok: true, json: async () => contexts.length === 1
+      ? { candidates: [{ finishReason: 'SAFETY' }] }
+      : { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"reply":"สวัสดี","mood":"curious","thought":"ดีใจที่เจอ","growth":"none"}' }] } }] } };
+  });
+  try {
+    const reply = await chatWithCompanion(state, 'joe', 'สวัสดี', 'th');
+    assert.equal(reply.reply, 'สวัสดี');
+    assert.equal(contexts.length, 2);
+    assert.equal(contexts[0].message, 'สวัสดี');
+    assert.equal(contexts[1].message, 'สวัสดี');
+    assert.match(JSON.stringify(contexts[0]), /old island story/);
+    assert.doesNotMatch(JSON.stringify(contexts[1]), /old island story/);
+    assert.deepEqual(contexts[1].memories, []);
+    assert.deepEqual(contexts[1].recentConversation, []);
+  } finally {
+    if (previousKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previousKey;
+  }
+});
+
+test('a second safety block remains blocked and unrelated provider failures are not retried', async (t) => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  process.env.GEMINI_API_KEY = 'fake-test-key';
+  let calls = 0;
+  let providerStatus = 200;
+  t.mock.method(globalThis, 'fetch', async () => {
+    calls += 1;
+    return providerStatus === 200
+      ? { ok: true, json: async () => ({ promptFeedback: { blockReason: 'SAFETY' } }) }
+      : { ok: false, status: providerStatus };
+  });
+  try {
+    await assert.rejects(chatWithCompanion(initialCompanion(), 'joe', 'สวัสดี', 'th'), /could not answer that message safely/);
+    assert.equal(calls, 2);
+    providerStatus = 429;
+    await assert.rejects(chatWithCompanion(initialCompanion(), 'joe', 'สวัสดี', 'th'), /usage limit/);
+    assert.equal(calls, 3);
+  } finally {
+    if (previousKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previousKey;
+  }
+});
+
 test('companion routes reject unauthenticated callers without reaching MongoDB', async () => {
   const app = express();
   app.use('/api/companions', companionRoutes);
