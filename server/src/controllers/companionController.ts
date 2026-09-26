@@ -122,6 +122,24 @@ async function reserveGeneration(operationId: string, kind: 'chats' | 'portraits
   });
 }
 
+// A reservation prevents two live requests with the same operation ID from
+// reaching the provider. It is intentionally retained after a successful
+// mutation (the operation receipt replays that result), but must be removed
+// when the provider/mutation fails before a receipt exists. Without this,
+// one malformed or failed Gemini response permanently strands the client's
+// retry ID behind a 409.
+async function releaseGeneration(operationId: string, kind: 'chats' | 'portraits') {
+  const reservationId = `${kind}:${operationId}`;
+  await withFamilyLock(async (family, token) => {
+    if (!family.recentOperations?.includes(reservationId)) return;
+    const result = await CompanionFamily.updateOne(
+      { _id: COMPANION_FAMILY_ID, lockToken: token },
+      { $set: { recentOperations: family.recentOperations.filter((entry) => entry !== reservationId) } }
+    );
+    if (!result.matchedCount) throw fail(409, 'The shared AI reservation expired. Please retry.');
+  });
+}
+
 const validCompanionId = (value) => typeof value === 'string' && (value === COMPANION_KEY || /^companion-[a-f0-9-]{36}$/.test(value));
 const validOperationId = (value) => typeof value === 'string' && OPERATION_ID.test(value);
 const activeFilter = { familyId: COMPANION_FAMILY_ID, archivedAt: null, bornAt: { $ne: null }, $or: [{ 'lifecycle.lifeStatus': 'alive' }, { lifecycle: { $exists: false } }] };
@@ -250,6 +268,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
   if (action === 'portrait') throw fail(410, 'Portrait generation has been retired. Your companion now grows through built-in animated forms.');
   if (action === 'forget' && (typeof memoryId !== 'string' || memoryId.length > 80)) throw fail(400, 'Choose a valid memory.');
   if (action === 'retire' && !Number.isSafeInteger(expectedRevision)) throw fail(400, 'A valid companion revision is required.');
+  let generationReserved = false;
   if (action === 'chat') {
     const identity = mutationIdentity(COMPANION_FAMILY_ID, companionId, operationId, actor, req.body);
     const receipt = await CompanionOperationReceipt.findOne({ familyId: COMPANION_FAMILY_ID, companionId, operationId }).lean();
@@ -259,6 +278,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
       if (!candidate) throw fail(404, 'That companion could not be found.');
       if (!candidate.bornAt || candidate.archivedAt || candidate.lifecycle?.lifeStatus !== 'alive') throw fail(409, 'This companion is not available for a new conversation.');
       await reserveGeneration(operationId, 'chats');
+      generationReserved = true;
     }
   }
   const mutate = (familyToken?: string) => withCompanionLock(operationId, async (state) => {
@@ -325,10 +345,15 @@ export const interactWithCompanion = wrap(async (req, res) => {
     }
     throw fail(400, 'Choose a supported companion action.');
   }, companionId, { actor, payload: req.body, familyToken });
-  const saved = action === 'restore' ? await withFamilyLock(async (_family, token) => {
-    await migrateCompanionRoster();
-    if (await Companion.countDocuments(activeFilter) >= ACTIVE_COMPANION_LIMIT) throw fail(409, 'Your companion family already has six active companions. Archive one before restoring another.');
-    return mutate(token);
-  }) : await mutate();
-  respond(res, saved);
+  try {
+    const saved = action === 'restore' ? await withFamilyLock(async (_family, token) => {
+      await migrateCompanionRoster();
+      if (await Companion.countDocuments(activeFilter) >= ACTIVE_COMPANION_LIMIT) throw fail(409, 'Your companion family already has six active companions. Archive one before restoring another.');
+      return mutate(token);
+    }) : await mutate();
+    respond(res, saved);
+  } catch (error) {
+    if (generationReserved) await releaseGeneration(operationId, 'chats').catch(() => {});
+    throw error;
+  }
 });

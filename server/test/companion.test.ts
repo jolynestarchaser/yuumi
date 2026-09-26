@@ -377,7 +377,8 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     assert.equal(stored.memories.some((row) => row.id === memory.id), false);
     family.budget.lastChat = new Date(0);
     const xp = stored.xp;
-    const failed = request('joe', 'chat', { text: 'This should not be remembered on failure.' });
+    const failedOperationId = 'chat-provider-failure-retry';
+    const failed = request('joe', 'chat', { operationId: failedOperationId, text: 'This should not be remembered on failure.' });
     finish = null;
     while (!finish) await new Promise((resolve) => setImmediate(resolve));
     finish({ ok: false, status: 429 });
@@ -385,5 +386,16 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
     assert.equal(stored.xp, xp);
     assert.equal(family.budget.chats, 2);
     assert.equal(stored.lockToken, undefined);
+    assert.equal(family.recentOperations.includes(`chats:${failedOperationId}`), false);
+
+    // The client intentionally keeps its operation ID after a lost/failed
+    // response. A definite provider failure must not strand that retry at 409.
+    family.budget.lastChat = new Date(0);
+    const retried = request('joe', 'chat', { operationId: failedOperationId, text: 'This should not be remembered on failure.' });
+    finish = null;
+    while (!finish) await new Promise((resolve) => setImmediate(resolve));
+    finish({ ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"reply":"I am back!","mood":"happy","thought":"A warm hello","growth":"none"}' }] } }] }) });
+    assert.equal((await retried).code, 200);
+    assert.equal(family.recentOperations.includes(`chats:${failedOperationId}`), true);
   } finally { if (previous === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previous; }
 });
