@@ -13,6 +13,7 @@ import { brainContext, chatWithCompanion, generateContent, geminiFailureMessage,
 import { careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
 import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
+import { translateText } from '../src/services/translation.js';
 
 test('time away preserves safe needs and relationships; repeated reads do not compound decay', () => {
   const state = { ...initialCompanion(), lifecycle: undefined, bornAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01'), needsUpdatedAt: new Date('2026-01-01'), bonds: { joe: 7, focus: 5 } };
@@ -215,6 +216,35 @@ test('companion chat defaults to the verified model when no override is set', as
   try {
     const reply = await chatWithCompanion(initialCompanion(), 'joe', 'Hello');
     assert.equal(reply.reply, 'Hello');
+  } finally {
+    if (previousKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previousKey;
+    if (previousModel === undefined) delete process.env.GEMINI_CHAT_MODEL; else process.env.GEMINI_CHAT_MODEL = previousModel;
+  }
+});
+
+test('Gemini 3.5 Flash-Lite uses minimal thinking for chat and default sampling for translation', async (t) => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  const previousModel = process.env.GEMINI_CHAT_MODEL;
+  process.env.GEMINI_API_KEY = 'fake-test-key';
+  process.env.GEMINI_CHAT_MODEL = 'gemini-3.5-flash-lite';
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async (url: string, options: RequestInit) => {
+    calls += 1;
+    assert.match(url, /\/models\/gemini-3\.5-flash-lite:generateContent$/);
+    const body = JSON.parse(options.body as string);
+    assert.equal(body.generationConfig.thinkingConfig?.thinkingBudget, undefined);
+    if (calls === 1) {
+      assert.equal(body.generationConfig.thinkingConfig?.thinkingLevel, 'minimal');
+      assert.equal(body.generationConfig.responseMimeType, 'application/json');
+      return { ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"reply":"Hello","mood":"curious","thought":"Hello","growth":"none"}' }] } }] }) };
+    }
+    assert.equal(body.generationConfig.temperature, undefined);
+    return { ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'Hello' }] } }] }) };
+  });
+  try {
+    assert.equal((await chatWithCompanion(initialCompanion(), 'joe', 'Hello')).reply, 'Hello');
+    assert.equal((await translateText('สวัสดี', 'en')).text, 'Hello');
+    assert.equal(calls, 2);
   } finally {
     if (previousKey === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = previousKey;
     if (previousModel === undefined) delete process.env.GEMINI_CHAT_MODEL; else process.env.GEMINI_CHAT_MODEL = previousModel;

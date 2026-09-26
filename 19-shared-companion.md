@@ -96,6 +96,12 @@ GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
 ```
 
 Model names are configurable; select models available to your Gemini project.
+`gemini-3.5-flash-lite` is an alternative chat/translation model when the
+project has access and a suitable quota. Its chat requests use minimal thinking;
+Gemini 2.5 Flash keeps its zero thinking budget. Check the project's live model
+quota and a small generation request before changing the Railway variable:
+an HTTP 429 can also reflect a project-wide spend limit, which changing models
+would not resolve.
 The image override and Cloudinary credentials remain only for legacy portrait records.
 Never use a `VITE_` variable for the Gemini key. No keys are collected in the browser.
 Care and creation work without Gemini; chat reports unavailable configuration.
