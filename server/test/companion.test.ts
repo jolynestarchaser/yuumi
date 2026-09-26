@@ -9,7 +9,7 @@ import CompanionFamily from '../src/models/CompanionFamily.js';
 import CompanionOperationReceipt from '../src/models/CompanionOperationReceipt.js';
 import companionRoutes from '../src/routes/companions.js';
 import { createCompanion, interactWithCompanion, nextBudget } from '../src/controllers/companionController.js';
-import { brainContext, chatWithCompanion, generateContent, geminiFailureMessage, parseBrainReply } from '../src/services/companionBrain.js';
+import { brainContext, chatWithCompanion, generateContent, geminiFailureMessage, incompleteGeminiResponseMessage, parseBrainReply } from '../src/services/companionBrain.js';
 import { careFor, forgetMemory, initialCompanion, publicCompanion, refreshCareRequest, remember, settledState, startingTraits, validateSetup } from '../src/services/companionState.js';
 import { companionMigrationPatch } from '../src/services/companionMigration.js';
 import { evolveCompanion } from '../src/services/companionEvolution.js';
@@ -195,13 +195,21 @@ test('Gemini provider errors identify the corrective server setting without expo
   assert.match(geminiFailureMessage(503), /temporarily unavailable/);
 });
 
+test('incomplete Gemini output reports a safe actionable finish reason', () => {
+  assert.match(incompleteGeminiResponseMessage({ candidates: [{ finishReason: 'MAX_TOKENS' }] }), /response limit/);
+  assert.match(incompleteGeminiResponseMessage({ candidates: [{ finishReason: 'SAFETY' }] }), /safely/);
+  assert.match(incompleteGeminiResponseMessage({ promptFeedback: { blockReason: 'LANGUAGE' } }), /Thai or English/);
+});
+
 test('companion chat defaults to the verified model when no override is set', async (t) => {
   const previousKey = process.env.GEMINI_API_KEY;
   const previousModel = process.env.GEMINI_CHAT_MODEL;
   process.env.GEMINI_API_KEY = 'fake-test-key';
   delete process.env.GEMINI_CHAT_MODEL;
-  t.mock.method(globalThis, 'fetch', async (url: string) => {
+  t.mock.method(globalThis, 'fetch', async (url: string, options: RequestInit) => {
     assert.match(url, /\/models\/gemini-2\.5-flash:generateContent$/);
+    const body = JSON.parse(options.body as string);
+    assert.equal(body.generationConfig.thinkingConfig.thinkingBudget, 0);
     return { ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"reply":"Hello","mood":"curious","thought":"Hello","growth":"none"}' }] } }] }) };
   });
   try {
