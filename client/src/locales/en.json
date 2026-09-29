@@ -1,4 +1,8 @@
 {
+  "New form! Level {level}": "New form! Level {level}",
+  "Current form: level {level} · {path}": "Current form: level {level} · {path}",
+  "Next form at level {level}. Every level changes your companion's shape.": "Next form at level {level}. Every level changes your companion's shape.",
+  "Life stage grows through age and care separately.": "Life stage grows through age and care separately.",
   "Creature": "Creature",
   "A familiar little friend": "A familiar little friend",
   "Personality and evolution grow through care, not these appearance choices.": "Personality and evolution grow through care, not these appearance choices.",

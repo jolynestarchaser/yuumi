@@ -6,10 +6,10 @@ const raceBias: Record<CompanionSpecies, [number, number, number]> = {
   dragon: [8, 4, 0], robot: [8, 0, 4], child: [4, 4, 4], custom: [4, 4, 4]
 };
 const paths: CompanionEvolution['path'][] = ['explorer', 'guardian', 'trickster'];
-export const evolutionMilestones = [3, 6, 10] as const;
+const evolutionHistoryLimit = 40;
 
-export function formIdFor(species: CompanionSpecies, stage: CompanionGrowthStage, branch: CompanionEvolution['path']) {
-  return `${species}-${stage}-${branch}-v2`;
+export function formIdFor(species: CompanionSpecies, stage: CompanionGrowthStage, branch: CompanionEvolution['path'], level: number): string {
+  return `${species}-${stage}-level-${level}-${branch}-v3`;
 }
 
 export function xpTierForLevel(level: number): CompanionVisualForm['xpTier'] {
@@ -24,12 +24,12 @@ export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appe
   const level = Math.floor(Math.max(0, state.xp || 0) / 80) + 1;
   const species = state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
   const tier = xpTierForLevel(level);
-  const earned = state.evolutions?.filter((entry) => entry.level <= level && entry.level >= 3).sort((a, b) => b.level - a.level)[0];
+  const earned = state.evolutions?.filter((entry) => entry.level <= level && entry.level >= 2).sort((a, b) => b.level - a.level)[0];
   // Old records sometimes stored an evolution branch in stage history. It is a
   // compatibility hint only; lifecycle history is never written by XP growth.
   const legacy = state.stageOutcomes?.filter((entry) => entry.level <= level).at(-1);
   const lifeStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
-  return { species, xpTier: tier, xpPath: tier ? earned?.path || legacy?.branch || 'guardian' : 'guardian', lifeStage: state.lifecycle?.stage || lifeStage };
+  return { species, xpTier: tier, xpPath: level >= 2 ? earned?.path || legacy?.branch || 'guardian' : 'guardian', lifeStage: state.lifecycle?.stage || lifeStage };
 }
 
 // Called inside the existing atomic lease, after a successful XP-earning action.
@@ -42,15 +42,15 @@ export function evolveCompanion(state: StoredCompanion, previousXp: number, rand
   const traits = [state.traits.curiosity, state.traits.affection, state.traits.playfulness];
   const weights = traits.map((value, index) => 1 + (Math.max(0, Math.min(100, value)) / 25) ** 2 + raceBias[species][index]);
   const evolutions = [...(state.evolutions || [])];
-  for (const milestone of evolutionMilestones) {
-    if (milestone <= previousLevel || milestone > level || evolutions.some((entry) => entry.level === milestone)) continue;
+  for (let earnedLevel = Math.max(2, previousLevel + 1, level - evolutionHistoryLimit + 1); earnedLevel <= level; earnedLevel++) {
+    if (evolutions.some((entry) => entry.level === earnedLevel)) continue;
     let roll = random() * weights.reduce((sum, weight) => sum + weight, 0);
-    let selected = paths.at(-1);
+    let selected: CompanionEvolution['path'] = paths.at(-1) || 'guardian';
     for (let index = 0; index < weights.length; index++) {
       roll -= weights[index];
       if (roll < 0) { selected = paths[index]; break; }
     }
-    evolutions.push({ level: milestone, species, path: selected, at: now });
+    evolutions.push({ level: earnedLevel, species, path: selected, at: now });
   }
-  return { ...state, evolutions: evolutions.slice(-40) };
+  return { ...state, evolutions: evolutions.sort((a, b) => a.level - b.level).slice(-evolutionHistoryLimit) };
 }

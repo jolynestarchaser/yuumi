@@ -99,11 +99,12 @@ export interface CompanionStageOutcome { id: string; level: number; stage: Compa
 export interface CompanionMemory { id: string; actor: Profile; kind: string; text: string; at: Timestamp }
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
+/** A durable level-up form event. Older companions may only have milestone entries. */
 export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
 /** The present body recipe. Unlike formId, this is not historical state. */
 export interface CompanionVisualForm {
   species: CompanionSpecies;
-  /** 0 = hatchling, then the forms earned at levels 3, 6, and 10. */
+  /** Broad silhouette family retained for old forms; level shapes continue without a cap. */
   xpTier: 0 | 1 | 2 | 3;
   xpPath: 'explorer' | 'guardian' | 'trickster';
   lifeStage: CompanionGrowthStage;

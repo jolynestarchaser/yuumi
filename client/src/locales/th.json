@@ -1,4 +1,8 @@
 {
+  "New form! Level {level}": "ร่างใหม่! เลเวล {level}",
+  "Current form: level {level} · {path}": "ร่างปัจจุบัน: เลเวล {level} · {path}",
+  "Next form at level {level}. Every level changes your companion's shape.": "ร่างถัดไปที่เลเวล {level} ทุกเลเวลจะเปลี่ยนรูปร่างของน้อง",
+  "Life stage grows through age and care separately.": "ช่วงวัยเติบโตตามอายุและการดูแลแยกจากเลเวล",
   "Creature": "ตัวน้อง",
   "A familiar little friend": "เพื่อนตัวน้อยที่คุ้นเคย",
   "Personality and evolution grow through care, not these appearance choices.": "นิสัยและการเติบโตเปลี่ยนจากการดูแล ไม่ใช่การแต่งรูปลักษณ์",

@@ -620,3 +620,26 @@
 }
 .companion-avatar.style-soft.species-spirit .creature-star::before { left: 0; transform: rotate(-27deg); }
 .companion-avatar.style-soft.species-spirit .creature-star::after { right: 0; transform: rotate(63deg); }
+
+/* Five anatomical beats repeat within the larger species and care-path forms. */
+.companion-avatar.style-soft.growth-shape-0 .creature-body { border-radius: 52% 48% 47% 53% / 46% 48% 52% 54%; }
+.companion-avatar.style-soft.growth-shape-1 .creature-body { margin-inline: -2px; border-radius: 48% 52% 50% 50% / 43% 48% 52% 57%; }
+.companion-avatar.style-soft.growth-shape-1 .creature-ear.left { scale: 1 1.13; }
+.companion-avatar.style-soft.growth-shape-2 .creature-body { margin-inline: -5px; border-radius: 53% 47% 48% 52% / 50% 47% 53% 50%; }
+.companion-avatar.style-soft.growth-shape-2 .creature-arm { scale: 1.12; }
+.companion-avatar.style-soft.growth-shape-3 .creature-body { margin-top: -3px; border-radius: 48% 52% 45% 55% / 43% 45% 55% 57%; }
+.companion-avatar.style-soft.growth-shape-3 .creature-ear { scale: 1.1 1.12; }
+.companion-avatar.style-soft.growth-shape-4 .creature-body { margin-inline: -4px; margin-top: -2px; border-radius: 55% 45% 51% 49% / 46% 43% 57% 54%; }
+.companion-avatar.style-soft.growth-shape-4 .creature-arm { scale: 1.28; }
+.companion-avatar.style-soft.growth-shape-4 .creature-foot { scale: 1.14 1.08; }
+.companion-avatar.style-soft.growth-ring-1 .creature-ear.right { scale: 1.12 1.08; }
+.companion-avatar.style-soft.growth-ring-2 .creature-arm.left { margin-left: -5px; scale: 1.18; }
+.companion-avatar.style-soft.growth-ring-3 .creature-arm.right { margin-right: -5px; scale: 1.18; }
+.companion-avatar.style-soft.growth-ring-4 .creature-foot { margin-inline: -5px; }
+.companion-avatar.level-up .companion-avatar-motion { animation: companion-level-evolve .9s ease-in-out 2; }
+@keyframes companion-level-evolve {
+  0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+  45% { transform: translateY(-9px) scale(1.1, .94); filter: brightness(1.22); }
+  72% { transform: translateY(2px) scale(.96, 1.07); filter: brightness(1.08); }
+}
+@media (prefers-reduced-motion: reduce) { .companion-avatar.level-up .companion-avatar-motion { animation: none; } }

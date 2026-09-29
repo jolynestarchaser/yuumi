@@ -3,14 +3,14 @@ import type { CompanionActivity } from './types.js';
 
 // A 32-cell sprite on a 256 × 256 canvas: integer edges stay crisp at 8×.
 // Facial parts remain separate so blinking never distorts the whole picture.
-export default function PixelCompanion({ species, face, activity = 'idle', lifeStage = 'hatchling', xpTier = 0, path = 'guardian' }: { species: CompanionSpecies; face: CompanionFace; activity?: CompanionActivity; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster' }) {
+export default function PixelCompanion({ species, face, activity = 'idle', lifeStage = 'hatchling', xpTier = 0, path = 'guardian', level = 1 }: { species: CompanionSpecies; face: CompanionFace; activity?: CompanionActivity; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster'; level?: number }) {
   const child = species === 'child';
   const ear = species === 'cat' || species === 'fox' ? 'M5 6h2V4h1v1h2v2h2v6H5zM20 7h2V5h2V4h1v2h2v7h-7z'
     : species === 'robot' ? 'M15 2h2v6h-2zM13 1h6v3h-6z'
     : child ? 'M6 6h5v7H5V8h1zM21 6h5v2h1v5h-6z'
     : species === 'dragon' ? 'M7 3h2v3h2v6H6V7h1zM23 3h2v4h1v5h-5V6h2z'
     : 'M5 3h3v1h2v2h2v6H6V9H5zM24 3h3v6h-1v3h-6V6h2V4h2z';
-  // Each XP milestone changes the filled silhouette, not just its decoration.
+  // Broad XP milestones change the filled body; each level changes an outer contour.
   // The same stepped contour is used for the border, so there is no ghost of the hatchling outline.
   const forms = {
     guardian: [
@@ -33,7 +33,25 @@ export default function PixelCompanion({ species, face, activity = 'idle', lifeS
     ]
   } as const;
   const body = forms[path][xpTier];
+  const growthShape = (level - 1) % 5;
+  const growthRing = Math.floor((level - 1) / 5) % 5;
+  const levelContour = [
+    '',
+    'M5 9h2v3H4v3H2v-4h3zM25 9h2v2h3v4h-2v-3h-3z',
+    'M3 15h4v4H3v2H1v-5h2zM25 15h4v1h2v5h-2v-2h-4z',
+    'M5 5h3v3h2v3H5zM24 5h3v6h-5V8h2z',
+    'M1 19h5v5H4v3H1zM26 19h5v8h-3v-3h-2z'
+  ][growthShape];
+  const ringContour = [
+    '',
+    'M2 13h3v5H1v-4h1z',
+    'M27 13h3v1h1v4h-4z',
+    'M1 15h3v7H0v-6h1z',
+    'M28 15h3v1h1v6h-4z'
+  ][growthRing];
   return <svg className='companion-pixel-sprite' viewBox='0 0 32 32' width='256' height='256' shapeRendering='crispEdges' aria-hidden='true'>
+    {levelContour && <path fill='var(--creature-body)' stroke='color-mix(in srgb,var(--creature-body) 35%,var(--creature-eye))' strokeWidth='1' d={levelContour} />}
+    {ringContour && <path fill='var(--creature-accent)' d={ringContour} />}
     {xpTier > 0 && <path fill='var(--creature-accent)' d={path === 'explorer' ? 'M2 15h4v2h3v2H5v3H2zM23 15h3v2h4v5h-3v-3h-4z' : path === 'trickster' ? 'M3 21h5v2h3v3H4v-2H2zM23 20h5v2h2v4h-7v-3h3z' : 'M2 17h5v2h3v3H4v-2H2zM22 17h4v2h4v3h-3v-1h-5z'} />}
     {species === 'dragon' && <path fill='var(--creature-accent)' d='M1 13h2v2h3v10H4v-3H2v-4H1zM29 13h2v5h-1v4h-2v3h-2V15h3z' />}
     {(species === 'cat' || species === 'fox') && <path fill='var(--creature-accent)' d='M26 21h3v-2h2v7h-2v2h-5v-3h2z' />}

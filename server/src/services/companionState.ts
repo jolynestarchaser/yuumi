@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { simulateCompanion } from './companionSimulation.js';
 import { currentDailyRitual } from './companionRitual.js';
-import { visualFormFor } from './companionEvolution.js';
+import { formIdFor, visualFormFor } from './companionEvolution.js';
 import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, LifecycleCareAction, CompanionSetup, Temperament, CompanionGrowthStage, CompanionState } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
@@ -183,7 +183,7 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
   const growthStage = safe.lifecycle?.stage || growthStageForLevel(level);
   const visualForm = visualFormFor(safe);
-  const formId = `${visualForm.species}-tier-${visualForm.xpTier}-${visualForm.xpPath}`;
+  const formId = formIdFor(visualForm.species, visualForm.lifeStage, visualForm.xpPath, level);
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : growthStage === 'elder' ? 'Elder companion' : 'Grown companion';
   const active = safe.careRequest?.state === 'active' ? safe.careRequest : undefined;
   const request = safe.lifecycle?.lifeStatus !== 'alive' ? null : active ? { id: active.id, action: active.action, state: active.state, text: active.action === 'feed' ? 'Could we have a little snack together?' : active.action === 'play' ? 'Will you play a tiny game with me?' : active.action === 'rest' ? 'I think a cozy nap would help me recharge.' : active.action === 'clean' ? 'Could you help me freshen up?' : active.action === 'medicine' ? 'I do not feel well. Could you help with medicine?' : 'Can I have a little cuddle?', urgency: ['feed', 'medicine'].includes(active.action) ? 'soon' as const : 'gentle' as const }

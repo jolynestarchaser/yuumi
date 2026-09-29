@@ -124,15 +124,27 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   const [tab, setTab] = useState('chat');
   const [creating, setCreating] = useState(false);
   const [reaction, setReaction] = useState<LifecycleCareAction | ''>('');
+  const [levelUp, setLevelUp] = useState(false);
   const [voiceActivity, setVoiceActivity] = useState<CompanionActivity | null>(null);
   const [careStatus, setCareStatus] = useState('');
   const [predecessorId, setPredecessorId] = useState<string | undefined>();
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const levelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const voiceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previousBehavior = useRef<{ id: string; state: string } | null>(null);
+  const previousLevel = useRef<{ id: string; level: number } | null>(null);
   const active = useRef(true);
-  useEffect(() => { active.current = true; return () => { active.current = false; stopCreatureVoice(); if (reactionTimer.current) clearTimeout(reactionTimer.current); if (voiceTimer.current) clearTimeout(voiceTimer.current); }; }, []);
-  useEffect(() => { stopCreatureVoice(); if (reactionTimer.current) clearTimeout(reactionTimer.current); if (voiceTimer.current) clearTimeout(voiceTimer.current); setReaction(''); setCareStatus(''); setVoiceActivity(null); }, [companionId]);
+  useEffect(() => { active.current = true; return () => { active.current = false; stopCreatureVoice(); if (reactionTimer.current) clearTimeout(reactionTimer.current); if (levelTimer.current) clearTimeout(levelTimer.current); if (voiceTimer.current) clearTimeout(voiceTimer.current); }; }, []);
+  useEffect(() => { stopCreatureVoice(); if (reactionTimer.current) clearTimeout(reactionTimer.current); if (levelTimer.current) clearTimeout(levelTimer.current); if (voiceTimer.current) clearTimeout(voiceTimer.current); setReaction(''); setLevelUp(false); setCareStatus(''); setVoiceActivity(null); }, [companionId]);
+  useEffect(() => {
+    if (!companion?.id) return;
+    const previous = previousLevel.current;
+    previousLevel.current = { id: companion.id, level: companion.level };
+    if (previous?.id !== companion.id || companion.level <= previous.level) return;
+    setLevelUp(true);
+    if (levelTimer.current) clearTimeout(levelTimer.current);
+    levelTimer.current = setTimeout(() => setLevelUp(false), 2600);
+  }, [companion?.id, companion?.level]);
   useEffect(() => {
     if (!companion?.id) return;
     const previous = previousBehavior.current;
@@ -184,8 +196,8 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <div className='companion-home-top'><span className='companion-kicker'>{t('OUR LITTLE WORLD')}</span><span className='companion-mood'>{t(companion.mood)}</span></div>
         <div className={`companion-habitat world-${companion.appearance?.world || 'moon-garden'}`}>
           <div className='companion-habitat-copy'><span className='companion-kicker'>{t('TODAY WITH')}</span><h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p></div>
-          <CompanionAvatar companion={companion} reaction={reaction} activity={avatarActivity} />
-          {(careStatus || busy) && <div className='companion-action-feedback' aria-live='polite'>{careStatus && !busy && <span className='is-success'>{careStatus}</span>}{busy && <span>{t('Taking care of {name}…', { name: companion.name })}</span>}</div>}
+          <CompanionAvatar companion={companion} reaction={reaction} activity={avatarActivity} levelUp={levelUp} />
+          {(careStatus || busy || levelUp) && <div className='companion-action-feedback' aria-live='polite'>{levelUp && <span className='is-success'>{t('New form! Level {level}', { level: companion.level })}</span>}{careStatus && !busy && !levelUp && <span className='is-success'>{careStatus}</span>}{busy && !levelUp && <span>{t('Taking care of {name}…', { name: companion.name })}</span>}</div>}
         </div>
         <h4 className='companion-card-heading'><Heart size={15} />{t('Needs right now')}</h4>
         <div className='companion-needs'>

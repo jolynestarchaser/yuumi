@@ -68,7 +68,7 @@ const schema = new mongoose.Schema<StoredCompanion>({
   memories: { type: [memorySchema], default: [], validate: (rows) => rows.length <= 80 },
   turns: { type: [turnSchema], default: [], validate: (rows) => rows.length <= 60 },
   evolutions: { type: [new mongoose.Schema({
-    level: { type: Number, min: 3, required: true },
+    level: { type: Number, min: 2, required: true },
     species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'], required: true },
     path: { type: String, enum: ['explorer', 'guardian', 'trickster'], required: true },
     at: { type: Date, required: true }

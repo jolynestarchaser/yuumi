@@ -4,7 +4,7 @@ import { evolveCompanion, visualFormFor } from '../src/services/companionEvoluti
 import { initialCompanion, validateAppearance } from '../src/services/companionState.js';
 import { brainContext, characterDesign, parseBrainReply } from '../src/services/companionBrain.js';
 
-test('evolution occurs only at earned milestones and does not reroll on a retry', () => {
+test('evolution occurs at each earned level and does not reroll on a retry', () => {
   const state = { ...initialCompanion(), xp: 160 };
   const evolved = evolveCompanion(state, 152, () => 0);
   assert.equal(evolved.evolutions.length, 1);
@@ -12,7 +12,7 @@ test('evolution occurs only at earned milestones and does not reroll on a retry'
   assert.equal(evolved.evolutions[0].path, 'explorer');
   assert.deepEqual(evolved.memories, state.memories);
   assert.deepEqual(evolveCompanion(evolved, 160, () => .999), evolved);
-  assert.deepEqual(evolveCompanion({ ...state, xp: 80 }, 72).evolutions, []);
+  assert.deepEqual(evolveCompanion({ ...state, xp: 80 }, 72, () => 0).evolutions.map((entry) => entry.level), [2]);
   assert.equal(state.evolutions, undefined);
 });
 
@@ -23,12 +23,20 @@ test('both species and accumulated behavior affect the same evolution roll', () 
   assert.notEqual(choose('custom', { curiosity: 100, affection: 0, playfulness: 0 }), choose('custom', { curiosity: 0, affection: 100, playfulness: 0 }));
 });
 
-test('multi-level rewards record every XP milestone once without changing lifecycle history', () => {
+test('multi-level rewards record every earned level once without changing lifecycle history', () => {
   const base = { ...initialCompanion(), xp: 0, stageOutcomes: [{ id: 'age-child', level: 0, stage: 'child' as const, fromFormId: 'old', toFormId: 'old', branch: 'guardian' as const, rulesVersion: 3, at: new Date() }] };
   const gained = evolveCompanion({ ...base, xp: 720 }, 0, () => 0);
-  assert.deepEqual(gained.evolutions.map((entry) => entry.level), [3, 6, 10]);
+  assert.deepEqual(gained.evolutions.map((entry) => entry.level), [2, 3, 4, 5, 6, 7, 8, 9, 10]);
   assert.deepEqual(gained.stageOutcomes, base.stageOutcomes);
   assert.deepEqual(evolveCompanion(gained, 0, () => .99).evolutions, gained.evolutions);
+});
+
+test('form events continue after the former level ten ceiling', () => {
+  const base = { ...initialCompanion(), xp: 14 * 80, evolutions: [{ level: 10, species: 'spirit' as const, path: 'guardian' as const, at: new Date() }] };
+  const next = evolveCompanion({ ...base, xp: 15 * 80 }, base.xp, () => 0);
+  assert.equal(next.evolutions.at(-1)?.level, 16);
+  assert.equal(next.evolutions.at(-1)?.path, 'explorer');
+  assert.equal(visualFormFor(next).xpPath, 'explorer');
 });
 
 test('visual form uses XP tier while lifecycle stays an independent age presentation', () => {

@@ -77,6 +77,9 @@ portrait; pause motion; test reduced motion, mobile layout, and both profile sna
   are independent: child requires two simulated days plus six meaningful care actions,
   juvenile seven days plus eighteen since child, and grown fourteen days plus thirty-six
   since juvenile. Elder begins at day 60 and natural death at day 90 regardless of care gates.
+- Every earned XP level from level 2 onward records a form change and visibly changes
+  the authored Soft and Pixel bodies. There is no final XP evolution level. The
+  broader age and care stages remain separate.
 - Gemini supplies a validated one-trait growth signal per successful chat; the server
   caps the increment at one. Gemini never sets XP, levels, or evolution outcomes.
   Dialogue receives the latest evolution and can suggest preferences or activities.

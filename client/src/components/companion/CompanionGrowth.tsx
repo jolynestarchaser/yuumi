@@ -13,10 +13,9 @@ export default function CompanionGrowth({ companion }: { companion: PublicCompan
     <h4 className='companion-growth-heading'>{t('Evolution')}</h4>
     <div><strong>{t('Level')} {companion.level}</strong><span>{levelXp} {t("/ 80 EXP")}</span></div>
     <progress aria-label={t('Experience to next level')} value={levelXp} max={80} />
-    <p className='companion-form-label'>{t(companion.growthStage)} · {t('XP form')} {form.xpTier + 1}/4 · {t(form.xpPath)}</p>
-    <div className='companion-evolution-steps' aria-label={t('Evolution levels')}>
-      {[1, 3, 6, 10].map((level, index) => <span key={level} className={index === form.xpTier ? 'is-current' : index < form.xpTier ? 'is-earned' : ''} aria-current={index === form.xpTier ? 'step' : undefined}>{t('Level')} {level}</span>)}
-    </div>
+    <p className='companion-form-label'>{t('Current form: level {level} · {path}', { level: companion.level, path: t(form.xpPath) })}</p>
+    {lifecycle?.lifeStatus === 'alive' && <small>{t("Next form at level {level}. Every level changes your companion's shape.", { level: companion.level + 1 })}</small>}
+    <small>{t('Life stage grows through age and care separately.')} {t(companion.growthStage)}</small>
     {lifecycle && <p>{t('Generation')} {lifecycle.generation} · {t(lifecycle.lifeStatus)} · {t(lifecycle.healthCondition)}{companion.automaticallyPaused ? ` · ${t('Paused while away')}` : ''}</p>}
     {protectionUntil && protectionUntil.getTime() > Date.now() && <small>{t('Return protection active until {time}', { time: protectionUntil.toLocaleString() })}</small>}
     {requirements && lifecycle?.lifeStatus === 'alive' && <><progress aria-label={t('Age progress to next stage')} value={Math.min(lifecycle.simulatedAgeHours, requirements.hours)} max={requirements.hours} /><small>{t('Next stage: {stage} · age {age}/{target} hours · care {care}/{careTarget}', { stage: t(requirements.stage), age: Math.floor(lifecycle.simulatedAgeHours), target: requirements.hours, care: lifecycle.stageCareCount, careTarget: requirements.care })}</small></>}

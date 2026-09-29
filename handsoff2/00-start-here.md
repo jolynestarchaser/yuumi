@@ -58,7 +58,7 @@ TypeScript configurations currently have `strict: false`.
 | --- | --- | --- |
 | Needs and XP | [companionState.ts](../server/src/services/companionState.ts) | Schema v2, four needs, protective floors, daily care XP budget |
 | Chat rewards | [companionController.ts](../server/src/controllers/companionController.ts) | 4 XP per saved reply until 12 chat XP/day |
-| Growth | [companionEvolution.ts](../server/src/services/companionEvolution.ts) | Stages at levels 3, 6, 10; persisted form outcomes |
+| Growth | [companionEvolution.ts](../server/src/services/companionEvolution.ts) | Form outcome at every XP level from 2 onward; age and care stages remain separate |
 | AI | [companionBrain.ts](../server/src/services/companionBrain.ts) | Gemini 2.5 Flash default, one large prompt, bounded context |
 | Persistence | [Companion.ts](../server/src/models/Companion.ts) | Existing identity, needs, history, lease, and operation buffer |
 | Migration | [companionMigration.ts](../server/src/services/companionMigration.ts) | v2 backfills, including XP budgets |

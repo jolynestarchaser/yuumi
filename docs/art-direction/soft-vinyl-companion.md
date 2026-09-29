@@ -45,4 +45,6 @@ Keep face parts separate from the body so blinking and expression swaps do not r
 
 This direction should survive the existing hatchling → child → juvenile → grown/elder progression. At each stage change the silhouette and at least two anatomical features; color changes or a badge alone do not count. The folded ear or an equivalent species-specific asymmetry can persist as an identity marker. Keep the soft renderer in SVG/CSS parts, as specified in [the companion UI handoff](../handoff/04-companion-game-ui.md). The reference SVG is editable source art for proportions and color, not a flattened animation sprite.
 
+Each XP level from 2 onward also changes the authored body contour, ears, arms, or feet. The five small shape beats combine with five larger appendage beats and the care path, so appearance continues to change after level 10. Life stages still use age and care gates for the larger transformations.
+
 The current Soft renderer applies the palette, volume, belly patch, and soft facial treatment in `CompanionAvatar.tsx` and `companion.css`. Spirit, bunny, and custom forms use the folded ear; pointed-ear and robot forms keep their own silhouettes. Existing saved colors and face choices continue to drive the result.
