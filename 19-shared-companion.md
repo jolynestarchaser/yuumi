@@ -53,6 +53,9 @@ portrait; pause motion; test reduced motion, mobile layout, and both profile sna
   supported. Saved design edits are revision-checked and preserve XP and memory.
 - A saved world (`moon-garden`, `sunny-meadow`, `cloud-cove`, or `pocket-workshop`)
   changes the creation backdrop and later habitat, independently of color palette.
+  The existing-companion editor offers the same creature, world, expression, shape,
+  color, and voice choices with a live unsaved preview. Saving retains earned
+  personality, XP, memories, and evolution; those are not appearance settings.
 - Short procedural creature vocalizations replace browser speech synthesis.
   Chat remains text. Browser Web Audio supports a bounded volume control,
   preview, cooldowns, and priority interruption; no Gemini speech calls are made.

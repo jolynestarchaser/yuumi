@@ -1,45 +1,68 @@
 import { useState } from 'react';
+import { Volume2 } from 'lucide-react';
 import type { CompanionAppearance, CompanionSpecies } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
+import { companionFaces, companionShapes, companionWorlds, creatureBases } from './companionChoiceData.js';
 import { companionVoiceProfile } from './companionVoiceProfile.js';
 import { colorThemes, voicePresets } from './companionDesign.js';
+import CompanionAvatar from './CompanionAvatar.js';
 import { creatureVoiceSupported, playCreatureVoice, stopCreatureVoice, unlockCreatureVoice } from './voice/audioPlayer.js';
 
-const species: [CompanionSpecies, string][] = [['spirit', 'Forest spirit'], ['bunny', 'Bunny'], ['cat', 'Cat'], ['fox', 'Fox'], ['dragon', 'Dragon'], ['robot', 'Robot'], ['child', 'Storybook child'], ['custom', 'Custom creature']];
+type DesignPanel = 'creature' | 'world' | 'details' | 'colors' | 'voice';
+const panels: { id: DesignPanel; label: string }[] = [
+  { id: 'creature', label: 'Creature' }, { id: 'world', label: 'Their world' },
+  { id: 'details', label: 'Little details' }, { id: 'colors', label: 'Colors' },
+  { id: 'voice', label: 'Voice' },
+];
+const editableBases = [...creatureBases, { id: 'child' as CompanionSpecies, label: 'Storybook child', note: 'A familiar little friend' }];
 
 export default function CompanionDesignFields({ value, onChange, disabled = false }: {
   value: CompanionAppearance; onChange: (value: CompanionAppearance) => void; disabled?: boolean;
 }) {
   const { t } = useCompanionLanguage();
-  const [panel, setPanel] = useState('look');
+  const [panel, setPanel] = useState<DesignPanel>('creature');
   const voice = companionVoiceProfile(value);
   const supported = creatureVoiceSupported();
   return <fieldset className='companion-design-fields' disabled={disabled}>
     <legend>{t('Make them yours')}</legend>
-    <div className='companion-design-nav' aria-label={t('Design sections')}>{[['look', 'Look'], ['colors', 'Colors'], ['voice', 'Voice']].map(([id, label]) => <button key={id} type='button' aria-pressed={panel === id} onClick={() => { stopCreatureVoice(); setPanel(id); }}>{t(label)}</button>)}</div>
-    <div className='companion-design-panel' hidden={panel !== 'look'}>
-    <label>{t('Species')}<select value={value.species || 'spirit'} onChange={(event) => onChange({ ...value, species: event.target.value as CompanionSpecies })}>{species.map(([key, label]) => <option key={key} value={key}>{t(label)}</option>)}</select></label>
-    {value.species === 'custom' && <div className='companion-custom-race'><label>{t('Describe your custom race')}<textarea required={panel === 'look'} maxLength={500} value={value.customDescription || ''} placeholder={t('A cloud jellyfish with tiny wings, four paws, and a glowing moon tail…')} onChange={(event) => onChange({ ...value, customDescription: event.target.value })} /></label><small>{t('Your description shapes their personality and their built-in evolving form. The preview shows selected shape, face, and colors.')}</small></div>}
-    <div className='companion-design-grid'>
-      <label>{t('Body shape')}<select value={value.silhouette || 'round'} onChange={(event) => onChange({ ...value, silhouette: event.target.value as CompanionAppearance['silhouette'] })}>{([['round', 'Round'], ['bean', 'Bean'], ['fluffy', 'Fluffy']] as const).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></label>
-      <label>{t('Face')}<select value={value.face || 'gentle'} onChange={(event) => onChange({ ...value, face: event.target.value as CompanionAppearance['face'] })}>{([['gentle', 'Gentle smile'], ['happy', 'Happy eyes'], ['sleepy', 'Sleepy eyes'], ['mischievous', 'Mischievous wink'], ['starry', 'Starry eyes']] as const).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></label>
-      <label>{t('Gender')}<select value={value.gender || 'unspecified'} onChange={(event) => onChange({ ...value, gender: event.target.value as CompanionAppearance['gender'] })}>{([['unspecified', 'Unspecified'], ['female', 'Female'], ['male', 'Male'], ['nonbinary', 'Nonbinary']] as const).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></label>
+    <nav className='companion-design-nav' aria-label={t('Design sections')}>
+      {panels.map(({ id, label }) => <button key={id} type='button' aria-pressed={panel === id} onClick={() => { stopCreatureVoice(); setPanel(id); }}>{t(label)}</button>)}
+    </nav>
+
+    <div className='companion-design-panel' hidden={panel !== 'creature'}>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Base creature')}</legend>
+        <div className='companion-base-grid'>{editableBases.map(({ id, label, note }) => <button key={id} type='button' className='companion-base-card' aria-pressed={(value.species || 'spirit') === id} onClick={() => onChange({ ...value, species: id })}><span aria-hidden='true'><CompanionAvatar small decorative companion={{ name: label, form: 'creature', mood: 'curious', appearance: { ...value, species: id, animated: false } }} /></span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div>
+      </fieldset>
+      {value.species === 'custom' && <label className='companion-design-description'>{t('Describe your creature')}<textarea maxLength={500} value={value.customDescription || ''} placeholder={t('A cloud jellyfish with four tiny paws…')} onChange={(event) => onChange({ ...value, customDescription: event.target.value })} /></label>}
     </div>
+
+    <div className='companion-design-panel' hidden={panel !== 'world'}>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Their world')}</legend>
+        <div className='companion-world-grid'>{companionWorlds.map(({ id, label, note, Icon }) => <button key={id} type='button' className={`companion-world-card world-${id}`} aria-pressed={(value.world || 'moon-garden') === id} onClick={() => onChange({ ...value, world: id })}><Icon size={22} /><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div>
+      </fieldset>
     </div>
+
+    <div className='companion-design-panel' hidden={panel !== 'details'}>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Expression')}</legend><div className='companion-chip-grid'>{companionFaces.map(({ id, label }) => <button key={id} type='button' aria-pressed={(value.face || 'gentle') === id} onClick={() => onChange({ ...value, face: id })}>{t(label)}</button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Body shape')}</legend><div className='companion-chip-grid'>{companionShapes.map(({ id, label }) => <button key={id} type='button' aria-pressed={(value.silhouette || 'round') === id} onClick={() => onChange({ ...value, silhouette: id })}>{t(label)}</button>)}</div></fieldset>
+      <label className='companion-design-gender'>{t('Gender')}<select value={value.gender || 'unspecified'} onChange={(event) => onChange({ ...value, gender: event.target.value as CompanionAppearance['gender'] })}>{([['unspecified', 'Unspecified'], ['female', 'Female'], ['male', 'Male'], ['nonbinary', 'Nonbinary']] as const).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></label>
+      <small>{t('Personality and evolution grow through care, not these appearance choices.')}</small>
+    </div>
+
     <div className='companion-design-panel' hidden={panel !== 'colors'}>
-    <fieldset className='companion-theme-picker'><legend>{t('Color theme')}</legend><div>{colorThemes.map(({ id, label, bodyColor, accentColor, eyeColor }) => <button key={id} type='button' aria-pressed={(value.theme || 'lavender') === id} onClick={() => onChange({ ...value, theme: id, bodyColor, accentColor, eyeColor })}><span aria-hidden='true'><i style={{ background: bodyColor }} /><i style={{ background: accentColor }} /><i style={{ background: eyeColor }} /></span>{t(label)}</button>)}</div></fieldset>
-    <div className='companion-color-fields'>{([['bodyColor', 'Body color', '#d4c2f0'], ['accentColor', 'Accent color', '#c4dbbf'], ['eyeColor', 'Eye color', '#423452']] as const).map(([key, label, fallback]) => <label key={key}>{t(label)}<input type='color' value={value[key] || fallback} onChange={(event) => onChange({ ...value, theme: 'custom', [key]: event.target.value })} /></label>)}</div>
-    <small>{t('Colors and species update the companion immediately, including every future growth form.')}</small>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Color palette')}</legend><div className='companion-palette-grid'>{colorThemes.map(({ id, label, bodyColor, accentColor, eyeColor }) => <button key={id} type='button' className='companion-palette-card' aria-pressed={(value.theme || 'lavender') === id} onClick={() => onChange({ ...value, theme: id, bodyColor, accentColor, eyeColor })}><span aria-hidden='true'><i style={{ background: bodyColor }} /><i style={{ background: accentColor }} /><i style={{ background: eyeColor }} /></span><strong>{t(label)}</strong></button>)}</div></fieldset>
+      <div className='companion-creation-colors'>{([['bodyColor', 'Body color', '#d4c2f0'], ['accentColor', 'Accent color', '#c4dbbf'], ['eyeColor', 'Eye color', '#423452']] as const).map(([key, label, fallback]) => <label key={key}>{t(label)}<input type='color' value={value[key] || fallback} onChange={(event) => onChange({ ...value, theme: 'custom', [key]: event.target.value })} /></label>)}</div>
     </div>
-    <div className='companion-design-panel companion-voice-panel' hidden={panel !== 'voice'}>
-    <label className='companion-check'><input type='checkbox' checked={voice.enabled} disabled={!supported} onChange={(event) => { if (!event.target.checked) stopCreatureVoice(); onChange({ ...value, voice: { ...voice, enabled: event.target.checked } }); }} />{t('Enable creature voice')}</label>
-    {!supported ? <small>{t('This browser does not support voice.')}</small> : <>
-      <label>{t('Voice character')}<select value={voice.preset || 'natural'} onChange={(event) => { const preset = voicePresets.find((entry) => entry.id === event.target.value); if (preset) onChange({ ...value, voice: { ...voice, preset: preset.id, rate: preset.rate, pitch: preset.pitch } }); }}>{voicePresets.map((preset) => <option key={preset.id} value={preset.id}>{t(preset.label)}</option>)}<option value='custom' disabled>{t('Custom tuning')}</option></select></label>
-      <label>{t('Volume')} · {Math.round((voice.volume ?? .8) * 100)}%<input type='range' min='0' max='1' step='.05' value={voice.volume ?? .8} onChange={(event) => onChange({ ...value, voice: { ...voice, volume: Number(event.target.value) } })} /></label>
-      <button type='button' className='companion-secondary' onClick={() => { unlockCreatureVoice(); playCreatureVoice('greeting', { ...value, voice }, true); }}>{t('Preview creature voice')}</button>
-      <small>{t('A tiny original creature voice, not spoken chat. Text stays readable on screen.')}</small>
-    </>}
+
+    <div className='companion-design-panel' hidden={panel !== 'voice'}>
+      <fieldset className='companion-creation-fieldset' disabled={!supported}><legend>{t('Creature voice')}</legend>
+        <div className='companion-voice-grid'>{voicePresets.map((preset) => <button key={preset.id} type='button' className='companion-choice-card' aria-pressed={(voice.preset || 'natural') === preset.id} onClick={() => onChange({ ...value, voice: { ...voice, preset: preset.id, rate: preset.rate, pitch: preset.pitch } })}><span className='companion-choice-glyph'><Volume2 size={18} /></span><strong>{t(preset.label)}</strong></button>)}</div>
+        <label className='companion-voice-enable'><input type='checkbox' checked={voice.enabled} onChange={(event) => { if (!event.target.checked) stopCreatureVoice(); onChange({ ...value, voice: { ...voice, enabled: event.target.checked } }); }} />{t('Let them chirp')}</label>
+        <label className='companion-voice-volume'>{t('Volume')} · {Math.round((voice.volume ?? .8) * 100)}%<input type='range' min='0' max='1' step='.05' value={voice.volume ?? .8} onChange={(event) => onChange({ ...value, voice: { ...voice, volume: Number(event.target.value) } })} /></label>
+        <button type='button' className='companion-voice-preview' onClick={() => { unlockCreatureVoice(); playCreatureVoice('greeting', { ...value, voice }, true); }}><Volume2 size={17} />{t('Hear their greeting')}</button>
+      </fieldset>
+      {!supported && <small>{t('This browser does not support voice. Your companion will still work without sound.')}</small>}
     </div>
-    {value.species === 'custom' && !value.customDescription?.trim() && panel !== 'look' && <small role='status'>{t('Add your custom race description in Look before continuing.')}</small>}
+    {value.species === 'custom' && !value.customDescription?.trim() && panel !== 'creature' && <small role='status'>{t('Add your custom race description in Look before continuing.')}</small>}
   </fieldset>;
 }

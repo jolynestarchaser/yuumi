@@ -436,11 +436,14 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
   }
   assert.equal((await request('joe', 'appearance', { appearance: { visualStyle: 'soft', animated: true, usePortrait: true } })).code, 200);
   const beforeCustomize = clone(stored);
-  const customization = { name: 'New Pip', form: 'creature', seed: 'A teal dragon', appearance: { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon', bodyColor: '#00aacc' }, expectedRevision: stored.revision };
+  const customization = { name: 'New Pip', form: 'creature', seed: 'A teal dragon', appearance: { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon', world: 'sunny-meadow', bodyColor: '#00aacc' }, expectedRevision: stored.revision };
   assert.equal((await request('focus', 'customize', customization)).code, 200);
   assert.equal(stored.name, 'New Pip');
+  assert.equal(stored.appearance.world, 'sunny-meadow');
   assert.deepEqual(stored.memories, beforeCustomize.memories);
   assert.equal(stored.xp, beforeCustomize.xp);
+  assert.deepEqual(stored.traits, beforeCustomize.traits);
+  assert.deepEqual(stored.evolutions, beforeCustomize.evolutions);
   assert.deepEqual(stored.portrait, beforeCustomize.portrait);
   assert.equal((await request('joe', 'customize', customization)).code, 409);
   assert.equal((await request('focus', 'adopt', { name: 'Other', form: 'pet', seed: 'A cat', temperament: 'playful' })).code, 409);

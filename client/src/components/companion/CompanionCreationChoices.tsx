@@ -1,37 +1,11 @@
-import { Cloud, Heart, Moon, Sparkles, Sun, Volume2, Wrench } from 'lucide-react';
-import type { CompanionAppearance, CompanionFace, CompanionSpecies, CompanionWorld, Temperament } from '../../../../shared/contracts.js';
+import { Heart, Sparkles, Volume2 } from 'lucide-react';
+import type { CompanionAppearance, Temperament } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
+import { companionFaces, companionShapes, companionWorlds, creatureBases, startingTemperaments } from './companionChoiceData.js';
 import { colorThemes, voicePresets } from './companionDesign.js';
 import { companionVoiceProfile } from './companionVoiceProfile.js';
 import CompanionAvatar from './CompanionAvatar.js';
 import { creatureVoiceSupported, playCreatureVoice, stopCreatureVoice, unlockCreatureVoice } from './voice/audioPlayer.js';
-
-const bases: { id: CompanionSpecies; label: string; note: string }[] = [
-  { id: 'spirit', label: 'Forest spirit', note: 'Leaf-eared and curious' },
-  { id: 'bunny', label: 'Bunny', note: 'A soft little hopper' },
-  { id: 'cat', label: 'Cat', note: 'Paws, naps, and mischief' },
-  { id: 'fox', label: 'Fox', note: 'Bright-eyed and quick' },
-  { id: 'dragon', label: 'Dragon', note: 'Tiny wings, big heart' },
-  { id: 'robot', label: 'Robot', note: 'A pocket-sized friend' },
-  { id: 'custom', label: 'Make my own', note: 'Describe your little creature' },
-];
-const worlds: { id: CompanionWorld; label: string; note: string; Icon: typeof Moon }[] = [
-  { id: 'moon-garden', label: 'Moon garden', note: 'Night flowers and soft stars', Icon: Moon },
-  { id: 'sunny-meadow', label: 'Sunny meadow', note: 'Warm grass and sleepy bees', Icon: Sun },
-  { id: 'cloud-cove', label: 'Cloud cove', note: 'A quiet place above the rain', Icon: Cloud },
-  { id: 'pocket-workshop', label: 'Pocket workshop', note: 'Little inventions everywhere', Icon: Wrench },
-];
-const temperaments: { id: Temperament; label: string; note: string }[] = [
-  { id: 'curious', label: 'Curious', note: 'Peeks around every corner' },
-  { id: 'gentle', label: 'Gentle', note: 'Stays close when you need them' },
-  { id: 'playful', label: 'Playful', note: 'Makes a game of small things' },
-];
-const faces: { id: CompanionFace; label: string }[] = [
-  { id: 'gentle', label: 'Soft smile' }, { id: 'happy', label: 'Happy eyes' },
-  { id: 'sleepy', label: 'Sleepy blink' }, { id: 'mischievous', label: 'Cheeky wink' },
-  { id: 'starry', label: 'Starry eyes' },
-];
-const shapes = [{ id: 'round', label: 'Round' }, { id: 'bean', label: 'Bean' }, { id: 'fluffy', label: 'Fluffy' }] as const;
 
 export default function CompanionCreationChoices({ step, name, onName, appearance, onAppearance, temperament, onTemperament, detail, onDetail, disabled }: {
   step: number;
@@ -46,22 +20,22 @@ export default function CompanionCreationChoices({ step, name, onName, appearanc
   return <div className='companion-creation-choice-page'>
     {step === 0 && <>
       <div className='companion-creation-heading'><span>01 / 06</span><h3>{t('Which little one caught your eye?')}</h3><p>{t('Pick a base creature. You can make the details your own next.')}</p></div>
-      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Base creature')}</legend><div className='companion-base-grid'>{bases.map(({ id, label, note }) => <button type='button' key={id} className='companion-base-card' aria-pressed={(appearance.species || 'spirit') === id} onClick={() => onAppearance({ ...appearance, species: id })}><span aria-hidden='true'><CompanionAvatar small decorative companion={{ name: label, form: 'creature', mood: 'curious', appearance: { ...appearance, species: id, animated: false } }} /></span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Base creature')}</legend><div className='companion-base-grid'>{creatureBases.map(({ id, label, note }) => <button type='button' key={id} className='companion-base-card' aria-pressed={(appearance.species || 'spirit') === id} onClick={() => onAppearance({ ...appearance, species: id })}><span aria-hidden='true'><CompanionAvatar small decorative companion={{ name: label, form: 'creature', mood: 'curious', appearance: { ...appearance, species: id, animated: false } }} /></span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
       {appearance.species === 'custom' && <label className='companion-creation-input'>{t('Describe your creature')}<textarea required maxLength={180} value={appearance.customDescription || ''} placeholder={t('A cloud jellyfish with four tiny paws…')} onChange={(event) => onAppearance({ ...appearance, customDescription: event.target.value })} /></label>}
       <label className='companion-creation-input'>{t('What should we call them?')}<input required maxLength={32} value={name} onChange={(event) => onName(event.target.value)} placeholder={t('A name that feels like theirs')} /></label>
     </>}
     {step === 1 && <>
       <div className='companion-creation-heading'><span>02 / 06</span><h3>{t('Where did they come from?')}</h3><p>{t('Their little world stays with them as they grow.')}</p></div>
-      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Their world')}</legend><div className='companion-world-grid'>{worlds.map(({ id, label, note, Icon }) => <button type='button' key={id} className={`companion-world-card world-${id}`} aria-pressed={(appearance.world || 'moon-garden') === id} onClick={() => onAppearance({ ...appearance, world: id })}><Icon size={22} /><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Their world')}</legend><div className='companion-world-grid'>{companionWorlds.map(({ id, label, note, Icon }) => <button type='button' key={id} className={`companion-world-card world-${id}`} aria-pressed={(appearance.world || 'moon-garden') === id} onClick={() => onAppearance({ ...appearance, world: id })}><Icon size={22} /><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
     </>}
     {step === 2 && <>
       <div className='companion-creation-heading'><span>03 / 06</span><h3>{t('How do they greet the world?')}</h3><p>{t('This is where their story starts. Care and time will shape the rest.')}</p></div>
-      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Starting personality')}</legend><div className='companion-personality-grid'>{temperaments.map(({ id, label, note }) => <button type='button' key={id} className='companion-choice-card' aria-pressed={temperament === id} onClick={() => onTemperament(id)}><span className='companion-choice-glyph'>{id === 'gentle' ? <Heart size={21} /> : <Sparkles size={21} />}</span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Starting personality')}</legend><div className='companion-personality-grid'>{startingTemperaments.map(({ id, label, note }) => <button type='button' key={id} className='companion-choice-card' aria-pressed={temperament === id} onClick={() => onTemperament(id)}><span className='companion-choice-glyph'>{id === 'gentle' ? <Heart size={21} /> : <Sparkles size={21} />}</span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div></fieldset>
     </>}
     {step === 3 && <>
       <div className='companion-creation-heading'><span>04 / 06</span><h3>{t('What would you notice first?')}</h3><p>{t('A face, a shape, one small thing only yours.')}</p></div>
-      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Expression')}</legend><div className='companion-chip-grid'>{faces.map(({ id, label }) => <button type='button' key={id} aria-pressed={(appearance.face || 'gentle') === id} onClick={() => onAppearance({ ...appearance, face: id })}>{t(label)}</button>)}</div></fieldset>
-      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Body shape')}</legend><div className='companion-chip-grid'>{shapes.map(({ id, label }) => <button type='button' key={id} aria-pressed={(appearance.silhouette || 'round') === id} onClick={() => onAppearance({ ...appearance, silhouette: id })}>{t(label)}</button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Expression')}</legend><div className='companion-chip-grid'>{companionFaces.map(({ id, label }) => <button type='button' key={id} aria-pressed={(appearance.face || 'gentle') === id} onClick={() => onAppearance({ ...appearance, face: id })}>{t(label)}</button>)}</div></fieldset>
+      <fieldset className='companion-creation-fieldset' disabled={disabled}><legend>{t('Body shape')}</legend><div className='companion-chip-grid'>{companionShapes.map(({ id, label }) => <button type='button' key={id} aria-pressed={(appearance.silhouette || 'round') === id} onClick={() => onAppearance({ ...appearance, silhouette: id })}>{t(label)}</button>)}</div></fieldset>
       <label className='companion-creation-input'>{t('One little detail (optional)')}<textarea maxLength={180} value={detail} onChange={(event) => onDetail(event.target.value)} placeholder={t('Collects smooth stones. Has a moon-shaped tail…')} /></label>
     </>}
     {step === 4 && <>

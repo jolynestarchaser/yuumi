@@ -1,6 +1,6 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-09-29-companion-creation-journey',
+  id: '2026-09-29-companion-creation-and-settings',
   title: 'Meet your companion your way',
   subtitle: 'Pick a creature, give them a world, and watch them take shape.',
   features: [
@@ -16,8 +16,8 @@ export const currentRelease = Object.freeze({
     },
     {
       icon: 'pet' as const,
-      title: 'Finish with color and sound',
-      description: 'Try a palette, tune their colors, and preview their creature chirp before hatching. The soft form has brighter, more expressive eyes.',
+      title: 'Keep making them yours',
+      description: 'The character settings now use the same creature, world, detail, color, and voice choices. Preview changes before saving; earned personality and evolution stay intact.',
     },
   ],
 });
