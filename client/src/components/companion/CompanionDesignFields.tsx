@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { CompanionAppearance, CompanionSpecies } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
-import { defaultVoice, useCompanionVoice } from './useCompanionVoice.js';
+import { useCompanionVoice } from './useCompanionVoice.js';
+import { companionVoiceProfile } from './companionVoiceProfile.js';
 import { colorThemes, voicePresets } from './companionDesign.js';
 
 const species: [CompanionSpecies, string][] = [['spirit', 'Forest spirit'], ['bunny', 'Bunny'], ['cat', 'Cat'], ['fox', 'Fox'], ['dragon', 'Dragon'], ['robot', 'Robot'], ['child', 'Storybook child'], ['custom', 'Custom creature']];
@@ -11,7 +12,7 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
 }) {
   const { t } = useCompanionLanguage();
   const [panel, setPanel] = useState('look');
-  const voice = value.voice || defaultVoice;
+  const voice = companionVoiceProfile(value);
   const { voices, supported, speak, stop, speaking, voiceError } = useCompanionVoice();
   return <fieldset className='companion-design-fields' disabled={disabled}>
     <legend>{t('Make them yours')}</legend>

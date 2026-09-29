@@ -24,12 +24,12 @@ export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appe
   const level = Math.floor(Math.max(0, state.xp || 0) / 80) + 1;
   const species = state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
   const tier = xpTierForLevel(level);
-  const milestone = evolutionMilestones[tier - 1];
-  const earned = milestone === undefined ? undefined : state.evolutions?.find((entry) => entry.level === milestone);
+  const earned = state.evolutions?.filter((entry) => entry.level <= level && entry.level >= 3).sort((a, b) => b.level - a.level)[0];
   // Old records sometimes stored an evolution branch in stage history. It is a
   // compatibility hint only; lifecycle history is never written by XP growth.
   const legacy = state.stageOutcomes?.filter((entry) => entry.level <= level).at(-1);
-  return { species, xpTier: tier, xpPath: earned?.path || legacy?.branch || 'guardian', lifeStage: state.lifecycle?.stage || 'hatchling' };
+  const lifeStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
+  return { species, xpTier: tier, xpPath: tier ? earned?.path || legacy?.branch || 'guardian' : 'guardian', lifeStage: state.lifecycle?.stage || lifeStage };
 }
 
 // Called inside the existing atomic lease, after a successful XP-earning action.

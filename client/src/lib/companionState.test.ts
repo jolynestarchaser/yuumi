@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import type { CompanionSnapshot } from '../../../shared/contracts.js';
+import type { CompanionSnapshot, PublicCompanion } from '../../../shared/contracts.js';
 import { mergeCompanionSnapshot, operationKey, readCompanionRoster, readCompanionSnapshot, readRememberedCompanion, rememberCompanion, resolveCompanionId } from './companionState.js';
+import { companionVoiceProfile } from '../components/companion/companionVoiceProfile.js';
+import { roamingDuration, roamingWords } from '../components/companion/companionBehavior.js';
 
 const snapshot = (id: string, revision: number) => ({ companion: { id, revision }, capabilities: {} }) as CompanionSnapshot;
 
@@ -51,4 +53,23 @@ test('companion API readers reject malformed detail and roster payloads', () => 
   assert.deepEqual(readCompanionRoster({ companions: [{ id: 'pet', name: 'Pip', revision: 0 }] })?.map((entry) => entry.id), ['pet']);
   assert.equal(readCompanionRoster([]), null);
   assert.equal(readCompanionRoster({ companions: [null] }), null);
+});
+
+test('species voice profiles are distinct, user choices persist, and tired voices slow down', () => {
+  const dragon = companionVoiceProfile({ visualStyle: 'soft', animated: true, usePortrait: false, species: 'dragon' });
+  const fox = companionVoiceProfile({ visualStyle: 'soft', animated: true, usePortrait: false, species: 'fox' });
+  assert.equal(dragon.enabled, true);
+  assert.notEqual(dragon.pitch, fox.pitch);
+  assert.equal(companionVoiceProfile({ visualStyle: 'soft', animated: true, usePortrait: false, species: 'dragon', voice: { ...dragon, enabled: false, voiceURI: 'chosen' } }).enabled, false);
+  assert.equal(companionVoiceProfile({ visualStyle: 'soft', animated: true, usePortrait: false, species: 'dragon', voice: { ...dragon, voiceURI: 'chosen' } }).voiceURI, 'chosen');
+  assert.ok(companionVoiceProfile({ visualStyle: 'soft', animated: true, usePortrait: false, species: 'fox' }, undefined, { energy: 20 }).rate < fox.rate);
+});
+
+test('roaming honors urgent needs, then care history and species gait', () => {
+  const base = { mood: 'curious', form: 'creature', appearance: { species: 'dragon' }, needs: { energy: 80, fullness: 80 }, traits: { curiosity: 60, affection: 60, playfulness: 60 } } as unknown as PublicCompanion;
+  assert.equal(roamingWords(base, 0), 'I can guard this little path.');
+  assert.equal(roamingWords({ ...base, needs: { ...base.needs, energy: 20 } }, 0), 'A cozy nap sounds lovely. I’ll rest here.');
+  const played = { ...base, careSummary: { actions: { play: 4, cuddle: 1 } }, traits: { curiosity: 60, affection: 60, playfulness: 75 } } as unknown as PublicCompanion;
+  assert.equal(roamingWords(played, 0), 'Shall we invent a tiny game?');
+  assert.ok(roamingDuration(base) > roamingDuration({ ...base, appearance: { ...base.appearance, species: 'bunny' } }));
 });

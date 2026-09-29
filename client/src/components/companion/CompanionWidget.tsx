@@ -14,6 +14,7 @@ import CompanionCustomizer from './CompanionCustomizer.js';
 import CompanionGrowth from './CompanionGrowth.js';
 import CompanionEgg from './CompanionEgg.js';
 import { useCompanionVoice } from './useCompanionVoice.js';
+import { companionVoiceProfile } from './companionVoiceProfile.js';
 import './companion.css';
 import type { CompanionPanelProps } from './types.js';
 import type { CompanionForm, LifecycleCareAction, Temperament } from '../../../../shared/contracts.js';
@@ -77,6 +78,7 @@ function HatchCompanion({ busy, act, onCreate }: Pick<CompanionPanelProps, 'busy
 function CompanionChat({ companion, capabilities, profile, busy, act }: CompanionPanelProps) {
   const { t, language } = useCompanionLanguage();
   const { speak, stop, speaking, supported, voiceError } = useCompanionVoice();
+  const voice = companionVoiceProfile(companion.appearance, companion.traits, companion.needs, language === 'th' ? 'th-TH' : 'en-US');
   const [draft, setDraft] = useState('');
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }); }, [companion.turns.length]);
@@ -85,7 +87,7 @@ function CompanionChat({ companion, capabilities, profile, busy, act }: Companio
     <div className='companion-chat-legend'><span className='joe'><i />Joe</span><span className='focus'><i />Focus</span><label><i style={{ backgroundColor: companion.chatColor || '#cdb2ea' }} />{companion.name}<input aria-label={t('{name} chat color', { name: companion.name })} type='color' value={companion.chatColor || '#cdb2ea'} disabled={Boolean(busy)} onChange={(event) => act({ action: 'chatColor', color: event.target.value })} /></label></div>
     <div className='companion-conversation' role='log' aria-label={t('Shared companion conversation')} aria-live='polite'>
       {!companion.turns.length && <div className='companion-empty'><Sparkles size={28} /><p>{t('Tell me about your day. I’m collecting our little stories.')}</p></div>}
-      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} style={turn.actor === 'companion' ? { '--companion-chat-color': companion.chatColor || '#cdb2ea' } : undefined} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? t("Joe") : t("Focus")}</small><CompanionText text={turn.text} />{turn.actor === 'companion' && supported && companion.appearance?.voice?.enabled && <button type='button' className='companion-listen' onClick={() => speaking ? stop() : speak(turn.text, companion.appearance.voice)}><Volume2 size={12} />{t(speaking ? 'Stop voice' : 'Listen')}</button>}</article>)}
+      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} style={turn.actor === 'companion' ? { '--companion-chat-color': companion.chatColor || '#cdb2ea' } : undefined} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? t("Joe") : t("Focus")}</small><CompanionText text={turn.text} />{turn.actor === 'companion' && supported && voice.enabled && <button type='button' className='companion-listen' onClick={() => speaking ? stop() : speak(turn.text, voice)}><Volume2 size={12} />{t(speaking ? 'Stop voice' : 'Listen')}</button>}</article>)}
       {busy === 'chat' && <p className='companion-thinking' role='status'>{t('{name} is finding the words…', { name: companion.name })}</p>}<div ref={end} />
     </div>
     {voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}
@@ -134,11 +136,13 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setCareStatus(''); }, [companionId]);
   useEffect(() => { if (companion?.lifecycle?.lifeStatus !== 'alive' && (tab === 'design' || tab === 'personality')) setTab('memories'); }, [companion?.lifecycle?.lifeStatus, tab]);
   async function care(action: LifecycleCareAction) {
+    if (reactionTimer.current) clearTimeout(reactionTimer.current);
+    setCareStatus('');
+    setReaction('');
     if (await act({ action }) && active.current) {
-      if (reactionTimer.current) clearTimeout(reactionTimer.current);
       setReaction(action);
       setCareStatus(t('{action} went well.', { action: t(careActions.find(([key]) => key === action)?.[2] || action) }));
-      reactionTimer.current = setTimeout(() => setReaction(''), 2600);
+      reactionTimer.current = setTimeout(() => { setReaction(''); setCareStatus(''); }, 2600);
     }
   }
   return <GlassDialog className='companion-dialog' title={<><PawPrint size={19} /> {t('Our little companion')}</>} eyebrow={t('JOE + FOCUS · A WORLD OF OUR OWN')} onClose={onClose}>
@@ -151,24 +155,24 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <div className='companion-habitat'>
           <div className='companion-habitat-copy'><span className='companion-kicker'>{t('TODAY WITH')}</span><h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p></div>
           <CompanionAvatar companion={companion} reaction={reaction} />
-          <div className='companion-action-feedback' aria-live='polite'>{careStatus && <span className='is-success'>{careStatus}</span>}{error && <span className='is-error'>{t(error)}</span>}{busy && <span>{t('Taking care of {name}…', { name: companion.name })}</span>}</div>
+          {(careStatus || busy) && <div className='companion-action-feedback' aria-live='polite'>{careStatus && !busy && <span className='is-success'>{careStatus}</span>}{busy && <span>{t('Taking care of {name}…', { name: companion.name })}</span>}</div>}
         </div>
         <div className='companion-home-tools'>{onGoOut && companion.lifecycle?.lifeStatus === 'alive' && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}<CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy) || companion.lifecycle?.lifeStatus !== 'alive'} onChange={(appearance) => { void act({ action: 'appearance', appearance }); }} /></div>
-        <CompanionGrowth companion={companion} />
         <div className='companion-needs'>
           {Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}
           {companion.lifecycle?.lifeStatus === 'alive' && (companion.behaviorState === 'resting' || companion.needs.energy < 35) && <p className='companion-energy-hint' role='status'>
             {t(companion.behaviorState === 'resting' ? 'Resting now. Energy keeps recovering during this nap.' : 'Low energy? Cuddle gives 8 now. Nap gives 20 now and 24 over 45 minutes.')}
           </p>}
         </div>
+        {companion.request && <button type='button' className={`companion-request ${companion.request.urgency}`} disabled={Boolean(busy) || !companion.allowedActions?.includes(companion.request.action)} onClick={() => care(companion.request!.action)}><span>{t('I need')}</span><strong>{t(companion.request.text)}</strong><small>{t(careActions.find(([action]) => action === companion.request!.action)?.[2] || 'Explore')}</small></button>}
+        {companion.lifecycle?.lifeStatus === 'alive' ? <div className='companion-care'>{careActions.filter(([action]) => companion.allowedActions?.includes(action)).map(([action, Icon, label]) => <button type='button' key={action} disabled={Boolean(busy)} onClick={() => care(action)}><Icon size={19} /><span>{t(label)}</span></button>)}</div> : <div className='companion-memorial' role='status'><strong>{t('A beloved part of our family history')}</strong><p>{t(companion.lifecycle?.lifeStatus === 'retired' ? 'Retired peacefully' : 'Remembered with love')}</p><button type='button' className='companion-secondary' disabled={Boolean(busy)} onClick={() => { setPredecessorId(companion.id); setCreating(true); }}>{t('Welcome a successor')}</button></div>}
+        <CompanionGrowth companion={companion} />
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>
         {companion.dailyRitual && <div className={`companion-ritual ${companion.dailyRitual.completedAt ? 'is-complete' : ''}`}>
           <div className='companion-ritual-heading'><span>{t('TODAY TOGETHER')}</span><small>{companion.dailyRitual.completedAt ? t('Shared today') : t('A small moment')}</small></div>
           <p>{t(companion.dailyRitual.thought)}</p>
           {companion.dailyRitual.completedAt ? <strong className='companion-ritual-done'>{t('Shared with {name}', { name: companion.dailyRitual.completedBy === 'joe' ? t('Joe') : t('Focus') })}</strong> : <button type='button' disabled={Boolean(busy) || !companion.allowedActions?.includes(companion.dailyRitual.action)} onClick={() => care(companion.dailyRitual!.action)}>{t(careActions.find(([action]) => action === companion.dailyRitual!.action)?.[2] || 'Explore')}</button>}
         </div>}
-        {companion.request && <button type='button' className={`companion-request ${companion.request.urgency}`} disabled={Boolean(busy) || !companion.allowedActions?.includes(companion.request.action)} onClick={() => care(companion.request!.action)}><span>{t('I need')}</span><strong>{t(companion.request.text)}</strong><small>{t(careActions.find(([action]) => action === companion.request!.action)?.[2] || 'Explore')}</small></button>}
-        {companion.lifecycle?.lifeStatus === 'alive' ? <div className='companion-care'>{careActions.filter(([action]) => companion.allowedActions?.includes(action)).map(([action, Icon, label]) => <button type='button' key={action} disabled={Boolean(busy)} onClick={() => care(action)}><Icon size={19} /><span>{t(label)}</span></button>)}</div> : <div className='companion-memorial' role='status'><strong>{t('A beloved part of our family history')}</strong><p>{t(companion.lifecycle?.lifeStatus === 'retired' ? 'Retired peacefully' : 'Remembered with love')}</p><button type='button' className='companion-secondary' disabled={Boolean(busy)} onClick={() => { setPredecessorId(companion.id); setCreating(true); }}>{t('Welcome a successor')}</button></div>}
         {companion.lifecycle?.lifeStatus === 'alive' && companion.lifecycle.stage === 'elder' && <button type='button' className='companion-secondary' disabled={Boolean(busy)} onClick={() => { if (window.confirm(t('Retire this elder companion? Their memories will remain.'))) void act({ action: 'retire', expectedRevision: companion.revision }); }}>{t('Retire peacefully')}</button>}
         <div className='companion-bonds'><span><i className='joe' />{t("Joe ·")} {companion.bonds.joe} {t('care moments')}</span><span><i className='focus' />{t("Focus ·")} {companion.bonds.focus} {t('care moments')}</span></div>
         <div className='companion-wish'><Leaf size={16} /><p>{t(companion.wish)}</p></div>

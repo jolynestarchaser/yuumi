@@ -9,17 +9,35 @@ export default function PixelCompanion({ species, face, lifeStage = 'hatchling',
     : child ? 'M6 6h5v7H5V8h1zM21 6h5v2h1v5h-6z'
     : species === 'dragon' ? 'M7 3h2v3h2v6H6V7h1zM23 3h2v4h1v5h-5V6h2z'
     : 'M5 3h3v1h2v2h2v6H6V9H5zM24 3h3v6h-1v3h-6V6h2V4h2z';
-  const body = xpTier === 0 ? 'M10 9h12v1h3v3h1v11h-2v2H8v-2H6V13h1v-3h3z'
-    : path === 'explorer' ? 'M11 7h10v1h3v3h2v12h-2v3H8v-3H6V11h2V9h3z'
-    : path === 'trickster' ? 'M10 8h12v2h4v4h-2v10h-3v3H10v-2H7v-4H5v-7h2v-3h3z'
-    : 'M9 9h14v1h3v3h2v11h-2v3H6v-3H4V13h2v-3h3z';
+  // Each XP milestone changes the filled silhouette, not just its decoration.
+  // The same stepped contour is used for the border, so there is no ghost of the hatchling outline.
+  const forms = {
+    guardian: [
+      'M10 9h12v1h3v3h1v11h-2v2H8v-2H6V13h1v-3h3z',
+      'M9 9h14v1h3v3h1v11h-2v3H7v-3H5V13h1v-3h3z',
+      'M8 9h16v1h3v3h2v11h-2v4H5v-4H3V13h2v-3h3z',
+      'M7 8h18v2h3v3h2v12h-3v4H5v-4H2V13h2v-3h3z'
+    ],
+    explorer: [
+      'M10 9h12v1h3v3h1v11h-2v2H8v-2H6V13h1v-3h3z',
+      'M11 7h10v1h3v3h2v12h-2v3H8v-3H6V11h2V9h3z',
+      'M11 5h10v2h3v3h2v14h-2v4H8v-4H6V10h2V7h3z',
+      'M12 3h8v2h3v3h2v3h2v14h-3v4H8v-4H5V11h2V8h2V5h3z'
+    ],
+    trickster: [
+      'M10 9h12v1h3v3h1v11h-2v2H8v-2H6V13h1v-3h3z',
+      'M10 8h12v2h4v4h-2v10h-3v3H10v-2H7v-4H5v-7h2v-3h3z',
+      'M9 7h13v2h5v5h-2v11h-4v3H10v-2H6v-4H4v-8h2v-4h3z',
+      'M8 6h14v2h5v5h2v4h-3v9h-5v3H10v-2H5v-5H3v-9h3V9h2z'
+    ]
+  } as const;
+  const body = forms[path][xpTier];
   return <svg className='companion-pixel-sprite' viewBox='0 0 32 32' width='256' height='256' shapeRendering='crispEdges' aria-hidden='true'>
     {xpTier > 0 && <path fill='var(--creature-accent)' d={path === 'explorer' ? 'M2 15h4v2h3v2H5v3H2zM23 15h3v2h4v5h-3v-3h-4z' : path === 'trickster' ? 'M3 21h5v2h3v3H4v-2H2zM23 20h5v2h2v4h-7v-3h3z' : 'M2 17h5v2h3v3H4v-2H2zM22 17h4v2h4v3h-3v-1h-5z'} />}
     {species === 'dragon' && <path fill='var(--creature-accent)' d='M1 13h2v2h3v10H4v-3H2v-4H1zM29 13h2v5h-1v4h-2v3h-2V15h3z' />}
     {(species === 'cat' || species === 'fox') && <path fill='var(--creature-accent)' d='M26 21h3v-2h2v7h-2v2h-5v-3h2z' />}
     <path fill='var(--creature-accent)' d={ear} />
-    <path fill='color-mix(in srgb,var(--creature-body) 65%,var(--creature-eye))' d='M10 8h12v1h3v2h2v3h1v10h-1v3h-3v2H8v-2H5v-3H4V14h1v-3h2V9h3z' />
-    <path fill='var(--creature-body)' d={body} />
+    <path fill='var(--creature-body)' stroke='color-mix(in srgb,var(--creature-body) 35%,var(--creature-eye))' strokeWidth='2' strokeLinejoin='miter' d={body} />
     <path fill='color-mix(in srgb,var(--creature-body) 65%,white)' d='M10 10h11v1H10v1H8v4H7v-4h1v-1h2z' />
     <path fill='color-mix(in srgb,var(--creature-body) 80%,var(--creature-eye))' d='M25 14h1v10h-2v2H9v-1h13v-2h2v-2h1z' />
     <path fill='var(--creature-accent)' d='M15 12h2v2h2v1h-2v2h-2v-2h-2v-1h2z' />

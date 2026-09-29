@@ -52,7 +52,7 @@
 .companion-growth p, .companion-growth small, .companion-growth summary { color:#b9aaca; font-size:11px; line-height:1.8; }
 .companion-growth small { display:block; margin-top:7px; }
 .companion-growth .companion-form-label { color:#e9da9b; margin:4px 0 0; text-transform:capitalize; }
-.companion-avatar.stage-child .companion-avatar-motion { scale:1.08 1.04; }.companion-avatar.stage-juvenile .companion-avatar-motion { scale:1.16 .98; }.companion-avatar.stage-grown .companion-avatar-motion,.companion-avatar.stage-elder .companion-avatar-motion { scale:1.24 .92; }.companion-avatar.stage-juvenile .creature-wing { display:block; width:34px; height:41px; }.companion-avatar.stage-grown .creature-wing,.companion-avatar.stage-elder .creature-wing { display:block; width:48px; height:58px; }.companion-avatar.stage-grown .creature-tail,.companion-avatar.stage-elder .creature-tail { display:block; width:52px; height:20px; }.companion-avatar.path-explorer.stage-grown .creature-tail,.companion-avatar.path-explorer.stage-elder .creature-tail { transform:rotate(-30deg) translateX(-12px); }.companion-avatar.path-trickster .creature-ear { transform:rotate(14deg) scale(1.13); }.companion-avatar.path-guardian.stage-grown .creature-foot,.companion-avatar.path-guardian.stage-elder .creature-foot { transform:scale(1.26,1.12); }
+.companion-avatar.stage-child .companion-avatar-motion { scale:1.02; }.companion-avatar.stage-juvenile .companion-avatar-motion { scale:1.04 .99; }.companion-avatar.stage-grown .companion-avatar-motion,.companion-avatar.stage-elder .companion-avatar-motion { scale:1.06 .98; }.companion-avatar.xp-tier-2 .creature-wing { display:block; width:34px; height:41px; }.companion-avatar.xp-tier-3 .creature-wing { display:block; width:48px; height:58px; }.companion-avatar.xp-tier-2 .creature-tail,.companion-avatar.xp-tier-3 .creature-tail { display:block; width:52px; height:20px; }.companion-avatar.path-explorer.xp-tier-3 .creature-tail { transform:rotate(-30deg) translateX(-12px); }.companion-avatar.path-trickster .creature-ear { transform:rotate(14deg) scale(1.13); }.companion-avatar.path-guardian.xp-tier-3 .creature-foot { transform:scale(1.26,1.12); }
 /* XP owns the body silhouette; life stage only adds age, posture and motion. */
 .companion-avatar.xp-tier-1 .companion-creature { transform:scale(1.08,1.04); }
 .companion-avatar.xp-tier-2.path-explorer .companion-creature { transform:scale(.92,1.18) translateY(-3px); }
@@ -339,3 +339,15 @@
   .companion-home-tools { grid-template-columns:110px minmax(0,1fr); align-items:start; }
   .companion-home-tools .companion-appearance-picker { padding:8px 10px; grid-template-columns:1fr 1fr; }.companion-home-tools .companion-appearance-picker legend { grid-column:1 / -1; }
 }
+
+/* A narrow home column needs its own breakpoint, independent of the dialog width. */
+@media (max-width: 1180px) {
+  .companion-habitat { grid-template-columns:minmax(0,1fr); }
+  .companion-habitat-copy { padding:18px 18px 0; text-align:center; }
+  .companion-habitat-copy .companion-stage { text-align:center; }
+  .companion-habitat > .companion-avatar { height:230px; }
+}
+.companion-habitat-copy h3 { overflow-wrap:anywhere; }
+.companion-care { grid-template-columns:repeat(auto-fit,minmax(64px,1fr)); margin:8px 0 12px; }
+.companion-care button { min-height:64px; padding:9px 4px; }
+.companion-care span { font-size:11px; }

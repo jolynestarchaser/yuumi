@@ -107,13 +107,14 @@ test('care XP caps while rest has a real wake condition', () => {
   assert.equal(awake.restUntil, null);
 });
 
-test('evolution persists three real stage outcomes at levels 3, 6, and 10', () => {
+test('XP evolution persists three path events without changing lifecycle history', () => {
   const state = initialCompanion();
   state.appearance = { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon' };
   state.xp = 9 * 80;
   const grown = evolveCompanion({ ...state, xp: 10 * 80 }, 0, () => .2, new Date('2026-09-18'));
-  assert.deepEqual(grown.stageOutcomes?.map((entry) => entry.level), [3, 6, 10]);
-  assert.equal(grown.stageOutcomes?.at(-1)?.toFormId, 'dragon-grown-explorer-v2');
+  assert.deepEqual(grown.evolutions?.map((entry) => entry.level), [3, 6, 10]);
+  assert.equal(grown.evolutions?.at(-1)?.path, 'explorer');
+  assert.deepEqual(grown.stageOutcomes, state.stageOutcomes);
 });
 
 test('character creation validates its fields and seeds personality from the chosen temperament', () => {
@@ -156,10 +157,11 @@ test('public companion derives a visible evolution form from level and care path
   state.lifecycle = undefined;
   state.xp = 9 * 80;
   state.appearance = { visualStyle: 'pixel', animated: true, usePortrait: false, species: 'dragon' };
-  state.evolutions = [{ level: 9, species: 'dragon', path: 'explorer', at: new Date() }];
+  state.evolutions = [{ level: 3, species: 'dragon', path: 'explorer', at: new Date() }];
   const companion = publicCompanion(state);
   assert.equal(companion.growthStage, 'grown');
-  assert.equal(companion.formId, 'dragon-grown-explorer');
+  assert.equal(companion.formId, 'dragon-tier-3-explorer');
+  assert.equal(companion.visualForm.lifeStage, 'grown');
   assert.equal(companion.stage, 'Grown companion');
 });
 

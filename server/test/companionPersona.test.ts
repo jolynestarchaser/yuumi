@@ -7,6 +7,21 @@ import type { StoredCompanion, Profile } from '../../shared/contracts.js';
 import { buildCompanionPrompt, buildSystemRules } from '../src/services/companionPrompt.js';
 import { validateBrainReply } from '../src/services/companionReplyValidation.js';
 import { initialCompanion } from '../src/services/companionState.js';
+import { companionPersona } from '../src/services/companionPersona.js';
+
+test('persona derives species manner and familiar care from saved state, with needs taking priority', () => {
+  const base = initialCompanion();
+  base.appearance = { ...base.appearance, species: 'robot' };
+  base.traits.playfulness = 76;
+  base.careSummary!.actions.play = 4;
+  base.needs.energy = 20;
+  const persona = companionPersona(base);
+  assert.equal(persona.species, 'robot');
+  assert.match(persona.manner, /Precise/);
+  assert.equal(persona.familiarCare, 'play');
+  assert.equal(persona.dominantTrait, 'playfulness');
+  assert.equal(persona.energyMode, 'quiet');
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

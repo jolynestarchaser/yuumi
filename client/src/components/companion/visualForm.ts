@@ -8,9 +8,9 @@ export function visualFormFor(companion: VisualSource): CompanionVisualForm {
   const level = Math.floor(Math.max(0, companion.xp || 0) / 80) + 1;
   const xpTier: CompanionVisualForm['xpTier'] = level >= 10 ? 3 : level >= 6 ? 2 : level >= 3 ? 1 : 0;
   const species: CompanionSpecies = companion.appearance?.species || (companion.form === 'child' ? 'child' : companion.form === 'pet' ? 'bunny' : 'spirit');
-  const milestone = ([undefined, 3, 6, 10] as const)[xpTier];
-  const xpPath = (milestone && companion.evolutions?.find((entry) => entry.level === milestone)?.path)
-    || companion.stageOutcomes?.filter((entry) => entry.level <= level).at(-1)?.branch || 'guardian';
-  const lifeStage: CompanionGrowthStage = companion.lifecycle?.stage || companion.growthStage || 'hatchling';
+  const earned = companion.evolutions?.filter((entry) => entry.level <= level && entry.level >= 3).sort((a, b) => b.level - a.level)[0];
+  const xpPath = xpTier ? earned?.path || companion.stageOutcomes?.filter((entry) => entry.level <= level).at(-1)?.branch || 'guardian' : 'guardian';
+  const inferredStage: CompanionGrowthStage = level < 3 ? 'hatchling' : level < 6 ? 'child' : level < 10 ? 'juvenile' : 'grown';
+  const lifeStage: CompanionGrowthStage = companion.lifecycle?.stage || companion.growthStage || inferredStage;
   return { species, xpTier, xpPath, lifeStage };
 }

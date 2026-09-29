@@ -4,8 +4,10 @@ import { useReducedMotion } from 'motion/react';
 import useCompanion from '../../hooks/useCompanion.js';
 import CompanionAvatar from './CompanionAvatar.js';
 import { CompanionLanguageProvider, useCompanionLanguage } from './companionLanguage.js';
-import { defaultVoice, useCompanionVoice } from './useCompanionVoice.js';
-import type { LifecycleCareAction, PublicCompanion } from '../../../../shared/contracts.js';
+import { useCompanionVoice } from './useCompanionVoice.js';
+import { companionVoiceProfile } from './companionVoiceProfile.js';
+import { roamingDuration, roamingWords } from './companionBehavior.js';
+import type { LifecycleCareAction } from '../../../../shared/contracts.js';
 
 const careIcons: Record<LifecycleCareAction, typeof Apple> = {
   feed: Apple,
@@ -16,14 +18,6 @@ const careIcons: Record<LifecycleCareAction, typeof Apple> = {
   clean: Droplets,
   medicine: Pill,
 };
-
-function roamingWords(companion: PublicCompanion, turn: number) {
-  if (companion.mood === 'sleepy' || companion.needs.energy < 35) return 'A cozy nap sounds lovely. I’ll rest here.';
-  if (companion.needs.fullness < 40) return 'A little snack would be nice when you have time.';
-  if (companion.traits.playfulness > companion.traits.curiosity && companion.traits.playfulness > companion.traits.affection) return ['Shall we invent a tiny game?', 'I bet I can hop over an imaginary cloud!'][turn % 2];
-  if (companion.traits.affection > companion.traits.curiosity) return ['It’s cozy being here with you two.', 'I’m saving a little imaginary hug for Joe and Focus.'][turn % 2];
-  return ['I wonder what’s around the next corner.', 'I’m exploring our little world. Want to join?'][turn % 2];
-}
 
 function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) {
   const { companion, error, act, busy } = useCompanion();
@@ -52,7 +46,7 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
   if (!companion?.bornAt) return error ? <aside className='companion-roamer' style={{ left: 16 }}><button onClick={onHome}>{t('Return home')}</button><p>{t(error)}</p></aside> : null;
   if (companion.lifecycle?.lifeStatus && companion.lifecycle.lifeStatus !== 'alive') return null;
   const words = t(roamingWords(companion, turn));
-  const voice = { ...(companion.appearance?.voice || defaultVoice), language: language === 'th' ? 'th-TH' as const : 'en-US' as const };
+  const voice = companionVoiceProfile(companion.appearance, companion.traits, companion.needs, language === 'th' ? 'th-TH' : 'en-US');
   const requestAction = companion.request?.action || 'explore';
   const CareIcon = careIcons[requestAction];
   async function careHere() {
@@ -61,7 +55,7 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
     setReaction(requestAction);
     reactionTimer.current = setTimeout(() => setReaction(''), 2600);
   }
-  return <aside className={`companion-roamer ${moving ? 'walking' : ''}`} style={{ left: x }} aria-label={companion.name} lang={language}>
+  return <aside className={`companion-roamer ${moving ? 'walking' : ''}`} style={{ left: x, transitionDuration: moving ? `${roamingDuration(companion)}s` : undefined }} aria-label={companion.name} lang={language}>
     <div className='companion-speech'><strong>{companion.name}</strong><p>{words}</p>{companion.request && <button className='companion-roamer-care' type='button' onClick={() => void careHere()} disabled={Boolean(busy) || !companion.allowedActions?.includes(requestAction)} aria-label={t('Care for {name}', { name: companion.name })}><CareIcon size={14} /><span>{t(companion.request.text)}</span></button>}{voice.enabled && supported && <button type='button' onClick={() => speaking ? stop() : speak(words, voice)} aria-label={t(speaking ? 'Stop voice' : 'Listen')}><Volume2 size={14} />{t(speaking ? 'Stop voice' : 'Listen')}</button>}{voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}</div>
     <button className='companion-roamer-pet' type='button' onClick={onOpen} aria-label={t('Chat')}><CompanionAvatar companion={companion} small reaction={reaction} /></button>
     <div className='companion-roamer-actions'>

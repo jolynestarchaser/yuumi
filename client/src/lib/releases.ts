@@ -1,21 +1,25 @@
-// Bump id when shipping user-visible changes. Acknowledgments are per profile
-// and browser; never mark an update read just because a dialog mounted.
+// Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-09-19-companion-lifecycle-generations',
-  title: 'วงจรชีวิตและทายาทของเพื่อนตัวน้อย',
-  subtitle: 'การดูแลไม่จำกัด สุขภาพ การพักผ่อนในวัยชรา และสายเลือดทายาทรุ่นต่อไป',
+  id: '2026-09-29-companion-evolution-voice',
+  title: 'A companion with more character',
+  subtitle: 'New forms, easier care, and a voice that fits who they are.',
   features: [
     {
-      icon: 'pet' as const,
-      title: 'การดูแลไม่จำกัดและระบบสุขภาพ',
-      description: 'ยกเลิกขีดจำกัด EXP รายวัน เพิ่มการดูแลความสะอาด ป้อนยาเมื่อป่วย และระบบปกป้องน้องเมื่อเราไม่อยู่'
+      icon: 'pixel' as const,
+      title: 'Forms that really change',
+      description: 'Pixel companions gain a different body shape at levels 3, 6, and 10. Their care path shapes the form; age adds its own details.',
     },
     {
-      icon: 'pixel' as const,
-      title: 'วัยชราและการสืบทอดสายเลือด',
-      description: 'น้องจะเติบโตสู่วัยชราพร้อมมงกุฎแห่งปัญญา สามารถให้น้องพักผ่อนอย่างสงบในสวนความทรงจำ และฟักไข่ทายาทรุ่นต่อไปเพื่อสืบทอดสายเลือด'
-    }
-  ]
+      icon: 'pet' as const,
+      title: 'Care is closer',
+      description: 'Care actions now sit by their needs. Success feedback clears after a moment, and the home fits narrow screens better.',
+    },
+    {
+      icon: 'pet' as const,
+      title: 'Their own way of speaking',
+      description: 'Species and the care they receive shape conversation and walking behavior. Tap Listen to hear a device voice tuned for them; you can change or disable it in Appearance.',
+    },
+  ],
 });
 
 const storageKey = (profile: string) => `yuu-mi:last-update:${profile}`;

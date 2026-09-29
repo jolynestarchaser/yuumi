@@ -48,6 +48,11 @@ test('visual form keeps every species recognizable and selects the path for its 
   }
 });
 
+test('visual form retains the last earned path if a later milestone has no saved event', () => {
+  const state = { ...initialCompanion(), xp: 720, lifecycle: undefined, evolutions: [{ level: 3, species: 'spirit' as const, path: 'explorer' as const, at: new Date() }] };
+  assert.deepEqual(visualFormFor(state), { species: 'spirit', xpTier: 3, xpPath: 'explorer', lifeStage: 'grown' });
+});
+
 test('species, colors, and voice accept bounded settings and reject unsafe inputs', () => {
   const appearance = { ...initialCompanion().appearance, species: 'dragon', bodyColor: '#00aacc', accentColor: '#cc88ff', eyeColor: '#334455', voice: { enabled: true, language: 'th-TH', voiceURI: '', rate: 1, pitch: 1.2 } };
   assert.equal(validateAppearance(appearance), true);
