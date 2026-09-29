@@ -153,8 +153,9 @@ export function validateAppearance(value: unknown): value is import('../../../sh
     && typeof voice.voiceURI === 'string' && voice.voiceURI.length <= 300
     && typeof voice.rate === 'number' && voice.rate >= .5 && voice.rate <= 1.5
     && typeof voice.pitch === 'number' && voice.pitch >= .5 && voice.pitch <= 2
+    && (voice.volume === undefined || (typeof voice.volume === 'number' && voice.volume >= 0 && voice.volume <= 1))
     && (voice.preset === undefined || ['natural', 'spark', 'fairy', 'dragon', 'robot', 'custom'].includes(voice.preset as string))
-    && Object.keys(voice).every((key) => ['enabled', 'language', 'voiceURI', 'rate', 'pitch', 'preset'].includes(key)));
+    && Object.keys(voice).every((key) => ['enabled', 'language', 'voiceURI', 'rate', 'pitch', 'preset', 'volume'].includes(key)));
   return Boolean(['soft', 'pixel'].includes(appearance.visualStyle as string)
     && typeof appearance.animated === 'boolean' && typeof appearance.usePortrait === 'boolean'
     && (appearance.species === undefined || ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'].includes(appearance.species as string))

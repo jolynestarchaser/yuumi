@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { CompanionAppearance, CompanionSpecies } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
-import { useCompanionVoice } from './useCompanionVoice.js';
 import { companionVoiceProfile } from './companionVoiceProfile.js';
 import { colorThemes, voicePresets } from './companionDesign.js';
+import { creatureVoiceSupported, playCreatureVoice, stopCreatureVoice, unlockCreatureVoice } from './voice/audioPlayer.js';
 
 const species: [CompanionSpecies, string][] = [['spirit', 'Forest spirit'], ['bunny', 'Bunny'], ['cat', 'Cat'], ['fox', 'Fox'], ['dragon', 'Dragon'], ['robot', 'Robot'], ['child', 'Storybook child'], ['custom', 'Custom creature']];
 
@@ -13,10 +13,10 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
   const { t } = useCompanionLanguage();
   const [panel, setPanel] = useState('look');
   const voice = companionVoiceProfile(value);
-  const { voices, supported, speak, stop, speaking, voiceError } = useCompanionVoice();
+  const supported = creatureVoiceSupported();
   return <fieldset className='companion-design-fields' disabled={disabled}>
     <legend>{t('Make them yours')}</legend>
-    <div className='companion-design-nav' aria-label={t('Design sections')}>{[['look', 'Look'], ['colors', 'Colors'], ['voice', 'Voice']].map(([id, label]) => <button key={id} type='button' aria-pressed={panel === id} onClick={() => { stop(); setPanel(id); }}>{t(label)}</button>)}</div>
+    <div className='companion-design-nav' aria-label={t('Design sections')}>{[['look', 'Look'], ['colors', 'Colors'], ['voice', 'Voice']].map(([id, label]) => <button key={id} type='button' aria-pressed={panel === id} onClick={() => { stopCreatureVoice(); setPanel(id); }}>{t(label)}</button>)}</div>
     <div className='companion-design-panel' hidden={panel !== 'look'}>
     <label>{t('Species')}<select value={value.species || 'spirit'} onChange={(event) => onChange({ ...value, species: event.target.value as CompanionSpecies })}>{species.map(([key, label]) => <option key={key} value={key}>{t(label)}</option>)}</select></label>
     {value.species === 'custom' && <div className='companion-custom-race'><label>{t('Describe your custom race')}<textarea required={panel === 'look'} maxLength={500} value={value.customDescription || ''} placeholder={t('A cloud jellyfish with tiny wings, four paws, and a glowing moon tail…')} onChange={(event) => onChange({ ...value, customDescription: event.target.value })} /></label><small>{t('Your description shapes their personality and their built-in evolving form. The preview shows selected shape, face, and colors.')}</small></div>}
@@ -32,17 +32,12 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
     <small>{t('Colors and species update the companion immediately, including every future growth form.')}</small>
     </div>
     <div className='companion-design-panel companion-voice-panel' hidden={panel !== 'voice'}>
-    <label className='companion-check'><input type='checkbox' checked={voice.enabled} disabled={!supported} onChange={(event) => onChange({ ...value, voice: { ...voice, enabled: event.target.checked } })} />{t('Enable voice')}</label>
+    <label className='companion-check'><input type='checkbox' checked={voice.enabled} disabled={!supported} onChange={(event) => { if (!event.target.checked) stopCreatureVoice(); onChange({ ...value, voice: { ...voice, enabled: event.target.checked } }); }} />{t('Enable creature voice')}</label>
     {!supported ? <small>{t('This browser does not support voice.')}</small> : <>
-      <label>{t('Fantasy voice')}<select value={voice.preset || 'natural'} onChange={(event) => { const preset = voicePresets.find((entry) => entry.id === event.target.value); if (preset) onChange({ ...value, voice: { ...voice, preset: preset.id, rate: preset.rate, pitch: preset.pitch } }); }}>{voicePresets.map((preset) => <option key={preset.id} value={preset.id}>{t(preset.label)}</option>)}<option value='custom' disabled>{t('Custom tuning')}</option></select></label>
-      <small>{t('Fantasy presets adjust device voice pitch and speed. They are not character voice clones, and results vary by device.')}</small>
-      <label>{t('Voice language')}<select value={voice.language} onChange={(event) => onChange({ ...value, voice: { ...voice, language: event.target.value as 'th-TH' | 'en-US', voiceURI: '' } })}><option value='th-TH'>ไทย</option><option value='en-US'>English</option></select></label>
-      <label>{t('Voice')}<select value={voices.some((entry) => entry.voiceURI === voice.voiceURI) ? voice.voiceURI : ''} onChange={(event) => onChange({ ...value, voice: { ...voice, voiceURI: event.target.value } })}><option value=''>{t('Device default')}</option>{voices.filter((entry) => entry.lang.startsWith(voice.language.slice(0, 2))).map((entry) => <option key={entry.voiceURI} value={entry.voiceURI}>{entry.name}</option>)}</select></label>
-      <label>{t('Speed')} · {voice.rate.toFixed(2)}<input type='range' min='.5' max='1.5' step='.05' value={voice.rate} onChange={(event) => onChange({ ...value, voice: { ...voice, preset: 'custom', rate: Number(event.target.value) } })} /></label>
-      <label>{t('Pitch')} · {voice.pitch.toFixed(2)}<input type='range' min='.5' max='2' step='.05' value={voice.pitch} onChange={(event) => onChange({ ...value, voice: { ...voice, preset: 'custom', pitch: Number(event.target.value) } })} /></label>
-      <button type='button' className='companion-secondary' onClick={() => speaking ? stop() : speak(voice.language === 'th-TH' ? 'สวัสดี เรามาเดินเล่นด้วยกันนะ' : 'Hello! Shall we go for a little walk?', { ...voice, enabled: true })}>{t(speaking ? 'Stop voice' : 'Preview voice')}</button>
-      <small>{t('Available voices depend on your device. Tap a speech bubble to listen.')}</small>
-      {voiceError && <small role='alert'>{t('Voice could not play. Try another device voice.')}</small>}
+      <label>{t('Voice character')}<select value={voice.preset || 'natural'} onChange={(event) => { const preset = voicePresets.find((entry) => entry.id === event.target.value); if (preset) onChange({ ...value, voice: { ...voice, preset: preset.id, rate: preset.rate, pitch: preset.pitch } }); }}>{voicePresets.map((preset) => <option key={preset.id} value={preset.id}>{t(preset.label)}</option>)}<option value='custom' disabled>{t('Custom tuning')}</option></select></label>
+      <label>{t('Volume')} · {Math.round((voice.volume ?? .8) * 100)}%<input type='range' min='0' max='1' step='.05' value={voice.volume ?? .8} onChange={(event) => onChange({ ...value, voice: { ...voice, volume: Number(event.target.value) } })} /></label>
+      <button type='button' className='companion-secondary' onClick={() => { unlockCreatureVoice(); playCreatureVoice('greeting', { ...value, voice }, true); }}>{t('Preview creature voice')}</button>
+      <small>{t('A tiny original creature voice, not spoken chat. Text stays readable on screen.')}</small>
     </>}
     </div>
     {value.species === 'custom' && !value.customDescription?.trim() && panel !== 'look' && <small role='status'>{t('Add your custom race description in Look before continuing.')}</small>}

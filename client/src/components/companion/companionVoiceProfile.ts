@@ -11,7 +11,7 @@ const speciesVoices: Record<CompanionSpecies, Pick<CompanionVoice, 'preset' | 'r
   custom: { preset: 'natural', rate: .96, pitch: 1.2 },
 };
 
-/** Device TTS stays opt-in per utterance; saved manual voice choices always win. */
+/** Reuse saved voice settings as a gentle creature timbre; no text is spoken. */
 export function companionVoiceProfile(
   appearance?: CompanionAppearance,
   traits?: { curiosity: number; affection: number; playfulness: number },

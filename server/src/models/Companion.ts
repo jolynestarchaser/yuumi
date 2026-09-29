@@ -60,7 +60,7 @@ const schema = new mongoose.Schema<StoredCompanion>({
       bodyColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
       accentColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
       eyeColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
-      voice: { type: new mongoose.Schema({ enabled: Boolean, language: { type: String, enum: ['th-TH', 'en-US'] }, voiceURI: { type: String, maxlength: 300 }, rate: { type: Number, min: .5, max: 1.5 }, pitch: { type: Number, min: .5, max: 2 }, preset: { type: String, enum: ['natural', 'spark', 'fairy', 'dragon', 'robot', 'custom'] } }, { _id: false }), default: undefined }
+      voice: { type: new mongoose.Schema({ enabled: Boolean, language: { type: String, enum: ['th-TH', 'en-US'] }, voiceURI: { type: String, maxlength: 300 }, rate: { type: Number, min: .5, max: 1.5 }, pitch: { type: Number, min: .5, max: 2 }, volume: { type: Number, min: 0, max: 1 }, preset: { type: String, enum: ['natural', 'spark', 'fairy', 'dragon', 'robot', 'custom'] } }, { _id: false }), default: undefined }
     }, { _id: false }),
     default: undefined
   },

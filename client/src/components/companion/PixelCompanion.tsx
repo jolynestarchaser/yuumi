@@ -1,8 +1,9 @@
 import type { CompanionFace, CompanionGrowthStage, CompanionSpecies, CompanionVisualForm } from '../../../../shared/contracts.js';
+import type { CompanionActivity } from './types.js';
 
 // A 32-cell sprite on a 256 × 256 canvas: integer edges stay crisp at 8×.
 // Facial parts remain separate so blinking never distorts the whole picture.
-export default function PixelCompanion({ species, face, lifeStage = 'hatchling', xpTier = 0, path = 'guardian' }: { species: CompanionSpecies; face: CompanionFace; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster' }) {
+export default function PixelCompanion({ species, face, activity = 'idle', lifeStage = 'hatchling', xpTier = 0, path = 'guardian' }: { species: CompanionSpecies; face: CompanionFace; activity?: CompanionActivity; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster' }) {
   const child = species === 'child';
   const ear = species === 'cat' || species === 'fox' ? 'M5 6h2V4h1v1h2v2h2v6H5zM20 7h2V5h2V4h1v2h2v7h-7z'
     : species === 'robot' ? 'M15 2h2v6h-2zM13 1h6v3h-6z'
@@ -42,13 +43,18 @@ export default function PixelCompanion({ species, face, lifeStage = 'hatchling',
     <path fill='color-mix(in srgb,var(--creature-body) 80%,var(--creature-eye))' d='M25 14h1v10h-2v2H9v-1h13v-2h2v-2h1z' />
     <path fill='var(--creature-accent)' d='M15 12h2v2h2v1h-2v2h-2v-2h-2v-1h2z' />
     <g className='pixel-eyes' fill='var(--creature-eye)'>
-      {face === 'starry' ? <path d='M9 17h1v2h2v1h-2v2H9v-2H7v-1h2zM22 17h1v2h2v1h-2v2h-1v-2h-2v-1h2z' />
-        : face === 'happy' ? <path d='M8 19h1v-1h2v1h1v2h-1v-1H9v1H8zM20 19h1v-1h2v1h1v2h-1v-1h-2v1h-1z' />
+      {activity === 'sleeping' ? <path d='M8 20h4v1H8zM20 20h4v1h-4z' />
+        : activity === 'error' ? <path d='M8 18h3v1H8zM10 19h2v2h-2zM20 18h4v1h-4zM20 20h4v1h-4z' />
+        : activity === 'working' ? <path d='M8 18h4v1H8zM9 19h2v2H9zM20 18h4v1h-4zM21 19h2v2h-2z' />
+        : activity === 'searching' ? <path d='M8 18h3v4H8zM20 18h3v4h-3zM9 18h1v1H9zM21 18h1v1h-1z' />
+        : activity === 'thinking' ? <path d='M10 18h2v3h-2zM22 18h2v3h-2z' />
+        : activity === 'success' || face === 'happy' ? <path d='M8 19h1v-1h2v1h1v2h-1v-1H9v1H8zM20 19h1v-1h2v1h1v2h-1v-1h-2v1h-1z' />
+        : face === 'starry' ? <path d='M9 17h1v2h2v1h-2v2H9v-2H7v-1h2zM22 17h1v2h2v1h-2v2h-1v-2h-2v-1h2z' />
         : face === 'sleepy' ? <path d='M8 20h4v1H8zM20 20h4v1h-4z' />
         : <><rect x='9' y='18' width='2' height='3' />{face === 'mischievous' ? <path d='M20 19h4v1h-4z' /> : <rect x='21' y='18' width='2' height='3' />}</>}
     </g>
-    <path fill='var(--creature-eye)' d={face === 'happy' ? 'M14 21h4v3h-1v1h-2v-1h-1z' : 'M14 21h1v1h2v-1h1v2h-4z'} />
-    <g fill='var(--creature-accent)'><rect x='7' y='22' width='4' height='1' /><rect x='21' y='22' width='4' height='1' /></g>
+    <path fill='var(--creature-eye)' d={activity === 'error' ? 'M14 23h4v1h-4z' : activity === 'working' ? 'M14 22h4v1h-4z' : activity === 'sleeping' ? 'M15 23h2v2h-2z' : activity === 'success' || face === 'happy' ? 'M14 21h4v3h-1v1h-2v-1h-1z' : 'M14 21h1v1h2v-1h1v2h-4z'} />
+    <g fill='color-mix(in srgb,#f2a7bd 75%,var(--creature-body))'><rect x='7' y='22' width='4' height='1' /><rect x='21' y='22' width='4' height='1' /></g>
     <g fill='color-mix(in srgb,var(--creature-body) 65%,var(--creature-eye))'><path d='M7 26h6v4H7zM19 26h6v4h-6z' /></g>
     <g fill='var(--creature-body)'><path d='M8 26h4v3H8zM20 26h4v3h-4z' /></g>
     {xpTier >= 2 && <path fill='var(--creature-eye)' d='M5 11h3v2H5zM24 11h3v2h-3z' />}

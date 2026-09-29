@@ -1,23 +1,23 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-09-29-companion-evolution-voice',
+  id: '2026-09-29-companion-expression-polish',
   title: 'A companion with more character',
-  subtitle: 'New forms, easier care, and a voice that fits who they are.',
+  subtitle: 'A softer little friend with expressions and a voice of their own.',
   features: [
     {
       icon: 'pixel' as const,
-      title: 'Forms that really change',
-      description: 'Pixel companions gain a different body shape at levels 3, 6, and 10. Their care path shapes the form; age adds its own details.',
+      title: 'A face for every moment',
+      description: 'Your companion now reacts while thinking, exploring, working, celebrating, feeling confused, and resting. Both soft and pixel forms have more expressive faces.',
     },
     {
       icon: 'pet' as const,
-      title: 'Care is closer',
-      description: 'Care actions now sit by their needs. Success feedback clears after a moment, and the home fits narrow screens better.',
+      title: 'A cozier home',
+      description: 'Needs and care lead the home view, with appearance settings tucked away when you want them. Little arms, blush, and gentle movement make the soft form feel more alive.',
     },
     {
       icon: 'pet' as const,
-      title: 'Their own way of speaking',
-      description: 'Species and the care they receive shape conversation and walking behavior. Tap Listen to hear a device voice tuned for them; you can change or disable it in Appearance.',
+      title: 'Their own little voice',
+      description: 'Short creature chirps now match care, thought, success, confusion, and rest. Chat stays readable as text instead of being spoken aloud. Set the sound level in Appearance.',
     },
   ],
 });
