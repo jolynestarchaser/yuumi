@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title description">
+  <title id="title">Mimi soft vinyl companion style sheet</title>
+  <desc id="description">A large lavender virtual pet with petal ears, tiny paws, warm cream belly, blush cheeks, and four small expression examples.</desc>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1"><stop stop-color="#FFF9F2"/><stop offset="1" stop-color="#F7F0FC"/></linearGradient>
+    <radialGradient id="vinyl" cx="33%" cy="23%" r="83%"><stop stop-color="#F5EAFB"/><stop offset=".42" stop-color="#DCC6F2"/><stop offset="1" stop-color="#B69ACD"/></radialGradient>
+    <linearGradient id="ear" x2=".8" y2="1"><stop stop-color="#EED9F7"/><stop offset="1" stop-color="#BEA2D4"/></linearGradient>
+    <linearGradient id="belly" x2=".8" y2="1"><stop stop-color="#FFF9EC"/><stop offset="1" stop-color="#F4DCCB"/></linearGradient>
+    <filter id="shadow" x="-40%" y="-60%" width="180%" height="240%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="blush"><feGaussianBlur stdDeviation="2.3"/></filter>
+    <symbol id="mimi-body" viewBox="0 0 240 275">
+      <ellipse cx="120" cy="257" rx="74" ry="10" fill="#665773" opacity=".18" filter="url(#shadow)"/>
+      <path d="M72 95 C43 74 36 32 46 15 C61 -2 94 36 99 87 Z" fill="url(#ear)" stroke="#A98CBE" stroke-width="2"/>
+      <path d="M150 82 C167 31 208 10 216 31 C223 52 203 87 174 102 Z" fill="url(#ear)" stroke="#A98CBE" stroke-width="2"/>
+      <path d="M62 86 C49 64 46 35 55 26 C67 27 85 57 85 84 Z" fill="#EFA9B9" opacity=".54"/>
+      <path d="M174 79 C187 48 204 35 207 40 C207 55 192 77 177 86 Z" fill="#EFA9B9" opacity=".48"/>
+      <ellipse cx="53" cy="187" rx="19" ry="28" transform="rotate(26 53 187)" fill="#C7ABD9"/>
+      <ellipse cx="190" cy="187" rx="19" ry="28" transform="rotate(-24 190 187)" fill="#BDA0D2"/>
+      <path d="M120 68 C64 68 31 101 32 153 C32 200 64 236 121 237 C178 239 210 204 210 153 C210 102 177 67 120 68 Z" fill="url(#vinyl)" stroke="#B69ACD" stroke-width="2.5"/>
+      <path d="M67 119 C78 91 101 83 117 84" fill="none" stroke="#FFF8FF" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+      <path d="M81 199 C84 184 96 174 120 172 C144 174 157 184 160 199 C155 218 142 226 121 227 C98 226 86 219 81 199 Z" fill="url(#belly)" opacity=".9"/>
+      <ellipse cx="85" cy="226" rx="28" ry="15" transform="rotate(-13 85 226)" fill="#C9AEDF" stroke="#AF91C7" stroke-width="1.5"/>
+      <ellipse cx="158" cy="226" rx="28" ry="15" transform="rotate(13 158 226)" fill="#BEA0D6" stroke="#A98CBE" stroke-width="1.5"/>
+      <ellipse cx="68" cy="159" rx="12" ry="7" fill="#EFA9B9" opacity=".68" filter="url(#blush)"/>
+      <ellipse cx="175" cy="159" rx="12" ry="7" fill="#EFA9B9" opacity=".68" filter="url(#blush)"/>
+      <path d="M115 81 C113 73 107 70 103 69 M117 79 C120 71 126 67 132 68" fill="none" stroke="#A9CBAA" stroke-width="4" stroke-linecap="round"/>
+      <path d="M105 69 C101 61 92 61 91 69 C95 74 101 73 105 69 Z M125 68 C132 59 142 61 141 68 C136 73 131 73 125 68 Z" fill="#A9CBAA"/>
+    </symbol>
+    <symbol id="face-idle" viewBox="0 0 240 275">
+      <ellipse cx="93" cy="141" rx="7" ry="10" fill="#41334D"/><ellipse cx="150" cy="141" rx="7" ry="10" fill="#41334D"/>
+      <ellipse cx="91" cy="137" rx="2.2" ry="3.1" fill="white"/><ellipse cx="148" cy="137" rx="2.2" ry="3.1" fill="white"/>
+      <path d="M115 163 Q121 169 127 163" fill="none" stroke="#674A68" stroke-width="3.5" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="face-happy" viewBox="0 0 240 275">
+      <path d="M84 144 Q93 133 102 144 M141 144 Q150 133 159 144" fill="none" stroke="#41334D" stroke-width="4" stroke-linecap="round"/>
+      <path d="M114 160 Q121 178 129 160 Z" fill="#8D567B" stroke="#674A68" stroke-width="2" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="face-sleep" viewBox="0 0 240 275">
+      <path d="M84 140 Q93 148 102 140 M141 140 Q150 148 159 140" fill="none" stroke="#41334D" stroke-width="3.5" stroke-linecap="round"/>
+      <ellipse cx="122" cy="164" rx="2.8" ry="3.5" fill="#674A68"/>
+    </symbol>
+    <symbol id="face-curious" viewBox="0 0 240 275">
+      <ellipse cx="94" cy="141" rx="7" ry="10" fill="#41334D"/><ellipse cx="150" cy="140" rx="8" ry="11" fill="#41334D"/>
+      <ellipse cx="92" cy="137" rx="2.2" ry="3" fill="white"/><ellipse cx="148" cy="136" rx="2.2" ry="3" fill="white"/>
+      <ellipse cx="123" cy="164" rx="3" ry="4.5" fill="#674A68"/>
+    </symbol>
+  </defs>
+  <rect width="1200" height="760" rx="28" fill="url(#background)"/>
+  <text x="66" y="72" fill="#57465F" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="3">CHARACTER STYLE DIRECTION / SOFT MODE</text>
+  <text x="66" y="136" fill="#41334D" font-family="Georgia, serif" font-size="60" font-weight="700">Meet Mimi</text>
+  <text x="68" y="170" fill="#766880" font-family="Arial, sans-serif" font-size="17">A little friend with the warmth of a well-loved toy.</text>
+  <ellipse cx="281" cy="600" rx="177" ry="30" fill="#DCC6F2" opacity=".24"/>
+  <use href="#mimi-body" x="85" y="190" width="410" height="470"/>
+  <use href="#face-idle" x="85" y="190" width="410" height="470"/>
+  <path d="M481 210 Q529 200 558 219" fill="none" stroke="#CDB9D7" stroke-width="2" stroke-dasharray="4 5"/>
+  <text x="505" y="195" fill="#7C6787" font-family="Arial, sans-serif" font-size="14">folded petal ear</text>
+  <text x="61" y="663" fill="#7C6787" font-family="Arial, sans-serif" font-size="14">large head · tiny paws · gentle asymmetry</text>
+  <text x="590" y="82" fill="#57465F" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">EXPRESSIONS</text>
+  <g fill="#FFFFFF" stroke="#E9DDEC" stroke-width="2">
+    <rect x="580" y="102" width="262" height="245" rx="25"/><rect x="862" y="102" width="262" height="245" rx="25"/>
+    <rect x="580" y="363" width="262" height="245" rx="25"/><rect x="862" y="363" width="262" height="245" rx="25"/>
+  </g>
+  <use href="#mimi-body" x="626" y="112" width="170" height="195"/><use href="#face-idle" x="626" y="112" width="170" height="195"/>
+  <use href="#mimi-body" x="908" y="112" width="170" height="195"/><use href="#face-happy" x="908" y="112" width="170" height="195"/>
+  <use href="#mimi-body" x="626" y="373" width="170" height="195"/><use href="#face-sleep" x="626" y="373" width="170" height="195"/>
+  <use href="#mimi-body" x="908" y="373" width="170" height="195"/><use href="#face-curious" x="908" y="373" width="170" height="195"/>
+  <g fill="#55465E" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">
+    <text x="711" y="329">Idle</text><text x="993" y="329">Happy</text><text x="711" y="590">Sleepy</text><text x="993" y="590">Curious</text>
+  </g>
+  <text x="590" y="667" fill="#766880" font-family="Arial, sans-serif" font-size="15">Soft vinyl volume · simple facial swaps · animation-ready parts</text>
+  <g transform="translate(590 693)"><circle cx="12" cy="12" r="12" fill="#DCC6F2"/><circle cx="54" cy="12" r="12" fill="#FFF0DF"/><circle cx="96" cy="12" r="12" fill="#EFA9B9"/><circle cx="138" cy="12" r="12" fill="#A9CBAA"/><circle cx="180" cy="12" r="12" fill="#41334D"/></g>
+</svg>

@@ -1,7 +1,7 @@
 import type { CompanionTheme, CompanionVoicePreset } from '../../../../shared/contracts.js';
 
 export const colorThemes: { id: Exclude<CompanionTheme, 'custom'>; label: string; bodyColor: string; accentColor: string; eyeColor: string }[] = [
-  { id: 'lavender', label: 'Lavender garden', bodyColor: '#d4c2f0', accentColor: '#c4dbbf', eyeColor: '#423452' },
+  { id: 'lavender', label: 'Lavender garden', bodyColor: '#dcc6f2', accentColor: '#a9cbaa', eyeColor: '#41334d' },
   { id: 'forest', label: 'Enchanted forest', bodyColor: '#8dcca0', accentColor: '#f6d893', eyeColor: '#21433c' },
   { id: 'ocean', label: 'Ocean dream', bodyColor: '#8edce5', accentColor: '#cab4f2', eyeColor: '#234369' },
   { id: 'sunset', label: 'Sunset peach', bodyColor: '#ffbc95', accentColor: '#f18eac', eyeColor: '#603b55' },

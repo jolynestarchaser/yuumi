@@ -528,3 +528,95 @@
 .companion-design-fields .companion-creation-colors label,.companion-design-fields .companion-voice-enable,.companion-design-fields .companion-voice-volume { color:#e5d8f2; }
 .companion-design-fields .companion-voice-preview { color:#352746; }
 @media (max-width:520px) { .companion-customizer-preview { grid-template-columns:105px minmax(0,1fr); min-height:126px; padding:9px; }.companion-customizer-preview .companion-avatar { width:105px; height:105px; }.companion-customizer-preview .companion-avatar-motion { zoom:.6; }.companion-design-fields { padding:11px; }.companion-design-fields .companion-world-grid { grid-template-columns:1fr 1fr; }.companion-design-fields .companion-base-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Soft mode: gentle vinyl volume and a recognizable, uneven silhouette. */
+.companion-avatar.style-soft .creature-body {
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--creature-body) 72%, #6f547e);
+  background: radial-gradient(ellipse at 34% 22%, color-mix(in srgb, var(--creature-body) 44%, white), transparent 61%),
+    linear-gradient(143deg, color-mix(in srgb, var(--creature-body) 83%, white) 18%, var(--creature-body) 59%, color-mix(in srgb, var(--creature-body) 79%, #755a87));
+  box-shadow: inset -8px -9px 14px color-mix(in srgb, var(--creature-body) 67%, #745e83),
+    inset 7px 7px 12px color-mix(in srgb, var(--creature-body) 42%, white),
+    0 9px 14px #32213d21;
+}
+.companion-avatar.style-soft .creature-body::before {
+  position: absolute;
+  top: 14px;
+  left: 23px;
+  width: 54px;
+  height: 17px;
+  border-top: 5px solid #fff9;
+  border-radius: 50%;
+  content: '';
+  transform: rotate(-14deg);
+}
+.companion-avatar.style-soft .creature-belly {
+  position: absolute;
+  bottom: 7px;
+  left: 50%;
+  width: 58px;
+  height: 35px;
+  border-radius: 50% 50% 46% 46%;
+  background: linear-gradient(145deg, #fff9ed, #f4dfd4);
+  box-shadow: inset -3px -3px 6px #d5b5b26b;
+  opacity: .86;
+  transform: translateX(-50%);
+}
+.companion-avatar.style-soft.species-robot .creature-belly,
+.companion-avatar.style-soft.species-child .creature-belly { display: none; }
+.companion-avatar.style-soft .creature-ear {
+  border-width: 2px;
+  background: radial-gradient(circle at 34% 24%, color-mix(in srgb, var(--creature-accent) 50%, white), transparent 70%), var(--creature-accent);
+  box-shadow: inset -4px -5px 8px color-mix(in srgb, var(--creature-accent) 75%, #756384);
+}
+.companion-avatar.style-soft.species-spirit .creature-ear.right,
+.companion-avatar.style-soft.species-bunny .creature-ear.right,
+.companion-avatar.style-soft.species-custom .creature-ear.right {
+  top: 10px;
+  right: 4px;
+  transform: rotate(48deg) scale(.91);
+}
+.companion-avatar.style-soft .creature-arm,
+.companion-avatar.style-soft .creature-foot {
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--creature-body) 72%, #6f547e);
+  box-shadow: inset -3px -3px 6px color-mix(in srgb, var(--creature-body) 75%, #756384);
+}
+.companion-avatar.style-soft.activity-idle .creature-face i {
+  width: 10px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: inset -2px -2px 2px #1b162633;
+}
+.companion-avatar.style-soft .creature-face i::after {
+  top: 2px;
+  left: 2px;
+  width: 3px;
+  height: 4px;
+  background: white;
+}
+.companion-avatar.style-soft .creature-face b { width: 10px; height: 6px; border-width: 2px; }
+.companion-avatar.style-soft .creature-cheeks i {
+  background: #efa9b9;
+  opacity: .7;
+  filter: blur(2px);
+}
+.companion-avatar.style-soft.species-spirit .creature-star {
+  top: 8px;
+  width: 12px;
+  height: 9px;
+  font-size: 0;
+  text-shadow: none;
+}
+.companion-avatar.style-soft.species-spirit .creature-star::before,
+.companion-avatar.style-soft.species-spirit .creature-star::after {
+  position: absolute;
+  top: 1px;
+  width: 7px;
+  height: 9px;
+  border-radius: 80% 0 80% 0;
+  background: var(--creature-accent);
+  content: '';
+}
+.companion-avatar.style-soft.species-spirit .creature-star::before { left: 0; transform: rotate(-27deg); }
+.companion-avatar.style-soft.species-spirit .creature-star::after { right: 0; transform: rotate(63deg); }
