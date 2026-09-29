@@ -126,16 +126,18 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   const [tab, setTab] = useState('chat');
   const [creating, setCreating] = useState(false);
   const [reaction, setReaction] = useState<LifecycleCareAction | ''>('');
+  const [careStatus, setCareStatus] = useState('');
   const [predecessorId, setPredecessorId] = useState<string | undefined>();
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const active = useRef(true);
   useEffect(() => { active.current = true; return () => { active.current = false; if (reactionTimer.current) clearTimeout(reactionTimer.current); }; }, []);
-  useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); }, [companionId]);
+  useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setCareStatus(''); }, [companionId]);
   useEffect(() => { if (companion?.lifecycle?.lifeStatus !== 'alive' && (tab === 'design' || tab === 'personality')) setTab('memories'); }, [companion?.lifecycle?.lifeStatus, tab]);
   async function care(action: LifecycleCareAction) {
     if (await act({ action }) && active.current) {
       if (reactionTimer.current) clearTimeout(reactionTimer.current);
       setReaction(action);
+      setCareStatus(t('{action} went well.', { action: t(careActions.find(([key]) => key === action)?.[2] || action) }));
       reactionTimer.current = setTimeout(() => setReaction(''), 2600);
     }
   }
@@ -146,10 +148,12 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
       <section className='companion-home' aria-label={t('Home of {name}', { name: companion.name })}>
         <div className='companion-roster' aria-label={t('Our companions')}>{roster.map((entry) => <button key={entry.id} type='button' aria-pressed={entry.id === companionId} onClick={() => selectCompanion(entry.id)} disabled={Boolean(busy)}><span>{entry.name}</span><small>{t('Level')} {entry.level}</small></button>)}<button type='button' className='companion-add' onClick={() => { setPredecessorId(undefined); setCreating(true); }} disabled={Boolean(busy)}>{t('Add companion')}</button></div>
         <div className='companion-home-top'><span className='companion-kicker'>{t('OUR LITTLE WORLD')}</span><span className='companion-mood'>{t(companion.mood)}</span></div>
-        <CompanionAvatar companion={companion} reaction={reaction} />
-        {onGoOut && companion.lifecycle?.lifeStatus === 'alive' && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}
-        <CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy) || companion.lifecycle?.lifeStatus !== 'alive'} onChange={(appearance) => { void act({ action: 'appearance', appearance }); }} />
-        <h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p>
+        <div className='companion-habitat'>
+          <div className='companion-habitat-copy'><span className='companion-kicker'>{t('TODAY WITH')}</span><h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p></div>
+          <CompanionAvatar companion={companion} reaction={reaction} />
+          <div className='companion-action-feedback' aria-live='polite'>{careStatus && <span className='is-success'>{careStatus}</span>}{error && <span className='is-error'>{t(error)}</span>}{busy && <span>{t('Taking care of {name}…', { name: companion.name })}</span>}</div>
+        </div>
+        <div className='companion-home-tools'>{onGoOut && companion.lifecycle?.lifeStatus === 'alive' && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}<CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy) || companion.lifecycle?.lifeStatus !== 'alive'} onChange={(appearance) => { void act({ action: 'appearance', appearance }); }} /></div>
         <CompanionGrowth companion={companion} />
         <div className='companion-needs'>
           {Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { simulateCompanion } from './companionSimulation.js';
 import { currentDailyRitual } from './companionRitual.js';
+import { visualFormFor } from './companionEvolution.js';
 import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, LifecycleCareAction, CompanionSetup, Temperament, CompanionGrowthStage, CompanionState } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
@@ -179,9 +180,8 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const level = Math.floor(safe.xp / 80) + 1;
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
   const growthStage = safe.lifecycle?.stage || growthStageForLevel(level);
-  const species = safe.appearance?.species || (safe.form === 'child' ? 'child' : safe.form === 'pet' ? 'bunny' : 'spirit');
-  const path = safe.stageOutcomes?.at(-1)?.branch || safe.evolutions?.at(-1)?.path || 'guardian';
-  const formId = safe.stageOutcomes?.at(-1)?.toFormId || `${species}-${growthStage}-${path}`;
+  const visualForm = visualFormFor(safe);
+  const formId = `${visualForm.species}-tier-${visualForm.xpTier}-${visualForm.xpPath}`;
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : growthStage === 'elder' ? 'Elder companion' : 'Grown companion';
   const active = safe.careRequest?.state === 'active' ? safe.careRequest : undefined;
   const request = safe.lifecycle?.lifeStatus !== 'alive' ? null : active ? { id: active.id, action: active.action, state: active.state, text: active.action === 'feed' ? 'Could we have a little snack together?' : active.action === 'play' ? 'Will you play a tiny game with me?' : active.action === 'rest' ? 'I think a cozy nap would help me recharge.' : active.action === 'clean' ? 'Could you help me freshen up?' : active.action === 'medicine' ? 'I do not feel well. Could you help with medicine?' : 'Can I have a little cuddle?', urgency: ['feed', 'medicine'].includes(active.action) ? 'soon' as const : 'gentle' as const }
@@ -189,5 +189,5 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const medicineReady = safe.lifecycle?.healthCondition === 'ill' && safe.needs.health < 100 && (!safe.lifecycle.lastMedicineAt || now.getTime() - new Date(safe.lifecycle.lastMedicineAt).getTime() >= 6 * 3_600_000);
   const resting = safe.behaviorState === 'resting' && safe.restUntil && new Date(safe.restUntil).getTime() > now.getTime();
   const allowedActions: LifecycleCareAction[] = safe.lifecycle?.lifeStatus === 'alive' ? ['feed', 'play', 'cuddle', ...(!resting ? ['rest' as const] : []), 'explore', 'clean', ...(medicineReady ? ['medicine' as const] : [])] : [];
-  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
+  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, visualForm, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
 }

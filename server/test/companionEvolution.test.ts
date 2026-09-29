@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evolveCompanion } from '../src/services/companionEvolution.js';
+import { evolveCompanion, visualFormFor } from '../src/services/companionEvolution.js';
 import { initialCompanion, validateAppearance } from '../src/services/companionState.js';
 import { brainContext, characterDesign, parseBrainReply } from '../src/services/companionBrain.js';
 
@@ -21,6 +21,31 @@ test('both species and accumulated behavior affect the same evolution roll', () 
   const choose = (species, traits) => evolveCompanion({ ...base, appearance: { ...base.appearance, species }, traits }, 152, () => .4).evolutions[0].path;
   assert.notEqual(choose('dragon', base.traits), choose('bunny', base.traits));
   assert.notEqual(choose('custom', { curiosity: 100, affection: 0, playfulness: 0 }), choose('custom', { curiosity: 0, affection: 100, playfulness: 0 }));
+});
+
+test('multi-level rewards record every XP milestone once without changing lifecycle history', () => {
+  const base = { ...initialCompanion(), xp: 0, stageOutcomes: [{ id: 'age-child', level: 0, stage: 'child' as const, fromFormId: 'old', toFormId: 'old', branch: 'guardian' as const, rulesVersion: 3, at: new Date() }] };
+  const gained = evolveCompanion({ ...base, xp: 720 }, 0, () => 0);
+  assert.deepEqual(gained.evolutions.map((entry) => entry.level), [3, 6, 10]);
+  assert.deepEqual(gained.stageOutcomes, base.stageOutcomes);
+  assert.deepEqual(evolveCompanion(gained, 0, () => .99).evolutions, gained.evolutions);
+});
+
+test('visual form uses XP tier while lifecycle stays an independent age presentation', () => {
+  const old = { ...initialCompanion(), xp: 720, lifecycle: { ...initialCompanion().lifecycle!, stage: 'elder' as const }, evolutions: undefined, stageOutcomes: undefined };
+  assert.deepEqual(visualFormFor(old), { species: 'spirit', xpTier: 3, xpPath: 'guardian', lifeStage: 'elder' });
+});
+
+test('visual form keeps every species recognizable and selects the path for its current XP tier', () => {
+  for (const species of ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'] as const) {
+    for (const [xp, tier] of [[0, 0], [160, 1], [400, 2], [720, 3]] as const) {
+      const state = { ...initialCompanion(), xp, appearance: { ...initialCompanion().appearance, species }, evolutions: xp ? [{ level: tier === 1 ? 3 : tier === 2 ? 6 : 10, species, path: 'trickster' as const, at: new Date() }] : [] };
+      const form = visualFormFor(state);
+      assert.equal(form.species, species);
+      assert.equal(form.xpTier, tier);
+      assert.equal(form.xpPath, tier ? 'trickster' : 'guardian');
+    }
+  }
 });
 
 test('species, colors, and voice accept bounded settings and reject unsafe inputs', () => {

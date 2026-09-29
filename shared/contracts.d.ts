@@ -97,6 +97,14 @@ export interface CompanionMemory { id: string; actor: Profile; kind: string; tex
 export interface CompanionTurn { id: string; actor: Profile | 'companion'; text: string; at: Timestamp }
 export interface CompanionPortrait { url: string; publicId: string; createdAt: Timestamp }
 export interface CompanionEvolution { level: number; species: CompanionSpecies; path: 'explorer' | 'guardian' | 'trickster'; at: Timestamp }
+/** The present body recipe. Unlike formId, this is not historical state. */
+export interface CompanionVisualForm {
+  species: CompanionSpecies;
+  /** 0 = hatchling, then the forms earned at levels 3, 6, and 10. */
+  xpTier: 0 | 1 | 2 | 3;
+  xpPath: 'explorer' | 'guardian' | 'trickster';
+  lifeStage: CompanionGrowthStage;
+}
 export type CompanionGrowthStage = 'hatchling' | 'child' | 'juvenile' | 'grown' | 'elder';
 export interface CompanionLifecycle {
   rulesVersion: 3; lifeStatus: CompanionLifeStatus; healthCondition: CompanionHealthCondition;
@@ -134,7 +142,7 @@ export interface StoredCompanion extends CompanionState {
   familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
 }
 export interface CompanionRequest { id: string; action: LifecycleCareAction; state: CareRequestState; text: string; urgency: 'gentle' | 'soon' }
-export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; wish: string; request: CompanionRequest | null; allowedActions?: LifecycleCareAction[]; automaticallyPaused?: boolean }
+export interface PublicCompanion extends CompanionState { id: string; archivedAt?: Timestamp | null; level: number; stage: string; growthStage: CompanionGrowthStage; formId: string; visualForm: CompanionVisualForm; wish: string; request: CompanionRequest | null; allowedActions?: LifecycleCareAction[]; automaticallyPaused?: boolean }
 export interface CompanionRitualNotice { companionId: string; name: string; ritual: CompanionDailyRitual | null }
 export interface CompanionRosterSummary { id: string; name: string; bornAt: Timestamp | null; archivedAt?: Timestamp | null; mood: CompanionMood; level: number; form: CompanionForm; appearance?: CompanionAppearance; revision: number }
 export interface CompanionCapabilities { chat: boolean; portraits: boolean }

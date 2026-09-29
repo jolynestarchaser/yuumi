@@ -5,13 +5,14 @@ export default function CompanionGrowth({ companion }: { companion: PublicCompan
   const { t } = useCompanionLanguage();
   const levelXp = companion.xp % 80;
   const evolution = companion.evolutions?.at(-1);
+  const form = companion.visualForm;
   const lifecycle = companion.lifecycle;
   const protectionUntil = lifecycle?.protectionUntil ? new Date(lifecycle.protectionUntil) : null;
   const requirements = lifecycle?.stage === 'hatchling' ? { hours: 48, care: 6, stage: 'child' } : lifecycle?.stage === 'child' ? { hours: 168, care: 18, stage: 'juvenile' } : lifecycle?.stage === 'juvenile' ? { hours: 336, care: 36, stage: 'grown' } : lifecycle?.stage === 'grown' ? { hours: 1440, care: 0, stage: 'elder' } : null;
   return <section className='companion-growth' aria-label={t('Growth')}>
     <div><strong>{t('Level')} {companion.level}</strong><span>{levelXp} {t("/ 80 EXP")}</span></div>
     <progress aria-label={t('Experience to next level')} value={levelXp} max={80} />
-    <p className='companion-form-label'>{t(companion.growthStage)}</p>
+    <p className='companion-form-label'>{t(companion.growthStage)} · {t('XP form')} {form.xpTier + 1}/4 · {t(form.xpPath)}</p>
     {lifecycle && <p>{t('Generation')} {lifecycle.generation} · {t(lifecycle.lifeStatus)} · {t(lifecycle.healthCondition)}{companion.automaticallyPaused ? ` · ${t('Paused while away')}` : ''}</p>}
     {protectionUntil && protectionUntil.getTime() > Date.now() && <small>{t('Return protection active until {time}', { time: protectionUntil.toLocaleString() })}</small>}
     {requirements && lifecycle?.lifeStatus === 'alive' && <><progress aria-label={t('Age progress to next stage')} value={Math.min(lifecycle.simulatedAgeHours, requirements.hours)} max={requirements.hours} /><small>{t('Next stage: {stage} · age {age}/{target} hours · care {care}/{careTarget}', { stage: t(requirements.stage), age: Math.floor(lifecycle.simulatedAgeHours), target: requirements.hours, care: lifecycle.stageCareCount, careTarget: requirements.care })}</small></>}

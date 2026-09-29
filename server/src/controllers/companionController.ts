@@ -67,7 +67,9 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
   try {
     if (state.recentOperations?.includes(operationId)) return state;
     const mutated = refreshCareRequest(await change(state, token));
-    const changed = mutated.lifecycle ? mutated : evolveCompanion(mutated, state.xp);
+    // XP forms are independent of age/lifecycle. This runs inside the same
+    // leased receipt mutation, so a replay sees the stored choice and cannot reroll.
+    const changed = evolveCompanion(mutated, state.xp);
     const { _id, __v, lockToken, lockedUntil, budget, ...fields } = changed;
     let saved: StoredCompanion | null = null;
     const session = await mongoose.startSession();
