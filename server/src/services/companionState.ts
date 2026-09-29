@@ -166,7 +166,8 @@ export function validateAppearance(value: unknown): value is import('../../../sh
     && (appearance.gender === undefined || ['unspecified', 'female', 'male', 'nonbinary'].includes(appearance.gender as string))
     && (appearance.theme === undefined || ['lavender', 'forest', 'ocean', 'sunset', 'starlight', 'candy', 'custom'].includes(appearance.theme as string))
     && (appearance.silhouette === undefined || ['round', 'bean', 'fluffy'].includes(appearance.silhouette as string))
-    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait', 'species', 'bodyColor', 'accentColor', 'eyeColor', 'voice', 'customDescription', 'face', 'gender', 'theme', 'silhouette'].includes(key)));
+    && (appearance.world === undefined || ['moon-garden', 'sunny-meadow', 'cloud-cove', 'pocket-workshop'].includes(appearance.world as string))
+    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait', 'species', 'bodyColor', 'accentColor', 'eyeColor', 'voice', 'customDescription', 'face', 'gender', 'theme', 'silhouette', 'world'].includes(key)));
 }
 
 export function startingTraits(temperament: Temperament) {

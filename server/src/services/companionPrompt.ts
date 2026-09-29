@@ -11,7 +11,7 @@ export function companionPrompt(state: StoredCompanion, actor: Profile, message:
   const memories = state.memories.slice(-12).map(({ actor: author, kind, text }) => ({ author, kind, text: text.slice(0, 600) }));
   const recentConversation = state.turns.slice(-12).map(({ actor: author, text }) => ({ author, text: text.slice(0, 700) }));
   const untrustedContext = {
-    identity: { name: state.name, description: state.seed, customDescription: state.appearance?.customDescription || null, inspirations: state.inspirations },
+    identity: { name: state.name, description: state.seed, world: state.appearance?.world || null, customDescription: state.appearance?.customDescription || null, inspirations: state.inspirations },
     memories,
     recentConversation,
     speaker: actor,

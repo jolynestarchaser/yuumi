@@ -19,14 +19,14 @@ const activityCue = {
   sleeping: { label: 'Resting', Icon: Moon },
 } as const;
 
-export default function CompanionAvatar({ companion, small = false, reaction = '', activity }: { companion: AvatarCharacter; small?: boolean; reaction?: LifecycleCareAction | ''; activity?: CompanionActivity }) {
+export default function CompanionAvatar({ companion, small = false, decorative = false, reaction = '', activity }: { companion: AvatarCharacter; small?: boolean; decorative?: boolean; reaction?: LifecycleCareAction | ''; activity?: CompanionActivity }) {
   const { t } = useCompanionLanguage();
   const appearance = companion.appearance || { visualStyle: 'soft' as const, animated: true, usePortrait: false };
   const visualForm = visualFormFor({ ...companion, xp: companion.xp || 0 });
   const { species, lifeStage, xpPath, xpTier } = visualForm;
   const state = activity || (reaction ? (reaction === 'rest' ? 'sleeping' : 'success') : companion.behaviorState === 'resting' || companion.mood === 'sleepy' ? 'sleeping' : 'idle');
   const cue = state === 'idle' ? null : activityCue[state];
-  return <div className={`companion-avatar species-${species} stage-${lifeStage} path-${xpPath} xp-tier-${xpTier} style-${appearance.visualStyle} ${appearance.animated ? '' : 'motion-paused'} ${small ? 'small' : ''} mood-${companion.mood} form-${companion.form} activity-${state} reaction-${reaction}`} style={{ '--creature-body': appearance.bodyColor || (species === 'child' ? '#f7d8be' : '#d4c2f0'), '--creature-accent': appearance.accentColor || (species === 'spirit' ? '#c4dbbf' : '#e9d0df'), '--creature-eye': appearance.eyeColor || '#423452' }} role='img' aria-label={`${companion.name || t('Your companion')}, ${t(companion.mood)}, ${cue ? t(cue.label) : t('Idle')}, ${t(appearance.visualStyle)}`}>
+  return <div className={`companion-avatar species-${species} stage-${lifeStage} path-${xpPath} xp-tier-${xpTier} style-${appearance.visualStyle} ${appearance.animated ? '' : 'motion-paused'} ${small ? 'small' : ''} mood-${companion.mood} form-${companion.form} activity-${state} reaction-${reaction}`} style={{ '--creature-body': appearance.bodyColor || (species === 'child' ? '#f7d8be' : '#d4c2f0'), '--creature-accent': appearance.accentColor || (species === 'spirit' ? '#c4dbbf' : '#e9d0df'), '--creature-eye': appearance.eyeColor || '#423452' }} role={decorative ? 'presentation' : 'img'} aria-hidden={decorative || undefined} aria-label={decorative ? undefined : `${companion.name || t('Your companion')}, ${t(companion.mood)}, ${cue ? t(cue.label) : t('Idle')}, ${t(appearance.visualStyle)}`}>
     <div className={`companion-avatar-motion face-${appearance.face || 'gentle'} silhouette-${appearance.silhouette || 'round'}`}>
       {appearance.visualStyle === 'pixel' ? <PixelCompanion species={species} face={appearance.face || 'gentle'} activity={state} lifeStage={lifeStage} xpTier={xpTier} path={xpPath} /> : <div className='companion-creature'>
         <i className='creature-tail' /><i className='creature-wing left' /><i className='creature-wing right' />

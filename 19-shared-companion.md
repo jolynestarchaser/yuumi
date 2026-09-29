@@ -3,8 +3,9 @@
 ## Product
 
 One custom virtual creature belongs to Joe and Focus together. Character creation
-has three steps: imagine its name/form/appearance, choose a starting temperament,
-then review and hatch. Nothing is generated or billed during creation.
+has six focused creation stops: choose a base creature and name, choose a world,
+pick a starting temperament, add visible details, choose colors, and set the
+creature voice before hatching. Nothing is generated or billed during creation.
 
 The dock opens a game-like companion home with an animated starter illustration,
 needs, care actions, imagined thoughts, daily wishes, shared chat, a memory journal,
@@ -47,23 +48,23 @@ portrait; pause motion; test reduced motion, mobile layout, and both profile sna
   language updates the whole app without replacing user-written content.
   Chat, thoughts, and memory text can be explicitly translated through the existing
   server translation endpoint. Translation changes display only, never saved memories.
-- Creation and the Personality editor offer spirit, bunny, cat, fox, dragon, robot,
-  storybook child, and custom species plus body/accent/eye colors. Custom species use
-  a starter until a portrait is generated from the description. Saved design edits
-  are revision-checked and preserve XP, memory, and existing portraits.
-- Optional device speech supports Thai/English voices, rate 0.5–1.5 and pitch 0.5–2.
-  Voice lists vary by browser/OS. Speech is initiated by a preview/listen click and
-  canceled when the voice component unmounts; no Gemini speech calls are made.
+- Creation presents spirit, bunny, cat, fox, dragon, robot, and custom creature
+  cards with a live authored preview. Existing storybook-child records remain
+  supported. Saved design edits are revision-checked and preserve XP and memory.
+- A saved world (`moon-garden`, `sunny-meadow`, `cloud-cove`, or `pocket-workshop`)
+  changes the creation backdrop and later habitat, independently of color palette.
+- Short procedural creature vocalizations replace browser speech synthesis.
+  Chat remains text. Browser Web Audio supports a bounded volume control,
+  preview, cooldowns, and priority interruption; no Gemini speech calls are made.
 - Custom race reveals a required 1–500 character description, passed to chat and
   prioritized in portrait prompts. Face, silhouette, gender identity, and six
   coordinated palettes persist alongside the design. Selecting a palette changes
   body, accent, and eye colors together; manual colors mark it as custom.
-- Five fantasy-style voice presets tune device speech pitch/rate. They are not
-  character voice clones; audible results depend on installed voices. Gender does
+- Five voice presets gently vary the creature chirp's pace and tone. Gender does
   not force a voice or color palette.
-- The creator is a wide two-column workbench with a live preview and Look/Colors/Voice
-  panels. Small viewports retain scrolling. Language selection is in Settings,
-  never a separate companion preference.
+- The creator keeps a live preview beside one focused choice at a time. It uses
+  cards and chips, with preview style controls tucked into a disclosure. Narrow
+  viewports stack the preview and choices. Language selection stays in Settings.
 - Go out opens a bounded walking pet above the desktop dock. Speech bubbles use
   needs and dominant traits, with no background generation or XP rewards. Pause,
   chat, and return-home controls remain available. Hidden tabs skip wandering updates;

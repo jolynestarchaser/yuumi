@@ -57,6 +57,7 @@ const schema = new mongoose.Schema<StoredCompanion>({
       gender: { type: String, enum: ['unspecified', 'female', 'male', 'nonbinary'] },
       theme: { type: String, enum: ['lavender', 'forest', 'ocean', 'sunset', 'starlight', 'candy', 'custom'] },
       silhouette: { type: String, enum: ['round', 'bean', 'fluffy'] },
+      world: { type: String, enum: ['moon-garden', 'sunny-meadow', 'cloud-cove', 'pocket-workshop'] },
       bodyColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
       accentColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
       eyeColor: { type: String, match: /^#[0-9a-fA-F]{6}$/ },

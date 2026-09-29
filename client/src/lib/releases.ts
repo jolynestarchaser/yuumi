@@ -1,23 +1,23 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-09-29-companion-expression-polish',
-  title: 'A companion with more character',
-  subtitle: 'A softer little friend with expressions and a voice of their own.',
+  id: '2026-09-29-companion-creation-journey',
+  title: 'Meet your companion your way',
+  subtitle: 'Pick a creature, give them a world, and watch them take shape.',
   features: [
     {
       icon: 'pixel' as const,
-      title: 'A face for every moment',
-      description: 'Your companion now reacts while thinking, exploring, working, celebrating, feeling confused, and resting. Both soft and pixel forms have more expressive faces.',
+      title: 'Choose your little one',
+      description: 'Creature cards replace the overlapping form and species choices. Name your companion while their live preview takes shape.',
     },
     {
       icon: 'pet' as const,
-      title: 'A cozier home',
-      description: 'Needs and care lead the home view, with appearance settings tucked away when you want them. Little arms, blush, and gentle movement make the soft form feel more alive.',
+      title: 'Give them a place and personality',
+      description: 'Pick a world, a starting temperament, and the face and shape that make them yours. Their world follows them into the habitat.',
     },
     {
       icon: 'pet' as const,
-      title: 'Their own little voice',
-      description: 'Short creature chirps now match care, thought, success, confusion, and rest. Chat stays readable as text instead of being spoken aloud. Set the sound level in Appearance.',
+      title: 'Finish with color and sound',
+      description: 'Try a palette, tune their colors, and preview their creature chirp before hatching. The soft form has brighter, more expressive eyes.',
     },
   ],
 });

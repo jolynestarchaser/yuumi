@@ -54,9 +54,9 @@ test('visual form retains the last earned path if a later milestone has no saved
 });
 
 test('species, colors, and voice accept bounded settings and reject unsafe inputs', () => {
-  const appearance = { ...initialCompanion().appearance, species: 'dragon', bodyColor: '#00aacc', accentColor: '#cc88ff', eyeColor: '#334455', voice: { enabled: true, language: 'th-TH', voiceURI: '', rate: 1, pitch: 1.2, volume: .8 } };
+  const appearance = { ...initialCompanion().appearance, species: 'dragon', world: 'moon-garden', bodyColor: '#00aacc', accentColor: '#cc88ff', eyeColor: '#334455', voice: { enabled: true, language: 'th-TH', voiceURI: '', rate: 1, pitch: 1.2, volume: .8 } };
   assert.equal(validateAppearance(appearance), true);
-  for (const invalid of [{ ...appearance, species: 'script' }, { ...appearance, bodyColor: 'url(https://example.test)' }, { ...appearance, voice: { ...appearance.voice, pitch: 100 } }, { ...appearance, voice: { ...appearance.voice, rate: Number.NaN } }, { ...appearance, voice: { ...appearance.voice, volume: 1.1 } }]) assert.equal(validateAppearance(invalid), false);
+  for (const invalid of [{ ...appearance, species: 'script' }, { ...appearance, world: 'untrusted-world' }, { ...appearance, bodyColor: 'url(https://example.test)' }, { ...appearance, voice: { ...appearance.voice, pitch: 100 } }, { ...appearance, voice: { ...appearance.voice, rate: Number.NaN } }, { ...appearance, voice: { ...appearance.voice, volume: 1.1 } }]) assert.equal(validateAppearance(invalid), false);
 });
 
 test('chat growth is a bounded trait signal, never model supplied XP', () => {

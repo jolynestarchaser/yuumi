@@ -71,12 +71,14 @@ export type CompanionSpecies = 'spirit' | 'bunny' | 'cat' | 'fox' | 'dragon' | '
 export type CompanionVoicePreset = 'natural' | 'spark' | 'fairy' | 'dragon' | 'robot' | 'custom';
 export type CompanionFace = 'gentle' | 'happy' | 'sleepy' | 'mischievous' | 'starry';
 export type CompanionTheme = 'lavender' | 'forest' | 'ocean' | 'sunset' | 'starlight' | 'candy' | 'custom';
+export type CompanionWorld = 'moon-garden' | 'sunny-meadow' | 'cloud-cove' | 'pocket-workshop';
 export interface CompanionVoice { enabled: boolean; language: 'th-TH' | 'en-US'; voiceURI: string; rate: number; pitch: number; preset?: CompanionVoicePreset; volume?: number }
 export interface CompanionAppearance {
   visualStyle: 'soft' | 'pixel'; animated: boolean; usePortrait: boolean;
   species?: CompanionSpecies; bodyColor?: string; accentColor?: string; eyeColor?: string; voice?: CompanionVoice;
   customDescription?: string; face?: CompanionFace; gender?: 'unspecified' | 'female' | 'male' | 'nonbinary';
   theme?: CompanionTheme; silhouette?: 'round' | 'bean' | 'fluffy';
+  world?: CompanionWorld;
 }
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
