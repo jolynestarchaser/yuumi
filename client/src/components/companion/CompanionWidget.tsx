@@ -151,7 +151,12 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy) || companion.lifecycle?.lifeStatus !== 'alive'} onChange={(appearance) => { void act({ action: 'appearance', appearance }); }} />
         <h3>{companion.name}</h3><p className='companion-stage'>{t(companion.stage)} · {t('Level')} {companion.level}</p>
         <CompanionGrowth companion={companion} />
-        <div className='companion-needs'>{Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}</div>
+        <div className='companion-needs'>
+          {Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}
+          {companion.lifecycle?.lifeStatus === 'alive' && (companion.behaviorState === 'resting' || companion.needs.energy < 35) && <p className='companion-energy-hint' role='status'>
+            {t(companion.behaviorState === 'resting' ? 'Resting now. Energy keeps recovering during this nap.' : 'Low energy? Cuddle gives 8 now. Nap gives 20 now and 24 over 45 minutes.')}
+          </p>}
+        </div>
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>
         {companion.dailyRitual && <div className={`companion-ritual ${companion.dailyRitual.completedAt ? 'is-complete' : ''}`}>
           <div className='companion-ritual-heading'><span>{t('TODAY TOGETHER')}</span><small>{companion.dailyRitual.completedAt ? t('Shared today') : t('A small moment')}</small></div>

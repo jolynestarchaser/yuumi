@@ -1,6 +1,6 @@
 import { advanceLifecycle } from './companionLifecycle.js';
 import { randomUUID } from 'node:crypto';
-import { HOUR_MS, MAX_OFFLINE_HOURS, NATURAL_DEATH_HOURS, NEED_RATES, RETURN_PROTECTION_HOURS } from './companionRules.js';
+import { HOUR_MS, MAX_OFFLINE_HOURS, NATURAL_DEATH_HOURS, NEED_RATES, REST_ENERGY_PER_HOUR, RETURN_PROTECTION_HOURS } from './companionRules.js';
 import type { CompanionLifecycleEvent, StoredCompanion } from '../../../shared/contracts.js';
 
 const clamp = (value: number): number => Math.max(0, Math.min(100, value));
@@ -34,7 +34,7 @@ export function simulateCompanion(input: StoredCompanion, now: Date, idFactory: 
   const awakeHours = hours - restHours;
   const needs = {
     fullness: clamp(input.needs.fullness + NEED_RATES.fullness * hours),
-    energy: clamp(input.needs.energy + restHours * 12 + NEED_RATES.energy * awakeHours),
+    energy: clamp(input.needs.energy + restHours * REST_ENERGY_PER_HOUR + NEED_RATES.energy * awakeHours),
     joy: clamp(input.needs.joy + NEED_RATES.joy * hours),
     comfort: clamp(input.needs.comfort + NEED_RATES.comfort * hours),
     hygiene: clamp(input.needs.hygiene + NEED_RATES.hygiene * hours),
@@ -44,7 +44,7 @@ export function simulateCompanion(input: StoredCompanion, now: Date, idFactory: 
   const low = needs.fullness < 20 || needs.energy < 20 || needs.hygiene < 20;
   const fullnessOnset = input.needs.fullness <= 20 ? 0 : (input.needs.fullness - 20) / Math.abs(NEED_RATES.fullness);
   const hygieneOnset = input.needs.hygiene <= 20 ? 0 : (input.needs.hygiene - 20) / Math.abs(NEED_RATES.hygiene);
-  const energyAfterRest = clamp(input.needs.energy + restHours * 12);
+  const energyAfterRest = clamp(input.needs.energy + restHours * REST_ENERGY_PER_HOUR);
   const energyOnset = energyAfterRest <= 20 ? restHours : restHours + (energyAfterRest - 20) / Math.abs(NEED_RATES.energy);
   const lowOnset = initiallyLow ? 0 : Math.min(fullnessOnset, hygieneOnset, energyOnset);
   const lowHours = low ? Math.max(0, hours - lowOnset) : 0;

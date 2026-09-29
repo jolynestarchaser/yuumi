@@ -7,6 +7,8 @@ export const RETURN_PROTECTION_HOURS = 24;
 export const NATURAL_DEATH_HOURS = 90 * 24;
 export const ELDER_HOURS = 60 * 24;
 export const MEDICINE_COOLDOWN_MS = 6 * HOUR_MS;
+export const REST_DURATION_MS = 45 * 60_000;
+export const REST_ENERGY_PER_HOUR = 32;
 
 export const NEED_RATES = Object.freeze({ fullness: -3, energy: -2, joy: -2, comfort: -1.5, hygiene: -2 });
 export const STAGE_GATES: ReadonlyArray<{ stage: CompanionGrowthStage; ageHours: number; care: number }> = Object.freeze([
@@ -18,7 +20,7 @@ export const STAGE_GATES: ReadonlyArray<{ stage: CompanionGrowthStage; ageHours:
 
 export const CARE_EFFECTS: Readonly<Record<LifecycleCareAction, Readonly<Record<string, number>>>> = Object.freeze({
   feed: { fullness: 24, joy: 4, comfort: 3 }, play: { fullness: -5, energy: -12, joy: 24, comfort: 4 },
-  cuddle: { energy: 4, joy: 14, comfort: 26 }, rest: { fullness: -2, joy: 3, comfort: 12 },
+  cuddle: { energy: 8, joy: 14, comfort: 26 }, rest: { fullness: -2, energy: 20, joy: 3, comfort: 12 },
   explore: { fullness: -6, energy: -10, joy: 16, comfort: 2 }, clean: { hygiene: 30 }, medicine: { health: 30 },
 });
 

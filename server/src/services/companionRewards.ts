@@ -1,5 +1,5 @@
 import { primaryNeed } from './companionRules.js';
-import { CARE_EFFECTS, MEDICINE_COOLDOWN_MS } from './companionRules.js';
+import { CARE_EFFECTS, MEDICINE_COOLDOWN_MS, REST_DURATION_MS } from './companionRules.js';
 import { engageCompanion } from './companionSimulation.js';
 import { advanceLifecycle } from './companionLifecycle.js';
 import { randomUUID } from 'node:crypto';
@@ -47,7 +47,7 @@ export function applyLifecycleCare(input: StoredCompanion, action: LifecycleCare
   const effects = CARE_EFFECTS[action];
   const needs = { ...before.needs };
   for (const [key, amount] of Object.entries(effects) as [keyof StoredCompanion['needs'], number][]) needs[key] = Math.max(0, Math.min(100, needs[key] + amount));
-  let after: StoredCompanion = { ...before, needs, ...(action === 'rest' ? { behaviorState: 'resting' as const, restUntil: new Date(now.getTime() + 45 * 60_000) } : {}), lifecycle: { ...before.lifecycle, ...(action === 'medicine' ? { lastMedicineAt: now } : {}) } };
+  let after: StoredCompanion = { ...before, needs, ...(action === 'rest' ? { behaviorState: 'resting' as const, restUntil: new Date(now.getTime() + REST_DURATION_MS) } : {}), lifecycle: { ...before.lifecycle, ...(action === 'medicine' ? { lastMedicineAt: now } : {}) } };
   const reward = careReward(before, after, action);
   const request = before.careRequest?.state === 'active' && before.careRequest.action === action && reward.meaningful
     ? { ...before.careRequest, state: 'fulfilled' as const, fulfilledAt: now, ...(actor ? { fulfilledBy: actor } : {}) }

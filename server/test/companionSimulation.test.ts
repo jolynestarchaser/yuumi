@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { StoredCompanion } from '../../shared/contracts.js';
-import { settleSimulation, applyEngagement } from '../src/services/companionSimulation.js';
-import { evaluateCareReward, evaluateChatReward, addSafeXp, isMedicineEligible } from '../src/services/companionRewards.js';
+import { settleSimulation, applyEngagement, simulateCompanion } from '../src/services/companionSimulation.js';
+import { evaluateCareReward, evaluateChatReward, addSafeXp, isMedicineEligible, applyLifecycleCare } from '../src/services/companionRewards.js';
+import { initialCompanion } from '../src/services/companionState.js';
 import { retireElder, createSuccessorState, calculateNextStageRequirement } from '../src/services/companionLifecycle.js';
 
 type LegacyCompanionFixture = StoredCompanion & Record<string, unknown>;
@@ -90,7 +91,7 @@ test('simulation: need decay is piecewise and accurate over time', () => {
   assert.equal(result.state.simulatedAgeHours, 10);
 });
 
-test('simulation: rest restores energy at +12/hour for 45 minutes then wakes to active cozy', () => {
+test('simulation: rest restores energy at +32/hour for 45 minutes then wakes to active cozy', () => {
   const start = new Date('2026-01-01T00:00:00Z');
   const restEnd = new Date('2026-01-01T00:45:00Z');
   const comp = createMockCompanion({
@@ -100,22 +101,47 @@ test('simulation: rest restores energy at +12/hour for 45 minutes then wakes to 
     mood: 'sleepy',
   });
 
-  // After 30 minutes of rest (0.5 hour): energy increases by +12 * 0.5 = +6 -> 46
+  // After 30 minutes of rest (0.5 hour): energy increases by +32 * 0.5 = +16 -> 56
   const midNap = new Date('2026-01-01T00:30:00Z');
   const midResult = settleSimulation(comp, midNap);
-  assert.equal(midResult.state.needs.energy, 46);
+  assert.equal(midResult.state.needs.energy, 56);
   assert.equal(midResult.state.behaviorState, 'resting');
 
   // After 60 minutes (45 min nap + 15 min awake):
-  // Nap restores: 40 + (12 * 0.75) = 49
-  // Awake for 0.25h: 49 - (2 * 0.25) = 48.5
+  // Nap restores: 40 + (32 * 0.75) = 64
+  // Awake for 0.25h: 64 - (2 * 0.25) = 63.5
   const afterHour = new Date('2026-01-01T01:00:00Z');
   const hourResult = settleSimulation(comp, afterHour);
   assert.equal(hourResult.state.behaviorState, 'active');
   assert.equal(hourResult.state.restUntil, null);
   assert.equal(hourResult.state.mood, 'cozy');
-  assert.equal(hourResult.state.needs.energy, 48.5);
+  assert.equal(hourResult.state.needs.energy, 63.5);
   assert.ok(hourResult.events.some((e) => e.type === 'nap_finished'));
+});
+
+test('care: a low-energy companion recovers through one nap without repeated rest rewards', () => {
+  const start = new Date('2026-01-01T00:00:00Z');
+  const base = initialCompanion();
+  const tired: StoredCompanion = {
+    ...base,
+    bornAt: start,
+    needs: { ...base.needs, energy: 0 },
+    lifecycle: { ...base.lifecycle!, simulationAt: start, lastEngagementAt: start },
+  };
+  const napping = applyLifecycleCare(tired, 'rest', start, 'joe');
+  assert.equal(napping.needs.energy, 20);
+  assert.equal(napping.behaviorState, 'resting');
+  assert.equal(napping.xp, 8);
+  assert.equal(tired.needs.energy, 0);
+  assert.throws(() => applyLifecycleCare(napping, 'rest', new Date(start.getTime() + 5_000), 'joe'), /already resting/);
+
+  const finished = simulateCompanion(napping, new Date(start.getTime() + 45 * 60_000));
+  assert.equal(finished.state.needs.energy, 44);
+  assert.equal(finished.state.behaviorState, 'active');
+  assert.equal(finished.state.xp, 8);
+
+  const cuddled = applyLifecycleCare(tired, 'cuddle', start, 'focus');
+  assert.equal(cuddled.needs.energy, 8);
 });
 
 test('simulation: 6 continuous hours of low need triggers illness', () => {
