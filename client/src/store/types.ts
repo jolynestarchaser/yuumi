@@ -35,7 +35,7 @@ export interface DesktopStore {
   toggleSecret(id: string, secret: boolean): Promise<DesktopItemData>;
   fetchHistory(entityType: string, entityId: string): Promise<Revision[]>;
   restoreHistory(historyId: string, expectedRevision: number): Promise<DesktopItemData>;
-  sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string }): Promise<MessageData>;
+  sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string; secretPin: string }): Promise<MessageData>;
   uploadMessageAttachment(file: File): Promise<MessageAttachment>;
   importMessageAttachment(url: string, operationId: string, signal?: AbortSignal): Promise<MessageAttachment>;
   markMessageRead(id: string): Promise<MessageData>;

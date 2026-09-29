@@ -44,6 +44,7 @@ export interface DesktopTextData extends Point {
   _id?: string; text: string; color: string; size: number; revision?: number;
 }
 export type MessageAnimation = 'none' | 'hearts' | 'sparkles' | 'emoji-rain' | 'confetti' | 'bubbles' | 'stars';
+export type FlowerBouquetStyle = 'rose' | 'daisy' | 'tulip';
 export interface HostedMessageAttachment {
   kind: 'image' | 'audio'; assetId?: string; secureUrl: string; name: string; mimeType: string; bytes: number; duration?: number | null;
 }
@@ -57,7 +58,7 @@ export type TranslationTarget = 'en' | 'th';
 export interface TranslationResult { text: string; target: TranslationTarget }
 export interface MessageDraft {
   subject: string; body: string; kind: 'letter' | 'alert'; icon: string;
-  accentColor: string; emoji: string; animation: MessageAnimation; attachment?: MessageAttachment | null;
+  accentColor: string; emoji: string; animation: MessageAnimation; bouquet?: FlowerBouquetStyle | null; attachment?: MessageAttachment | null;
 }
 export interface MessageData extends MessageDraft {
   _id: string; sender: Profile; recipient: Profile; createdAt: Timestamp; readAt?: Timestamp | null; operationId?: string;

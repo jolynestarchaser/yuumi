@@ -53,6 +53,13 @@ test('messages only accept the supported animation presets', () => {
   assert.match(message.validateSync()?.message || '', /animation/);
 });
 
+test('messages only accept the supported flower bouquet styles', () => {
+  const message = new Message({ sender: 'joe', recipient: 'focus', body: 'flowers', operationId: 'test-bouquet', bouquet: 'rose' });
+  assert.equal(message.validateSync(), undefined);
+  message.bouquet = 'wildflower';
+  assert.match(message.validateSync()?.message || '', /bouquet/);
+});
+
 test('messages persist a whitelisted icon and any valid hex accent color', () => {
   const message = new Message({ sender: 'joe', recipient: 'focus', body: 'hello', operationId: 'test-icon', icon: 'rocket', accentColor: '#2d55ff' });
   assert.equal(message.validateSync(), undefined);

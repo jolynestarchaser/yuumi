@@ -13,6 +13,7 @@ import { importRemoteMedia, RemoteMediaError } from '../services/remoteMedia.js'
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
 const sendWindow = new Map();
+const pinWindow = new Map();
 const importWindow = new Map();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const attachmentTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a']);
@@ -43,6 +44,18 @@ function checkRate(profile) {
   const current = (sendWindow.get(profile) || []).filter((time) => now - time < 60_000);
   if (current.length >= 10) return false;
   current.push(now); sendWindow.set(profile, current); return true;
+}
+function acceptsMessagePin(profile, candidate) {
+  const configured = process.env.MESSAGE_SECRET_PIN;
+  if (!configured || !/^\d{4,12}$/.test(configured)) return { ok: false, configured: false };
+  const now = Date.now();
+  const attempts = (pinWindow.get(profile) || []).filter((time) => now - time < 60_000);
+  if (attempts.length >= 5) return { ok: false, configured: true, rateLimited: true };
+  const actual = Buffer.from(configured);
+  const supplied = Buffer.from(typeof candidate === 'string' ? candidate : '');
+  const valid = actual.length === supplied.length && crypto.timingSafeEqual(actual, supplied);
+  if (!valid) { attempts.push(now); pinWindow.set(profile, attempts); }
+  return { ok: valid, configured: true };
 }
 function checkImportRate(profile) {
   const now = Date.now();
@@ -112,11 +125,16 @@ router.post('/attachment-url', async (req, res, next) => {
 });
 
 router.post('/', async (req, res) => {
+  const pinCheck = acceptsMessagePin(req.desktop.profile, req.body?.secretPin);
+  if (!pinCheck.configured) return res.status(503).json({ success: false, error: { code: 'MESSAGE_PIN_UNCONFIGURED', message: 'Private message sending is not configured.' } });
+  if (pinCheck.rateLimited) return res.status(429).json({ success: false, error: { code: 'PIN_RATE_LIMITED', message: 'Please wait before trying the message PIN again.' } });
+  if (!pinCheck.ok) return res.status(403).json({ success: false, error: { code: 'INVALID_MESSAGE_PIN', message: 'The private message PIN is incorrect.' } });
   const recipient = String(req.body?.recipient || '').toLowerCase();
   const body = typeof req.body?.body === 'string' ? req.body.body.trim() : '';
   const subject = typeof req.body?.subject === 'string' ? req.body.subject.trim() : '';
   const kind = ['alert', 'letter'].includes(req.body?.kind) ? req.body.kind : 'letter';
   const animation = messageAnimationTypes.includes(req.body?.animation) ? req.body.animation : 'hearts';
+  const bouquet = ['rose', 'daisy', 'tulip'].includes(req.body?.bouquet) ? req.body.bouquet : null;
   const icon = messageIconTypes.includes(req.body?.icon) ? req.body.icon : 'heart';
   const accentColor = typeof req.body?.accentColor === 'string' && /^#[0-9a-f]{6}$/i.test(req.body.accentColor)
     ? req.body.accentColor
@@ -126,7 +144,7 @@ router.post('/', async (req, res) => {
   if (!['joe', 'focus'].includes(recipient) || recipient === req.desktop.profile || (!body && !attachment) || attachment === undefined || body.length > 5000 || subject.length > 120) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Message details are invalid.' } });
   const operationId = typeof req.body?.operationId === 'string' && /^[A-Za-z0-9-]{10,80}$/.test(req.body.operationId) ? req.body.operationId : null;
   if (!operationId) return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'A valid operation ID is required.' } });
-  const payload = { sender: req.desktop.profile, recipient, kind, subject, body, attachment, icon, accentColor, emoji, animation };
+  const payload = { sender: req.desktop.profile, recipient, kind, subject, body, attachment, icon, accentColor, emoji, animation, bouquet };
   const operationFingerprint = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
   const previous = await Message.findOne({ sender: req.desktop.profile, operationId });
   if (previous) {

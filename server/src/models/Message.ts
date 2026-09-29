@@ -40,6 +40,7 @@ const messageSchema = new mongoose.Schema({
   accentColor: { type: String, match: /^#[0-9a-fA-F]{6}$/, default: '#ff8fa5' },
   emoji: { type: String, maxlength: 16, default: '💌' },
   animation: { type: String, enum: messageAnimationTypes, default: 'hearts' },
+  bouquet: { type: String, enum: ['rose', 'daisy', 'tulip'], default: null },
   readAt: { type: Date, default: null },
   operationId: { type: String, required: true, maxlength: 80 },
   operationFingerprint: { type: String, required: true, maxlength: 64, default: 'legacy' }

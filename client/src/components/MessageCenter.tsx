@@ -1,7 +1,7 @@
 import { useI18n, getLocale, translate as t } from '../lib/i18n.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { BellRing, Heart, ImagePlus, Languages, Mail, Music2, Paperclip, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { BellRing, Heart, ImagePlus, KeyRound, Languages, Mail, Music2, Paperclip, Send, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useAuthStore } from '../store/authStore.js';
 import { useDesktopStore } from '../store/desktopStore.js';
@@ -12,6 +12,7 @@ import { Textarea } from './ui/textarea.js';
 import { iconCatalog, iconComponents } from '../lib/iconCatalog.js';
 import { useTranslation } from '../hooks/useTranslation.js';
 import { giphyIdFromUrl, giphyImageUrl } from '../lib/giphy.js';
+import FlowerBouquet, { flowerBouquetOptions } from './FlowerBouquet.js';
 import { acceptsUrlAttachmentResult, attachmentFromProviderUrl, beginUrlAttachmentRequest, isGiphyUrl, isMessageSendBlocked, messageOperationForSnapshot, type UrlAttachmentRequest } from '../lib/messageAttachmentResolution.js';
 import type { MessageDraft, MessageAnimation, MessageAttachment, MessageAttachmentInput } from '../../../shared/contracts.js';
 import {
@@ -117,6 +118,7 @@ export default function MessageCenter({ suspended = false }) {
   const [celebrating, setCelebrating] = useState(false);
   const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState('');
+  const [secretPin, setSecretPin] = useState('');
   const [attachmentFile, setAttachmentFile] = useState(null);
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [giphyUrl, setGiphyUrl] = useState('');
@@ -263,7 +265,7 @@ export default function MessageCenter({ suspended = false }) {
   async function submit(event) {
     event.preventDefault();
     const hasAttachment = Boolean(attachmentFile || urlAttachment || spotifyUrl.trim() || giphyUrl.trim());
-    if (isMessageSendBlocked({ body: form.body, hasAttachment, urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment }) || sendingRef.current) return;
+    if (isMessageSendBlocked({ body: form.body, hasAttachment, urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment }) || !/^\d{4,12}$/.test(secretPin) || sendingRef.current) return;
     sendingRef.current = true;
     setSending(true);
     setFormError('');
@@ -276,11 +278,13 @@ export default function MessageCenter({ suspended = false }) {
       pendingMessage.current = messageOperationForSnapshot(pendingMessage.current, profile as 'joe' | 'focus', snapshot, () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2));
       await sendMessage({
         ...snapshot,
+        secretPin,
         operationId: pendingMessage.current.operationId
       });
       pendingMessage.current = null;
       uploadedAttachment.current = null;
       setForm({ ...DEFAULT_FORM });
+      setSecretPin('');
       clearAttachmentDraft();
       setCompose(false);
       pushToast(t('Sent to {name} ✦', { name: profileName(recipientFor(profile)) }));
@@ -343,8 +347,10 @@ export default function MessageCenter({ suspended = false }) {
           <span><MessageMark icon={effectIconNames[name]} accentColor={form.accentColor} size={20} /></span><small>{t(option.label)}</small>
         </button>)}
       </div>
+      <fieldset className='bouquet-picker'><legend>{t('Send a flower bouquet')}</legend><div>{flowerBouquetOptions.map((option) => <button type='button' key={option.value} className={form.bouquet === option.value ? 'active' : ''} onClick={() => setForm((value) => ({ ...value, bouquet: value.bouquet === option.value ? null : option.value }))}><FlowerBouquet style={option.value} compact /><small>{t(option.label)}</small></button>)}</div></fieldset>
+      <label className='message-pin-field'><span><KeyRound size={15} /> {t('Secret PIN to send')}</span><Input aria-label={t('Secret PIN to send')} type='password' inputMode='numeric' autoComplete='off' pattern='[0-9]*' minLength={4} maxLength={12} value={secretPin} onChange={(event) => setSecretPin(event.target.value.replace(/\D/g, '').slice(0, 12))} placeholder='••••' /></label>
       {(formError || translationError) && <p className='form-error' role='alert'>{t(formError || translationError)}</p>}
-      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); clearTranslationError(); clearAttachmentDraft(); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending || isMessageSendBlocked({ body: form.body, hasAttachment: Boolean(attachmentFile || urlAttachment || spotifyUrl.trim() || giphyUrl.trim()), urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment })}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
+      <div className='dialog-actions'><Button variant='secondary' onClick={() => { setCompose(false); setFormError(''); setSecretPin(''); clearTranslationError(); clearAttachmentDraft(); }}>{t("ยกเลิก")}</Button><Button variant='neon' type='submit' disabled={sending || !/^\d{4,12}$/.test(secretPin) || isMessageSendBlocked({ body: form.body, hasAttachment: Boolean(attachmentFile || urlAttachment || spotifyUrl.trim() || giphyUrl.trim()), urlValue: mediaUrl, resolvedUrlAttachment: Boolean(urlAttachment), resolving: resolvingAttachment })}><Send size={14} /> {sending ? t("กำลังส่ง…") : t("ส่งถึง {value0}", { value0: profileName(recipientFor(profile)) })}</Button></div>
     </form> : <div className='mailbox-layout'>
       <div className='message-list' aria-label={t("Inbox")}>
         {messages.length ? messages.map((message) => <button className={`message-row ${message.readAt ? '' : 'unread'} ${selected?._id === message._id ? 'selected' : ''}`} key={message._id} onClick={() => openMessage(message)}>
@@ -353,7 +359,7 @@ export default function MessageCenter({ suspended = false }) {
         </button>) : <p className='empty-mailbox'><Sparkles size={22} /> {t("ยังไม่มีข้อความ")}<br /><small>{t("ลองเขียนฉบับแรกถึง")} {profileName(recipientFor(profile))}</small></p>}
       </div>
       <article className={`message-detail ${selected ? 'has-message' : ''}`}>
-        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} accentColor={selected.accentColor} /><p className='eyebrow'>{selected.kind === 'alert' ? t("Special alert") : t("From {value0}", { value0: profileName(selected.sender) })}</p><div className='detail-emoji'><MessageMark {...selected} size={31} /></div><h3>{selected.subject || t("A special message")}</h3>{selected.body && <p>{selected.body}</p>}<MessageAttachment attachment={selected.attachment} /></> : <><Mail size={30} /><strong>{t("เลือกจดหมายเพื่อเปิดอ่าน")}</strong><small>{t("ข้อความใหม่จะมีขอบสี Neon")}</small></>}
+        {selected ? <><EffectOrbit animation={selected.animation} emoji={selected.emoji} accentColor={selected.accentColor} /><p className='eyebrow'>{selected.kind === 'alert' ? t("Special alert") : t("From {value0}", { value0: profileName(selected.sender) })}</p><div className='detail-emoji'><MessageMark {...selected} size={31} /></div><h3>{selected.subject || t("A special message")}</h3>{selected.body && <p>{selected.body}</p>}<FlowerBouquet style={selected.bouquet} /><MessageAttachment attachment={selected.attachment} /></> : <><Mail size={30} /><strong>{t("เลือกจดหมายเพื่อเปิดอ่าน")}</strong><small>{t("ข้อความใหม่จะมีขอบสี Neon")}</small></>}
       </article>
     </div>}
   </GlassDialog> : null;
@@ -370,6 +376,7 @@ export default function MessageCenter({ suspended = false }) {
       </div>
       <h3>{nextUnread.subject || t("A little note for you")}</h3>
       <p className='incoming-copy'>{nextUnread.body}</p>
+      <FlowerBouquet style={nextUnread.bouquet} compact />
       {nextUnread.attachment && <div className='incoming-attachment'><Paperclip size={13} /> {nextUnread.attachment.kind === 'spotify' ? t("มีเพลงจาก Spotify แนบมา") : nextUnread.attachment.kind === 'audio' ? t("มีเพลงแนบมา") : t("มีรูป/GIF แนบมา")}</div>}
       <div className='incoming-actions'><button type='button' onClick={dismissIncoming}>{t("ไว้ทีหลัง")}</button><button type='button' className='primary' onClick={openIncoming}>{t("เปิดอ่าน")} <Sparkles size={14} /></button></div>
     </motion.aside>

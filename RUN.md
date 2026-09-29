@@ -44,7 +44,7 @@ Copy-Item client/.env.example client/.env
 Copy-Item server/.env.example server/.env
 ```
 
-Set `MONGODB_URI`, `JWT_SECRET`, and the Cloudinary variables in `server/.env`. The default `client/.env` points to `http://localhost:5000/api`.
+Set `MONGODB_URI`, `JWT_SECRET`, `MESSAGE_SECRET_PIN`, and the Cloudinary variables in `server/.env`. The message PIN gates all new letters and alerts and stays only on the server. The default `client/.env` points to `http://localhost:5000/api`.
 
 ## Seed the Two Users
 
