@@ -1,5 +1,5 @@
 import type { Socket } from 'socket.io-client';
-import type { DesktopItemData, DesktopWindowData, DesktopSettingsData, DesktopTextData, InkStroke, MessageData, MessageDraft, MessageAttachment, MessageAttachmentInput, Point, Bounds, Profile } from '../../../shared/contracts.js';
+import type { DesktopItemData, DesktopWindowData, DesktopSettingsData, DesktopTextData, InkStroke, MessageData, MessageDraft, MessageAttachment, MessageAttachmentInput, MessageStreak, Point, Bounds, Profile } from '../../../shared/contracts.js';
 
 export interface AuthStore {
   token: string; profile: Profile | ''; unlocked: boolean; busy: boolean;
@@ -10,14 +10,14 @@ export interface Revision { _id: string; revision: number; actor: string; operat
 export interface ContextMenuState extends Point { item?: DesktopItemData; parentId?: string | null }
 export interface DesktopStore {
   items: DesktopItemData[]; trashItems: DesktopItemData[]; windows: DesktopWindowData[];
-  strokes: InkStroke[]; texts: DesktopTextData[]; messages: MessageData[]; unreadMessages: number;
+  strokes: InkStroke[]; texts: DesktopTextData[]; messages: MessageData[]; unreadMessages: number; messageStreak: MessageStreak | null;
   history: Revision[]; remoteInk: Record<string, InkStroke>; selectedId: string | null; selectedIds: string[];
   loading: boolean; contextMenu: ContextMenuState | null; settings: DesktopSettingsData; socket: Socket | null;
   connected: boolean; playingId: string | null; tool: string; penSettings: { color: string; width: number };
   toasts: { id: string; message: string; tone: string }[];
   fetchItems(parentId?: string): Promise<void>; fetchTrash(): Promise<DesktopItemData[]>;
   fetchWindows(): Promise<void>; fetchSettings(): Promise<void>; fetchStrokes(): Promise<void>; fetchTexts(): Promise<void>;
-  fetchMessages(folder?: string): Promise<MessageData[]>; fetchFolderItems(parentId: string): Promise<DesktopItemData[]>;
+  fetchMessages(folder?: string): Promise<MessageData[]>; fetchMessageStreak(): Promise<MessageStreak>; fetchFolderItems(parentId: string): Promise<DesktopItemData[]>;
   connectRealtime(): void; disconnectRealtime(): void;
   createItem(payload: Partial<DesktopItemData> & Pick<DesktopItemData, 'name' | 'type'>): Promise<DesktopItemData>;
   updateItem(id: string, patch: Partial<DesktopItemData>, expectedRevision?: number, operationId?: string): Promise<DesktopItemData>;
@@ -35,7 +35,7 @@ export interface DesktopStore {
   toggleSecret(id: string, secret: boolean): Promise<DesktopItemData>;
   fetchHistory(entityType: string, entityId: string): Promise<Revision[]>;
   restoreHistory(historyId: string, expectedRevision: number): Promise<DesktopItemData>;
-  sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string; secretPin: string }): Promise<MessageData>;
+  sendMessage(payload: Omit<MessageDraft, 'attachment'> & { attachment?: MessageAttachmentInput | null; recipient: Profile; operationId: string }): Promise<MessageData>;
   uploadMessageAttachment(file: File): Promise<MessageAttachment>;
   importMessageAttachment(url: string, operationId: string, signal?: AbortSignal): Promise<MessageAttachment>;
   markMessageRead(id: string): Promise<MessageData>;

@@ -15,7 +15,7 @@ const historyOperationIds = new Map<string, string>();
 const textSaveQueues = new Map();
 
 export const useDesktopStore = create<DesktopStore>((set, get) => ({
-  items: [], trashItems: [], windows: [], strokes: [], texts: [], messages: [], unreadMessages: 0, history: [], remoteInk: {}, selectedId: null, selectedIds: [], loading: false, contextMenu: null, settings: defaultSettings, socket: null, connected: false, playingId: null,
+  items: [], trashItems: [], windows: [], strokes: [], texts: [], messages: [], unreadMessages: 0, messageStreak: null, history: [], remoteInk: {}, selectedId: null, selectedIds: [], loading: false, contextMenu: null, settings: defaultSettings, socket: null, connected: false, playingId: null,
   tool: 'select', penSettings: { color: '#b6ff00', width: 5 }, toasts: [],
   fetchItems: async (parentId = 'root') => { set({ loading: true }); try { const { data } = await api.get('/items', { params: { parentId } }); set((state) => ({ items: mergeItemLists(state.items, data.data) })); } finally { set({ loading: false }); } },
   fetchTrash: async () => { const { data } = await api.get('/items', { params: { scope: 'trash' } }); set({ trashItems: data.data }); return data.data; },
@@ -24,6 +24,7 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
   fetchStrokes: async () => { const { data } = await api.get('/desktop/strokes'); set({ strokes: data.data }); },
   fetchTexts: async () => { const { data } = await api.get('/desktop/texts'); set({ texts: data.data }); },
   fetchMessages: async (folder = 'inbox') => { const { data } = await api.get('/messages', { params: { folder } }); set({ messages: data.data }); if (folder === 'inbox') { const unread = await api.get('/messages/unread-count'); set({ unreadMessages: unread.data.data.count }); } return data.data; },
+  fetchMessageStreak: async () => { const { data } = await api.get('/messages/streak'); set({ messageStreak: data.data }); return data.data; },
   fetchFolderItems: async (parentId) => { const { data } = await api.get('/items', { params: { parentId } }); set((state) => ({ items: mergeItemLists(state.items, data.data) })); return data.data; },
   connectRealtime: () => {
     if (get().socket) return;
@@ -48,10 +49,11 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
     socket.on('text:updated', (text) => set((state) => ({ texts: state.texts.map((row) => row._id === text._id && (text.revision || 0) >= (row.revision || 0) ? text : row) })));
     socket.on('text:deleted', ({ id }) => set((state) => ({ texts: state.texts.filter((text) => text._id !== id) })));
     socket.on('message:received', (message) => set((state) => mergeReceivedMessage(state, message)));
+    socket.on('message:streak-updated', () => { get().fetchMessageStreak().catch(() => {}); });
     socket.on('message:read', (message) => set((state) => mergeReadMessage(state, message)));
     set({ socket });
   },
-  disconnectRealtime: () => { const socket = get().socket; socket?.disconnect(); set({ socket: null, connected: false, messages: [], unreadMessages: 0 }); },
+  disconnectRealtime: () => { const socket = get().socket; socket?.disconnect(); set({ socket: null, connected: false, messages: [], unreadMessages: 0, messageStreak: null }); },
   createItem: async (payload) => { const { data } = await api.post('/items', payload); set((state) => ({ items: state.items.some((item) => item._id === data.data._id) ? state.items.map((item) => item._id === data.data._id ? mergeItemVersions(item, data.data) : item) : [...state.items, data.data] })); return data.data; },
   updateItem: async (id, patch, expectedRevision, suppliedOperationId) => { const previous = itemSaveQueues.get(id) || Promise.resolve(); const task = previous.catch(() => {}).then(async () => { const current = get().items.find((item) => item._id === id); const revision = expectedRevision ?? (current?.contentRevision || 0); const signature = JSON.stringify([id, revision, patch]); const operationId = suppliedOperationId || itemOperationIds.get(signature) || crypto.randomUUID(); if (!suppliedOperationId) itemOperationIds.set(signature, operationId); const body = { ...patch, expectedRevision: revision, operationId }; const { data } = await api.patch(`/items/${id}`, body); if (!suppliedOperationId) itemOperationIds.delete(signature); set((state) => ({ items: state.items.map((item) => item._id === id ? mergeItemVersions(item, data.data) : item) })); return data.data; }); itemSaveQueues.set(id, task); try { return await task; } finally { if (itemSaveQueues.get(id) === task) itemSaveQueues.delete(id); } },
   trashItem: async (id) => { const item = get().items.find((row) => row._id === id); if (!item) return; const previous = get().items; set((state) => ({ items: state.items.filter((row) => row._id !== id), windows: state.windows.filter((window) => window.itemId !== id), selectedId: state.selectedId === id ? null : state.selectedId, selectedIds: state.selectedIds.filter((value) => value !== id) })); try { const { data } = await api.patch(`/items/${id}/trash`); set((state) => ({ trashItems: state.trashItems.some((row) => row._id === id) ? state.trashItems : [data.data, ...state.trashItems] })); get().pushToast(`${item.name} moved to Trash.`); } catch { set({ items: previous }); get().pushToast('Could not move item to Trash.', 'error'); } },
@@ -79,7 +81,7 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
   toggleSecret: async (id, secret) => get().updateItem(id, { secret }),
   fetchHistory: async (entityType, entityId) => { const { data } = await api.get('/history', { params: { entityType, entityId } }); set({ history: data.data }); return data.data; },
   restoreHistory: async (historyId, expectedRevision) => { const signature = `${historyId}:${expectedRevision}`; const operationId = historyOperationIds.get(signature) || crypto.randomUUID(); historyOperationIds.set(signature, operationId); const { data } = await api.post(`/history/${historyId}/restore`, { expectedRevision, operationId }); historyOperationIds.delete(signature); set((state) => ({ items: state.items.map((item) => item._id === data.data._id ? mergeItemVersions(item, data.data) : item), texts: state.texts.map((row) => row._id === data.data._id && (data.data.revision || 0) >= (row.revision || 0) ? data.data : row) })); return data.data; },
-  sendMessage: async (payload) => { const { data } = await api.post('/messages', payload); return data.data; },
+  sendMessage: async (payload) => { const { data } = await api.post('/messages', payload); get().fetchMessageStreak().catch(() => {}); return data.data; },
   uploadMessageAttachment: async (file) => { const body = new FormData(); body.append('file', file); const { data } = await api.post('/messages/attachment', body); return data.data; },
   importMessageAttachment: async (url, operationId, signal) => { const { data } = await api.post('/messages/attachment-url', { url, operationId }, { signal }); return data.data; },
   markMessageRead: async (id) => { const { data } = await api.patch(`/messages/${id}/read`); set((state) => mergeReadMessage(state, data.data)); return data.data; },

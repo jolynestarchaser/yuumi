@@ -9,11 +9,11 @@ import { requireDesktopSession, requireProfile } from '../middleware/auth.js';
 import { normalizeSpotifyAttachment } from '../services/spotifyAttachment.js';
 import { normalizeGiphyAttachment } from '../services/giphyAttachment.js';
 import { importRemoteMedia, RemoteMediaError } from '../services/remoteMedia.js';
+import { messageStreak } from '../services/messageStreak.js';
 
 const router = Router();
 router.use(requireDesktopSession, requireProfile);
 const sendWindow = new Map();
-const pinWindow = new Map();
 const importWindow = new Map();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 const attachmentTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac', 'audio/x-m4a']);
@@ -45,18 +45,6 @@ function checkRate(profile) {
   if (current.length >= 10) return false;
   current.push(now); sendWindow.set(profile, current); return true;
 }
-function acceptsMessagePin(profile, candidate) {
-  const configured = process.env.MESSAGE_SECRET_PIN;
-  if (!configured || !/^\d{4,12}$/.test(configured)) return { ok: false, configured: false };
-  const now = Date.now();
-  const attempts = (pinWindow.get(profile) || []).filter((time) => now - time < 60_000);
-  if (attempts.length >= 5) return { ok: false, configured: true, rateLimited: true };
-  const actual = Buffer.from(configured);
-  const supplied = Buffer.from(typeof candidate === 'string' ? candidate : '');
-  const valid = actual.length === supplied.length && crypto.timingSafeEqual(actual, supplied);
-  if (!valid) { attempts.push(now); pinWindow.set(profile, attempts); }
-  return { ok: valid, configured: true };
-}
 function checkImportRate(profile) {
   const now = Date.now();
   const current = (importWindow.get(profile) || []).filter((time) => now - time < 60_000);
@@ -73,6 +61,14 @@ router.get('/', async (req, res) => {
 router.get('/unread-count', async (req, res) => {
   const count = await Message.countDocuments({ recipient: req.desktop.profile, readAt: null });
   res.json({ success: true, data: { count } });
+});
+
+router.get('/streak', async (_req, res) => {
+  const days = await Message.aggregate<{ day: string; senders: string[] }>([
+    { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Bangkok' } }, senders: { $addToSet: '$sender' } } },
+    { $project: { _id: 0, day: '$_id', senders: 1 } }
+  ]);
+  res.json({ success: true, data: messageStreak(days) });
 });
 
 router.post('/attachment', upload.single('file'), async (req, res, next) => {
@@ -125,10 +121,6 @@ router.post('/attachment-url', async (req, res, next) => {
 });
 
 router.post('/', async (req, res) => {
-  const pinCheck = acceptsMessagePin(req.desktop.profile, req.body?.secretPin);
-  if (!pinCheck.configured) return res.status(503).json({ success: false, error: { code: 'MESSAGE_PIN_UNCONFIGURED', message: 'Private message sending is not configured.' } });
-  if (pinCheck.rateLimited) return res.status(429).json({ success: false, error: { code: 'PIN_RATE_LIMITED', message: 'Please wait before trying the message PIN again.' } });
-  if (!pinCheck.ok) return res.status(403).json({ success: false, error: { code: 'INVALID_MESSAGE_PIN', message: 'The private message PIN is incorrect.' } });
   const recipient = String(req.body?.recipient || '').toLowerCase();
   const body = typeof req.body?.body === 'string' ? req.body.body.trim() : '';
   const subject = typeof req.body?.subject === 'string' ? req.body.subject.trim() : '';
@@ -161,6 +153,7 @@ router.post('/', async (req, res) => {
     return res.status(409).json({ success: false, error: { code: 'OPERATION_CONFLICT', message: 'This send retry does not match the original message.' } });
   }
   req.app.get('io')?.to(`profile:${recipient}`).emit('message:received', message);
+  req.app.get('io')?.to('profile:joe').to('profile:focus').emit('message:streak-updated');
   res.status(201).json({ success: true, data: message });
 });
 

@@ -42,6 +42,11 @@
 .profile-focus { background:#2453ff !important; color:#edf5ff !important; }
 .subtle-button { width:100%; background:transparent !important; color:#edf5ff !important; border:1px solid rgba(255,255,255,.24) !important; margin-top:8px; }
 .message-button { position:relative; display:inline-flex; align-items:center; gap:4px; color:#fff; border:0; border-radius:10px; background:transparent; padding:6px 9px; }
+.message-streak-heart { position:relative; display:inline-grid; flex:0 0 40px; place-items:center; width:40px; height:40px; color:#ff8fa5; filter:drop-shadow(0 3px 8px #ff8fa555); }
+.message-streak-heart b { position:absolute; top:8px; color:#06113e; font:800 13px Manrope,sans-serif; }
+.message-streak-heart.pulse { animation:streak-heart-pulse .85s ease-out; }
+.message-streak-detail { display:grid; gap:2px; min-width:0; color:#eaf0ff; font-size:12px; }
+.message-streak-detail span { color:#bdc8e9; font-size:11px; }
 .active-profile { padding:3px 8px; border-radius:999px; font:700 10px 'DM Mono',monospace !important; color:#06113e !important; background:#b6ff00; }
 .active-profile.focus { color:#edf5ff !important; background:#2453ff; }
 .message-button b {
@@ -69,7 +74,7 @@
 .message-dialog .dialog-heading { align-items:flex-start; padding-right:38px; }
 .message-dialog h2 { display:flex; align-items:center; gap:8px; }
 .message-dialog .dialog-content { min-width:0; min-height:0; }
-.message-commandbar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; margin:16px 0 14px; padding:10px; border:1px solid #ffffff18; border-radius:15px; background:linear-gradient(100deg,#ffffff0b,#b6ff0008); }
+.message-commandbar { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:10px; margin:16px 0 14px; padding:10px; border:1px solid #ffffff18; border-radius:15px; background:linear-gradient(100deg,#ffffff0b,#b6ff0008); }
 .message-commandbar button, .message-kind-picker button, .incoming-actions button {
   display:inline-flex;
   align-items:center;
@@ -142,7 +147,7 @@
 .effect-picker small { margin-top:3px; white-space:nowrap; font-size:9px; }
 .emoji-field { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#aebce5; font-size:11px; }
 .emoji-field input { width:76px; text-align:center; font-size:20px; }
-.bouquet-picker { margin:0; padding:10px; border:1px solid #ffffff20; border-radius:13px; color:#dfe7ff; }.bouquet-picker legend { padding:0 5px; color:#aebce5; font-size:11px; }.bouquet-picker > div { display:flex; gap:8px; }.bouquet-picker button { flex:1; overflow:hidden; padding:4px; border:1px solid #ffffff20; border-radius:10px; color:#dfe7ff; background:#ffffff0b; }.bouquet-picker button.active { border-color:#ff8fa5; background:#ff8fa526; box-shadow:inset 0 0 0 1px #ff8fa555; }.bouquet-picker small { display:block; margin-top:-4px; font-size:9px; }.flower-bouquet { display:grid; justify-items:center; width:min(100%,180px); margin:10px auto; color:#67708a; text-align:center; }.flower-bouquet svg { width:100%; filter:drop-shadow(0 8px 9px #02062128); }.flower-bouquet figcaption { font-size:10px; font-weight:700; }.flower-bouquet.compact { width:92px; margin:7px auto -2px; }.message-pin-field { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#aebce5; font-size:11px; }.message-pin-field span { display:flex; align-items:center; gap:6px; }.message-pin-field input { width:104px; letter-spacing:.24em; text-align:center; }
+.bouquet-picker { margin:0; padding:10px; border:1px solid #ffffff20; border-radius:13px; color:#dfe7ff; }.bouquet-picker legend { padding:0 5px; color:#aebce5; font-size:11px; }.bouquet-picker > div { display:flex; gap:8px; }.bouquet-picker button { flex:1; overflow:hidden; padding:4px; border:1px solid #ffffff20; border-radius:10px; color:#dfe7ff; background:#ffffff0b; }.bouquet-picker button.active { border-color:#ff8fa5; background:#ff8fa526; box-shadow:inset 0 0 0 1px #ff8fa555; }.bouquet-picker small { display:block; margin-top:-4px; font-size:9px; }.flower-bouquet { display:grid; justify-items:center; width:min(100%,180px); margin:10px auto; color:#67708a; text-align:center; }.flower-bouquet svg { width:100%; filter:drop-shadow(0 8px 9px #02062128); }.flower-bouquet figcaption { font-size:10px; font-weight:700; }.flower-bouquet.compact { width:92px; margin:7px auto -2px; }
 .message-compose .dialog-actions { margin-top:2px; }
 .message-compose .dialog-actions button { display:inline-flex; align-items:center; justify-content:center; gap:6px; }
 
@@ -194,6 +199,7 @@
 }
 
 @keyframes mail-badge-pop { from { opacity:0; transform:scale(.25) rotate(-18deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+@keyframes streak-heart-pulse { 0%,100% { transform:scale(1); } 35% { transform:scale(1.22); } 65% { transform:scale(.94); } }
 @keyframes incoming-backdrop { from { opacity:0; } to { opacity:1; } }
 @keyframes envelope-hover { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-4px) rotate(2deg); } }
 @keyframes orbit-glyph { 0%,100% { opacity:.3; transform:translateY(8px) rotate(-8deg) scale(.75); } 50% { opacity:1; transform:translateY(-6px) rotate(7deg) scale(1.08); } }

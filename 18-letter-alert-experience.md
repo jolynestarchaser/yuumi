@@ -7,6 +7,13 @@ Updated: 2026-09-13
 
 Make letters and alerts easy to notice and open after profile login without letting desktop windows cover them. The experience stays compact on phones and adds playful, sender-configurable motion and a short glass-like sound effect.
 
+## Shared sending streak
+
+- A signed-in Joe or Focus can send a letter or alert without a separate message PIN. The existing profile session, validation, rate limit, and operation ID still apply.
+- The shared streak gains one day when either person sends at least one letter or alert during a calendar day in `Asia/Bangkok`. Sending more on that day does not add days.
+- A streak remains visible through the following day so either person can continue it. It resets after a full day without a send. Existing messages count toward the streak.
+- The mailbox shows whether Joe and Focus have each sent something today. A heart in the top bar shows the shared day count and pulses when it rises, except when reduced motion is requested.
+
 ## Code review findings
 
 ### Critical

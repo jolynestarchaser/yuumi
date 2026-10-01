@@ -63,6 +63,7 @@ export interface MessageDraft {
 export interface MessageData extends MessageDraft {
   _id: string; sender: Profile; recipient: Profile; createdAt: Timestamp; readAt?: Timestamp | null; operationId?: string;
 }
+export interface MessageStreak { count: number; day: string; today: { joe: boolean; focus: boolean } }
 export interface ApiResponse<T> { success: true; data: T }
 export interface ApiFailure { success: false; error: { code: string; message: string; data?: unknown } }
 export interface RequestError { response?: { data?: { error?: { message?: string } } }; code?: string; message?: string }

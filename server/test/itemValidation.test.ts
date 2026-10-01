@@ -56,7 +56,7 @@ test('messages only accept the supported animation presets', () => {
 test('messages only accept the supported flower bouquet styles', () => {
   const message = new Message({ sender: 'joe', recipient: 'focus', body: 'flowers', operationId: 'test-bouquet', bouquet: 'rose' });
   assert.equal(message.validateSync(), undefined);
-  message.bouquet = 'wildflower';
+  message.set('bouquet', 'wildflower');
   assert.match(message.validateSync()?.message || '', /bouquet/);
 });
 
