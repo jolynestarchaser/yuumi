@@ -1,9 +1,10 @@
 import type { CompanionFace, CompanionGrowthStage, CompanionSpecies, CompanionVisualForm } from '../../../../shared/contracts.js';
 import type { CompanionActivity } from './types.js';
+import type { ArtGrowthFamily } from './artCatalog.js';
 
 // A 32-cell sprite on a 256 × 256 canvas: integer edges stay crisp at 8×.
 // Facial parts remain separate so blinking never distorts the whole picture.
-export default function PixelCompanion({ species, face, activity = 'idle', lifeStage = 'hatchling', xpTier = 0, path = 'guardian', level = 1 }: { species: CompanionSpecies; face: CompanionFace; activity?: CompanionActivity; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster'; level?: number }) {
+export default function PixelCompanion({ species, face, activity = 'idle', lifeStage = 'hatchling', xpTier = 0, path = 'guardian', level = 1, growthFamily }: { species: CompanionSpecies; face: CompanionFace; activity?: CompanionActivity; lifeStage?: CompanionGrowthStage; xpTier?: CompanionVisualForm['xpTier']; path?: 'explorer' | 'guardian' | 'trickster'; level?: number; growthFamily?: ArtGrowthFamily }) {
   const child = species === 'child';
   const ear = species === 'cat' || species === 'fox' ? 'M5 6h2V4h1v1h2v2h2v6H5zM20 7h2V5h2V4h1v2h2v7h-7z'
     : species === 'robot' ? 'M15 2h2v6h-2zM13 1h6v3h-6z'
@@ -49,9 +50,15 @@ export default function PixelCompanion({ species, face, activity = 'idle', lifeS
     'M1 15h3v7H0v-6h1z',
     'M28 15h3v1h1v6h-4z'
   ][growthRing];
+  const minorGrowth = level < 7 ? '' : growthFamily === 'wing_bud_soft' || growthFamily === 'ribbon_wing'
+    ? level < 8 ? 'M4 13h2v3H3v-2h1zM26 13h2v3h3v-2h-1z' : level < 9 ? 'M3 12h3v5H2v-3h1zM26 12h3v2h2v3h-5z' : 'M2 11h4v7H1v-5h1zM26 11h4v2h2v5h-6z'
+    : growthFamily === 'tail_branch' ? level < 8 ? 'M25 23h3v-2h2v4h-2v2h-3z' : level < 9 ? 'M24 22h4v-3h2v6h-2v2h-4z' : 'M23 21h5v-4h3v7h-2v2h-6z'
+    : growthFamily === 'plush_reshape' ? level < 8 ? 'M5 24h3v3H5zM24 24h3v3h-3z' : level < 9 ? 'M4 23h4v4H4zM24 23h4v4h-4z' : 'M3 22h5v5H3zM24 22h5v5h-5z'
+    : '';
   return <svg className='companion-pixel-sprite' viewBox='0 0 32 32' width='256' height='256' shapeRendering='crispEdges' aria-hidden='true'>
     {levelContour && <path fill='var(--creature-body)' stroke='color-mix(in srgb,var(--creature-body) 35%,var(--creature-eye))' strokeWidth='1' d={levelContour} />}
     {ringContour && <path fill='var(--creature-accent)' d={ringContour} />}
+    {minorGrowth && <path fill='var(--creature-accent)' d={minorGrowth} />}
     {xpTier > 0 && <path fill='var(--creature-accent)' d={path === 'explorer' ? 'M2 15h4v2h3v2H5v3H2zM23 15h3v2h4v5h-3v-3h-4z' : path === 'trickster' ? 'M3 21h5v2h3v3H4v-2H2zM23 20h5v2h2v4h-7v-3h3z' : 'M2 17h5v2h3v3H4v-2H2zM22 17h4v2h4v3h-3v-1h-5z'} />}
     {species === 'dragon' && <path fill='var(--creature-accent)' d='M1 13h2v2h3v10H4v-3H2v-4H1zM29 13h2v5h-1v4h-2v3h-2V15h3z' />}
     {(species === 'cat' || species === 'fox') && <path fill='var(--creature-accent)' d='M26 21h3v-2h2v7h-2v2h-5v-3h2z' />}

@@ -82,6 +82,10 @@
 .species-cat .creature-tail, .species-fox .creature-tail { display:block; position:absolute; right:-14px; bottom:17px; width:44px; height:58px; background:var(--creature-accent); border-radius:80% 20% 60% 40%; transform:rotate(28deg); }
 .species-dragon .creature-wing { display:block; position:absolute; width:38px; height:67px; top:49px; background:var(--creature-accent); clip-path:polygon(0 0,100% 35%,85% 100%,45% 70%,0 85%); }
 .creature-wing.left { left:-19px; transform:scaleX(-1); }.creature-wing.right { right:-19px; }
+/* Discrete Lv7–9 precursor states. Lv10 keeps the same wing anchors and expands them. */
+.style-soft.growth-wing_bud_soft[data-growth-level='7'] .creature-wing,.style-soft.growth-ribbon_wing[data-growth-level='7'] .creature-wing { display:block; position:absolute; top:76px; width:13px; height:16px; border:3px solid color-mix(in srgb,var(--creature-accent) 70%,var(--creature-eye)); border-radius:75% 30% 65% 35%; background:var(--creature-accent); }
+.style-soft.growth-wing_bud_soft[data-growth-level='8'] .creature-wing,.style-soft.growth-ribbon_wing[data-growth-level='8'] .creature-wing { display:block; position:absolute; top:65px; width:23px; height:29px; border:3px solid color-mix(in srgb,var(--creature-accent) 70%,var(--creature-eye)); border-radius:75% 30% 65% 35%; background:var(--creature-accent); }
+.style-soft.growth-wing_bud_soft[data-growth-level='9'] .creature-wing,.style-soft.growth-ribbon_wing[data-growth-level='9'] .creature-wing { display:block; position:absolute; top:56px; width:31px; height:38px; border:3px solid color-mix(in srgb,var(--creature-accent) 70%,var(--creature-eye)); border-radius:75% 30% 65% 35%; background:var(--creature-accent); }
 .companion-roamer { position:fixed; bottom:calc(108px + env(safe-area-inset-bottom)); width:208px; max-width:calc(100vw - 16px); z-index:2147479000; color:#f1e9ff; font:12px 'Manrope',sans-serif; }
 .companion-roamer.walking { transition:left 8s linear; }
 .companion-speech { padding:12px; border:1px solid #cdb7ed66; border-radius:16px 16px 16px 4px; background:#171b35f5; box-shadow:0 8px 28px #0005; }

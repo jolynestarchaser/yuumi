@@ -1,0 +1,22 @@
+.companion-soft-pet { display:block; width:256px; height:256px; overflow:visible; }
+.companion-avatar:has(.companion-soft-pet)::after { display:none; }
+.companion-avatar:has(.companion-soft-pet) .companion-avatar-motion { animation:none; scale:1; }
+.pet-art-root { transform-origin:256px 448px; animation:pet-art-breathe 3.4s ease-in-out infinite; }
+.pet-art-eyes { transform-box:fill-box; transform-origin:center; animation:pet-art-blink 6s infinite; }
+.pet-art-wings { transform-origin:0 0; animation:pet-art-follow 3.4s ease-in-out infinite; }
+.activity-sleeping .pet-art-root { animation:pet-art-rest 4.5s ease-in-out infinite; }
+.activity-success .pet-art-root,.reaction-play .pet-art-root { animation:pet-art-hop 1s cubic-bezier(.23,1,.32,1) 2; }
+.reaction-feed .pet-art-paw { transform-origin:0 0; animation:pet-art-nibble 1.8s ease-in-out; }
+.activity-thinking .pet-art-root { animation:pet-art-think 2.5s ease-in-out infinite; }
+.companion-avatar.level-up:has(.companion-soft-pet) .companion-avatar-motion { animation:none; }
+.level-up .pet-art-root { animation:pet-art-reveal 1.2s cubic-bezier(.23,1,.32,1); }
+.motion-paused .companion-soft-pet * { animation:none !important; }
+@keyframes pet-art-breathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.015,.99); } }
+@keyframes pet-art-rest { 0%,100% { transform:translateY(3px) scale(1,.98); } 50% { transform:translateY(4px) scale(1.01,.97); } }
+@keyframes pet-art-blink { 0%,43%,47%,100% { transform:scaleY(1); } 45% { transform:scaleY(.08); } }
+@keyframes pet-art-follow { 0%,100% { transform:rotate(0deg); } 50% { transform:rotate(3deg); } }
+@keyframes pet-art-hop { 0%,100% { transform:translateY(0); } 15% { transform:scale(1.03,.97); } 42% { transform:translateY(-18px) scale(.98,1.02); } 72% { transform:scale(1.025,.975); } }
+@keyframes pet-art-nibble { 0%,100% { transform:rotate(0deg); } 35%,65% { transform:rotate(-20deg); } }
+@keyframes pet-art-think { 0%,100% { transform:rotate(0deg); } 50% { transform:rotate(-3deg); } }
+@keyframes pet-art-reveal { 0%,100% { transform:scale(1); opacity:1; } 25% { transform:scale(.98,1.02); } 55% { transform:scale(1.025,.975); opacity:.8; } }
+@media (prefers-reduced-motion:reduce) { .companion-soft-pet * { animation:none !important; } }
