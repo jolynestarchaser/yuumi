@@ -24,7 +24,7 @@ export function xpTierForLevel(level: number): CompanionVisualForm['xpTier'] {
 /** Derives the current recipe without turning legacy history into new events. */
 export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appearance' | 'evolutions' | 'stageOutcomes' | 'lifecycle' | 'progression'>): CompanionVisualForm {
   const level = state.progression ? petLevel(state.xp, state.progression.legacyLevel) : Math.floor(Math.max(0, state.xp || 0) / 80) + 1;
-  const species = state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
+  const species = state.progression?.render.species || state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
   const tier = xpTierForLevel(level);
   const earned = state.evolutions?.filter((entry) => entry.level <= level && entry.level >= 2).sort((a, b) => b.level - a.level)[0];
   // Old records sometimes stored an evolution branch in stage history. It is a

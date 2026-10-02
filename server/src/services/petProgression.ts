@@ -1,7 +1,10 @@
 import { createHmac, randomBytes } from 'node:crypto';
-import { CARE_AXES, FAMILIES, LIVE_LEVEL_CAP, PET_CATALOG_VERSION, PET_CONFIG_VERSION, PET_RNG_VERSION, SEGMENTS, familiesFor, petLevel, recipeId, vector, xpThreshold } from './petCatalog.js';
+import { CARE_AXES, FAMILIES, PET_CATALOG_VERSION, PET_CONFIG_VERSION, PET_RNG_VERSION, SEGMENTS, familiesFor, petLevel, recipeId, vector, xpThreshold } from './petCatalog.js';
 import type { CareVector, CompanionSpecies, PetGrowthAudit, PetGrowthFamily, PetGrowthPlan, PetProgression, PetRarity, PetRenderSpec, StoredCompanion } from '../../../shared/contracts.js';
 import { careProfile } from './petCare.js';
+import { enrollPetForms } from './petProgressionMigration.js';
+import { applyPetFormLevel } from './petFormGrowth.js';
+import { loadPetForms } from './petFormCatalog.js';
 
 const speciesFor = (state: StoredCompanion): CompanionSpecies => state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
 /** Independent labelled HMAC draws mapped to exactly representable uniform 53-bit values. */
@@ -32,9 +35,10 @@ export function initializePetProgression(state: StoredCompanion, now: Date, lega
     plans: [], events: [], audit: [], days: [], bond: 0, trust: 60, habitIds: [],
     personality: { sociability: state.traits.affection / 100, energyDisposition: state.traits.playfulness / 100, curiosityDisposition: state.traits.curiosity / 100, boldness: .5, routinePreference: .5 },
     lastRewardAt: {}, restStartedAt: null, contentBlocked: null, activity: null,
+    ...(!legacy ? { formEngineVersion: 1 as const, formBaselineLevel: 1, presentationSequence: 0, recentFormIds: [], formPlan: null, formDecision: null } : {}),
   };
   // No invented old care evidence, RNG outcomes, or tutorial reward on migration.
-  return { ...state, bornAt: legacy && !state.bornAt ? now : state.bornAt, xp: legacy ? Math.max(state.xp, xpThreshold(oldLevel)) : state.xp, progression,
+  return { ...state, bornAt: legacy && !state.bornAt ? now : state.bornAt, xp: state.xp, progression,
     ...(state.lifecycle ? { lifecycle: { ...state.lifecycle, simulationAt: now, lastEngagementAt: now, lowNeedExposureHours: 0, healthCondition: 'well' as const } } : {}),
   };
 }
@@ -49,9 +53,10 @@ function auditEntry(p: PetProgression, id: string, kind: 'plan' | 'final', snaps
   return { id, kind, snapshotId, profile, candidates, selectedId, at: now, configVersion: p.configVersion, catalogVersion: p.catalogVersion, rngVersion: p.rngVersion };
 }
 export function applyPetGrowth(input: StoredCompanion, now = new Date()): StoredCompanion {
-  if (!input.progression || !input.bornAt) return input;
-  const state: StoredCompanion = { ...input, progression: structuredClone(input.progression) };
+  if (!input.progression || !input.bornAt || input.archivedAt || input.lifecycle?.lifeStatus !== 'alive') return input;
+  const state = enrollPetForms(input);
   const p = state.progression!;
+  if (p.formEngineVersion !== 1 || p.render.species !== speciesFor(state)) return state;
   const liveProfile = careProfile(p, now);
   const target = petLevel(state.xp, p.legacyLevel);
   if (p.catalogVersion !== PET_CATALOG_VERSION || p.configVersion !== PET_CONFIG_VERSION || p.rngVersion !== PET_RNG_VERSION) {
@@ -59,15 +64,20 @@ export function applyPetGrowth(input: StoredCompanion, now = new Date()): Stored
   }
   if (p.legacyDiscoveryPending) {
     const evidence = p.days.reduce((sum, day) => sum + day.evidence.reduce((total, entry) => total + entry.units, 0), 0);
-    if (evidence < 6 || state.needs.fullness < 35 || state.needs.energy < 25 || state.needs.hygiene < 30) return state;
-    // An explicit discovery, never backfilled historical milestones.
-    p.legacyDiscoveryPending = false;
-    p.render = { ...p.render, legacy: true, parts: { ...p.render.parts, paws: { step: 3, variant: 'soft' } }, capabilityIds: [...new Set([...p.render.capabilityIds, 'grasp' as const])] };
-    p.events.push({ growthEventId: `legacy-discovery-${state._id || 'pet'}`, level: p.appearanceLevel, kind: 'evolution', planId: 'legacy-discovery', stepSpecId: null,
-      beforeRenderRef: 'legacy-baseline', afterRenderRef: 'legacy-discovery-v1.1', before: input.progression.render, after: structuredClone(p.render), changedPartIds: ['paws'], newCapabilityIds: ['grasp'], presentationSequence: 1, appliedAt: now, acknowledgedAt: null, reasonTags: [] });
+    if (evidence >= 6 && state.needs.fullness >= 35 && state.needs.energy >= 25 && state.needs.hygiene >= 30) {
+      // An explicit discovery, never backfilled historical milestones.
+      p.legacyDiscoveryPending = false;
+      p.render = { ...p.render, legacy: true, parts: { ...p.render.parts, paws: { step: 3, variant: 'soft' } }, capabilityIds: [...new Set([...p.render.capabilityIds, 'grasp' as const])] };
+      p.events.push({ growthEventId: `legacy-discovery-${state._id || 'pet'}`, level: p.appearanceLevel, kind: 'evolution', planId: 'legacy-discovery', stepSpecId: null,
+        beforeRenderRef: 'legacy-baseline', afterRenderRef: 'legacy-discovery-v1.1', before: input.progression.render, after: structuredClone(p.render), changedPartIds: ['paws'], newCapabilityIds: ['grasp'], presentationSequence: (p.presentationSequence || 0) + 1, appliedAt: now, acknowledgedAt: null, reasonTags: [] });
+      p.presentationSequence = (p.presentationSequence || 0) + 1;
+    }
   }
-  if (p.legacyDiscoveryPending) return state;
-  for (let level = p.appearanceLevel + 1; level <= target; level++) {
+  if (p.legacyDiscoveryPending && p.appearanceLevel < 10) return state;
+  const lastLevel = Math.min(target, p.appearanceLevel + 25);
+  const forms = lastLevel > 10 ? loadPetForms() : undefined;
+  for (let level = p.appearanceLevel + 1; level <= lastLevel; level++) {
+    if (level > 10) { if (!applyPetFormLevel(state, level, liveProfile, now, forms)) break; continue; }
     const segment = SEGMENTS.find((entry) => level > entry.from && level <= entry.to);
     if (!segment) { p.contentBlocked = 'This growth segment is not available yet.'; break; }
     const segmentId = `seg${String(segment.from).padStart(2, '0')}_${String(segment.to).padStart(2, '0')}`;
@@ -128,12 +138,14 @@ export function applyPetGrowth(input: StoredCompanion, now = new Date()): Stored
     p.events.push({ growthEventId: eventId, level, kind: major ? 'evolution' : 'minor', planId: plan.planId,
       stepSpecId: major ? null : plan.minorStepSpecIds[String(level)], beforeRenderRef: `${p.catalogVersion}:${eventId}:before`, afterRenderRef: `${p.catalogVersion}:${eventId}:after`,
       before, after: structuredClone(p.render), changedPartIds: [family], newCapabilityIds: newCapabilities,
-      presentationSequence: p.events.length + 1, appliedAt: now, acknowledgedAt: null,
+      presentationSequence: (p.presentationSequence || 0) + 1, appliedAt: now, acknowledgedAt: null,
       ...(rarity ? { rarity, recipeId: selectedRecipe } : {}), reasonTags: CARE_AXES.filter((axis) => profile[axis] > 1 / 6 + .02 && reasonAffinity[axis] > 0).sort((a, b) => profile[b] * reasonAffinity[b] - profile[a] * reasonAffinity[a]).slice(0, 2),
     });
     if (!major) plan.status = 'active';
+    p.presentationSequence = (p.presentationSequence || 0) + 1;
     p.appearanceLevel = level; p.contentBlocked = null; p.blockedSnapshot = null;
   }
+  p.catchUpPending = p.appearanceLevel < target;
   return state;
 }
 
