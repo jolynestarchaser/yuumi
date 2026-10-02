@@ -1,0 +1,24 @@
+.companion-illustrated-pet { isolation: isolate; }
+.companion-illustrated-pet .pet-art-root { transform-box: view-box; transform-origin: 256px 448px; filter: drop-shadow(0 5px 3px rgb(72 45 70 / 8%)); }
+.companion-illustrated-pet[data-life-stage='elder'] .pet-art-root { filter: saturate(.88) drop-shadow(0 5px 3px rgb(72 45 70 / 8%)); }
+.companion-illustrated-pet .illustrated-ground { transform-origin: 256px 454px; }
+.companion-illustrated-pet.pet-is-walking .illustrated-ground { animation: illustrated-shadow var(--pet-walk-cycle) ease-in-out infinite; }
+.illustrated-sleep { animation: illustrated-sleep 3s ease-in-out infinite; }
+.reaction-feed .companion-illustrated-pet .pet-art-root { animation: illustrated-nibble .45s cubic-bezier(.22,1,.36,1) 2; }
+.reaction-cuddle .companion-illustrated-pet .pet-art-root { animation: illustrated-nuzzle .8s cubic-bezier(.22,1,.36,1) 1; }
+.reaction-medicine .companion-illustrated-pet .pet-art-root { animation: illustrated-nuzzle .65s cubic-bezier(.22,1,.36,1) 1; }
+.reaction-explore .companion-illustrated-pet .pet-art-root { animation: illustrated-look .85s cubic-bezier(.22,1,.36,1) 1; }
+.reaction-clean .companion-illustrated-pet .pet-art-root { animation: illustrated-shake .65s ease-out 1; }
+.activity-searching .companion-illustrated-pet .pet-art-root { animation: illustrated-look 2s ease-in-out infinite; }
+.activity-working .companion-illustrated-pet .pet-art-root { animation: illustrated-nibble 1.2s ease-in-out infinite; }
+.activity-error .companion-illustrated-pet .pet-art-root { animation: illustrated-shake .7s ease-in-out 1; }
+@keyframes illustrated-nibble { 50% { transform: translateY(4px) rotate(-3deg) scale(1.015,.98); } }
+@keyframes illustrated-nuzzle { 30% { transform: rotate(-6deg) translateY(-3px); } 70% { transform: rotate(5deg); } }
+@keyframes illustrated-shake { 15% { transform: rotate(-4deg); } 35% { transform: rotate(3deg); } 55% { transform: rotate(-2deg); } 75% { transform: rotate(1deg); } 100% { transform: rotate(0); } }
+@keyframes illustrated-look { 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+.motion-paused .companion-illustrated-pet * { animation: none !important; }
+.companion-illustrated-pet[data-animated='false'] * { animation: none !important; }
+.companion-illustrated-pet[data-motion-paused='true'] * { animation-play-state: paused !important; }
+@keyframes illustrated-shadow { 50% { transform: scaleX(.86); opacity: .65; } }
+@keyframes illustrated-sleep { 50% { transform: translateY(-10px); opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .companion-illustrated-pet * { animation: none !important; } }

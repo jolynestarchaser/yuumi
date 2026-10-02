@@ -1,4 +1,13 @@
 {
+  "Illustrated artwork uses its authored palette, shape and wardrobe. Your saved customization preferences are preserved for the layered-art update.": "ภาพประกอบใช้สี รูปร่าง และชุดที่ออกแบบไว้ ค่าปรับแต่งที่บันทึกไว้ยังคงเก็บไว้สำหรับการอัปเดตงานภาพแบบแยกชั้น",
+  "Illustrated customization — coming later": "ปรับแต่งภาพประกอบ — จะมาในภายหลัง",
+  "Moodboard-inspired illustrated companions, with soft shading and distinct evolution looks.": "เพื่อนตัวน้อยในสไตล์ภาพประกอบตามมู้ดบอร์ด พร้อมแสงเงานุ่มและร่างวิวัฒนาการที่แตกต่าง",
+  "66 illustrated evolution looks": "66 รูปลักษณ์วิวัฒนาการแบบภาพประกอบ",
+  "Each species has nature, celestial, and adventurer artwork in compact and agile forms. Saved form IDs select their exact look without rerolling. Robots retain mechanical designs.": "ทุกสายพันธุ์มีภาพธีมธรรมชาติ ดวงดาว และนักผจญภัย ทั้งร่างกะทัดรัดและปราดเปรียว ใช้ร่างที่บันทึกไว้โดยไม่สุ่มใหม่ หุ่นยนต์ยังคงรูปลักษณ์จักรกล",
+  "Your progress stays yours": "ความก้าวหน้าของน้องยังอยู่ครบ",
+  "Species, age, memories, and saved evolution data stay intact. This illustration pass uses authored colors and wardrobe; saved customization preferences remain preserved while layered artwork is developed.": "สายพันธุ์ อายุ ความทรงจำ และข้อมูลวิวัฒนาการยังอยู่ครบ ภาพชุดนี้ใช้สีและชุดที่ออกแบบไว้ โดยยังเก็บค่าปรับแต่งเดิมระหว่างพัฒนาภาพแบบแยกชั้น",
+  "Forest spirit, bunny, cat, dog, frog, duck, fox, dragon, robot, storybook child, and the custom cloud base now use softly shaded, textured illustrations throughout companion views.": "ภูตป่า กระต่าย แมว สุนัข กบ เป็ด จิ้งจอก มังกร หุ่นยนต์ เด็กน้อยในนิทาน และน้องเมฆ ใช้ภาพประกอบมีพื้นผิวและแสงเงานุ่มในหน้าจอเพื่อนตัวน้อย",
+  "Illustrated cutouts breathe, hop, waddle, march, or float with species-specific timing. Age changes size and cadence independently of evolution. Animation-off and reduced motion remain supported; articulated limbs and evolving facial animation need layered rigs.": "ภาพน้องขยับหายใจ กระโดด เดินโยก เดินเป็นจังหวะ หรือลอยตามสายพันธุ์ อายุเปลี่ยนขนาดและจังหวะแยกจากวิวัฒนาการ ยังปิดแอนิเมชันและลดการเคลื่อนไหวได้ ส่วนข้อต่อและสีหน้าต้องใช้ภาพแยกชั้น",
   "New form! Level {level}": "ร่างใหม่! เลเวล {level}",
   "Current form: level {level} · {path}": "ร่างปัจจุบัน: เลเวล {level} · {path}",
   "Next form at level {level}. Every level changes your companion's shape.": "ร่างถัดไปที่เลเวล {level} ทุกเลเวลจะเปลี่ยนรูปร่างของน้อง",

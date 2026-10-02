@@ -1,6 +1,7 @@
 import type { CompanionAppearance, CompanionState, LifecycleCareAction, PublicCompanion } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
-import SoftPet, { petArtPalette, type PetArtRender } from './SoftPet.js';
+import { petArtPalette, type PetArtRender } from './SoftPet.js';
+import SoftPet from './IllustratedPet.js';
 import './pet-art.css';
 import { visualFormFor } from './visualForm.js';
 import { artRecipeFor } from './artCatalog.js';
@@ -25,7 +26,7 @@ const activityCue = {
 
 export default function CompanionAvatar({ companion, small = false, decorative = false, reaction = '', activity, levelUp = false, walking = false, facing = 'right' }: { companion: ArtCharacter; small?: boolean; decorative?: boolean; reaction?: LifecycleCareAction | ''; activity?: CompanionActivity; levelUp?: boolean; walking?: boolean; facing?: 'left' | 'right' }) {
   const { t } = useCompanionLanguage();
-  // Legacy pixel preferences remain readable, but all companions use outlined art.
+  // Legacy preferences remain saved; runtime artwork uses the illustrated atlas.
   const appearance: CompanionAppearance = { ...(companion.appearance || { animated: true }), visualStyle: 'soft' as const, usePortrait: false };
   const visualForm = visualFormFor({ ...companion, xp: companion.xp || 0 });
   const { species, lifeStage, xpPath, xpTier } = visualForm;

@@ -1,5 +1,14 @@
 # Art implementation status
 
+## Current runtime: illustrated 2.5D
+
+All 11 species and 66 saved form looks now use painted transparent PNG artwork,
+replacing the old SVG bodies in companion views. See [the illustrated pass](illustrated-2-5d.md)
+for rendering, save compatibility, generation prompts and explicit limits.
+The historical SVG rig/export status below remains unchanged. This runtime pass
+does not validate rigs for server selection. Customization overlays and limb
+articulation require the next layered-art pass; saved preferences are preserved.
+
 ## All 11 species: 66 form drafts
 
 All species now have six authored head/body contours: nature, celestial and
