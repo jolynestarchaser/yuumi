@@ -383,7 +383,9 @@ test('shared actions serialize both caregivers, deduplicate retries, and preserv
   t.mock.method(mongoose, 'startSession', async () => ({ withTransaction: async (work) => work(), endSession: async () => {} }));
   t.mock.method(CompanionOperationReceipt, 'findOne', (filter) => query(() => receipts.find((row) => row.familyId === filter.familyId && row.companionId === filter.companionId && row.operationId === filter.operationId) || null));
   t.mock.method(CompanionOperationReceipt, 'create', async (values) => { receipts.push(...clone(values)); return values; });
-  const matches = (query) => stored && (!query.lockToken || stored.lockToken === query.lockToken) && (!query.lockedUntil || new Date(stored.lockedUntil) <= query.lockedUntil.$lte);
+  const matches = (query) => stored && (!query.lockToken || stored.lockToken === query.lockToken)
+    && (!query.lockedUntil?.$lte || new Date(stored.lockedUntil) <= query.lockedUntil.$lte)
+    && (!query.lockedUntil?.$gt || new Date(stored.lockedUntil) > query.lockedUntil.$gt);
   const apply = (update) => { Object.assign(stored, clone(update.$set || {})); for (const key of Object.keys(update.$unset || {})) delete stored[key]; };
   t.mock.method(Companion, 'updateOne', async (query, update) => {
     if (update.$setOnInsert && !stored) stored = { _id: 'joe-and-focus', ...clone(update.$setOnInsert), lockedUntil: new Date(0), recentOperations: [] };

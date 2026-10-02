@@ -29,7 +29,10 @@ const fail = (status, message) => Object.assign(new Error(message), { status });
 const privateNoStore = (res) => res.set('Cache-Control', 'private, no-store');
 const respond = async (res, state: StoredCompanion) => {
   const companion = publicCompanion(state);
-  if (companion.growth && state.progression?.historyStored) {
+  // Recent snapshots already cover the complete log until old events have been
+  // evicted from the 100-entry cache. Avoid a database round-trip for new pets.
+  if (companion.growth && state.progression?.historyStored
+    && state.progression.presentationSequence > state.progression.events.length) {
     const pending = await readPetHistory(state.familyId, String(state._id), true);
     companion.growth.pendingPresentationIds = pending.events.map((event) => event.growthEventId);
     companion.growth.pendingCursor = pending.nextCursor;

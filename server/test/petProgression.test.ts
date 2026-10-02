@@ -17,12 +17,12 @@ function pet(species: CompanionSpecies = 'cat', secret = 'repeatable-secret'): S
   state.appearance = { ...state.appearance!, species };
   return initializePetProgression(state, now, false, secret);
 }
-test('published XP thresholds, live cap and one-time tutorial are exact', () => {
+test('published XP thresholds continue without a cap and tutorial is one-time', () => {
   assert.deepEqual([3, 6, 10, 15, 20, 25, 30].map(xpThreshold), [225, 750, 1800, 3675, 6175, 9300, 13050]);
   assert.equal(validatePetCatalog(), true);
   const state = grantTutorial(pet(), now);
   assert.equal(state.xp, 125); assert.equal(grantTutorial(state, now).xp, 125);
-  assert.equal(petLevel(999999), 10);
+  assert.equal(petLevel(999999), 280);
 });
 test('all MVP species apply every threshold in order, keep anatomy and unlock capabilities before ACK', () => {
   for (const species of ['cat', 'dog', 'frog', 'dragon', 'duck'] as const) {
