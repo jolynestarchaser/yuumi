@@ -182,11 +182,32 @@ export type CareVector = Record<CareAxis, number>;
 export type PetRarity = 'common' | 'uncommon' | 'rare';
 export type PetGrowthFamily = 'tail' | 'crest' | 'paws' | 'wings' | 'horns' | 'gills';
 export type PetCapability = 'greeting' | 'grasp' | 'float' | 'sense' | 'water';
+export type PetFormStyle = 'nature' | 'celestial' | 'adventurer';
+export type PetFormSocket = 'tail' | 'crest' | 'pawLeft' | 'pawRight' | 'wingLeft' | 'wingRight' | 'hornLeft' | 'hornRight' | 'gillLeft' | 'gillRight';
+export interface PetSocketPose { anchor: { x: number; y: number }; pivot: { x: number; y: number } }
+export interface PetBodyForm {
+  id: string; style: PetFormStyle; body: 'compact' | 'agile'; chapter: number; rendererVersion: 'pet-form-v1';
+}
+export interface PetPrecursorProgress {
+  planId: string; fromLevel: number; toLevel: number; step: number; totalSteps: number; detailIds: string[];
+}
+export interface PetFormPlan {
+  id: string; fromLevel: number; toLevel: number; catalogVersion: string;
+  compatibleFormIds: string[]; precursorDetailIds: string[]; snapshotId: string;
+}
+export interface PetFormDecision {
+  plan: PetFormPlan; profile: CareVector; preference: 'gentle' | 'adventurous';
+  styles: { id: PetFormStyle; weight: number }[];
+  candidates: { id: string; style: PetFormStyle; body: 'compact' | 'agile'; weight: number }[];
+  selectedId: string; selectedDetailIds: string[];
+}
+export interface PetHistoryPage { events: PetGrowthEvent[]; nextCursor: string | null }
 export interface PetRenderSpec {
   catalogVersion: string; species: CompanionSpecies; level: number;
   parts: Partial<Record<PetGrowthFamily, { step: number; variant: 'neutral' | 'soft' | 'petal' | 'star' | 'basic' }>>;
   capabilityIds: PetCapability[];
   legacy: boolean;
+  bodyForm?: PetBodyForm; detailIds?: string[]; precursorProgress?: PetPrecursorProgress;
 }
 export interface PetGrowthPlan {
   planId: string; segmentId: string; fromLevel: number; toLevel: number;
@@ -208,12 +229,14 @@ export interface PetActivitySession {
   targets: number[]; answers: number[]; startedAt: Timestamp; expiresAt: Timestamp; actor: Profile;
 }
 export interface PetGrowthPublic {
-  version: 1; level: number; appearanceLevel: number; levelCap: number;
+  version: 1; level: number; appearanceLevel: number; levelCap: number | null;
   nextThreshold: number | null; levelThreshold: number; dailyXp: number; dailyXpCap: number;
   nextRewardResetAt: Timestamp; ageHours: number; ageVerified: boolean;
   morphPreference: 'gentle' | 'adventurous'; careProfile: CareVector;
   bond: number; trust: number; habitIds: string[]; render: PetRenderSpec;
   activePlan: PetGrowthPlan | null; history: PetGrowthEvent[]; pendingPresentationIds: string[];
+  formPlan?: PetFormPlan | null; historyCursor?: string | null; pendingCursor?: string | null;
+  catchUpPending?: boolean;
   contentBlocked: string | null; legacyLevel: number | null; activity: PetActivitySession | null;
 }
 export interface PetCareEvidence { eventId: string; at: Timestamp; category: string; vector: CareVector; units: number }
@@ -225,6 +248,7 @@ export interface PetGrowthAudit {
   id: string; kind: 'plan' | 'final'; snapshotId: string; at: Timestamp;
   profile: CareVector; candidates: { id: string; weight: number }[]; selectedId: string;
   effectiveTiers?: Partial<Record<PetRarity, number>>;
+  formDecision?: PetFormDecision;
   configVersion: string; catalogVersion: string; rngVersion: string;
 }
 export interface PetProgression {
@@ -237,5 +261,8 @@ export interface PetProgression {
   personality: { sociability: number; energyDisposition: number; curiosityDisposition: number; boldness: number; routinePreference: number };
   lastRewardAt: Partial<Record<string, Timestamp>>; restStartedAt: Timestamp | null;
   contentBlocked: string | null; activity: PetActivitySession | null;
-  blockedSnapshot?: { level: number; snapshotId: string; profile: CareVector } | null;
+  blockedSnapshot?: { level: number; snapshotId: string; profile: CareVector; preference?: 'gentle' | 'adventurous' } | null;
+  formEngineVersion?: 1; formBaselineLevel?: number; formPlan?: PetFormPlan | null;
+  formDecision?: PetFormDecision | null; recentFormIds?: string[]; presentationSequence?: number;
+  catchUpPending?: boolean; historyStored?: boolean;
 }
