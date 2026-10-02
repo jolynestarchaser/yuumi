@@ -1,23 +1,23 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-09-29-companion-creation-and-settings',
-  title: 'Meet your companion your way',
-  subtitle: 'Pick a creature, give them a world, and watch them take shape.',
+  id: '2026-10-02-companion-dressing-room',
+  title: 'A fresh look for every companion',
+  subtitle: 'All your little friends, one art style, and a clearer place to make them yours.',
   features: [
     {
-      icon: 'pixel' as const,
-      title: 'Choose your little one',
-      description: 'Creature cards replace the overlapping form and species choices. Name your companion while their live preview takes shape.',
+      icon: 'pet' as const,
+      title: 'Meet all 11 species',
+      description: 'Forest spirit, bunny, cat, dog, frog, duck, fox, dragon, robot, storybook child, and a custom cloud base now share the same outlined artwork. All appear in creation and character settings.',
     },
     {
       icon: 'pet' as const,
-      title: 'Give them a place and personality',
-      description: 'Pick a world, a starting temperament, and the face and shape that make them yours. Their world follows them into the habitat.',
+      title: 'A clearer character editor',
+      description: 'The animated preview has its own stage, species choices are easier to scan, and save controls stay within reach. Changes stay in the preview until you save them for both of you.',
     },
     {
       icon: 'pet' as const,
-      title: 'Keep making them yours',
-      description: 'The character settings now use the same creature, world, detail, color, and voice choices. Preview changes before saving; earned personality and evolution stay intact.',
+      title: 'Still moving, still your companion',
+      description: 'Breathing, blinking, care reactions, and growth effects remain. Pixel-art selection is retired; existing companions keep their species, colors, memories, and progress. Animation-off and reduced motion are still supported.',
     },
   ],
 });
