@@ -12,12 +12,14 @@ import { applyLifecycleCare, addXp } from '../services/companionRewards.js';
 import { retireCompanion } from '../services/companionLifecycle.js';
 import { completeDailyRitual, currentDailyRitual } from '../services/companionRitual.js';
 import { assertReceiptPayload, mutationIdentity } from '../services/companionMutation.js';
-import { acknowledgeGrowth, initializePetProgression } from '../services/petProgression.js';
+import { initializePetProgression } from '../services/petProgression.js';
 import { grantTutorial, rewardPetAction } from '../services/petCare.js';
 import { petLevel } from '../services/petCatalog.js';
 import { applyPetCare, choosePetPrompt, completePetActivityStep, settlePetRest, startPetActivity } from '../services/petActions.js';
 import { fallbackPetReply, validatePetReplyAbilities } from '../services/petDialogue.js';
 import { petGameplayEnabled } from '../services/petRollout.js';
+import { persistPetGrowth, readPetHistory } from '../services/petGrowthHistory.js';
+import { enrollPetForms } from '../services/petProgressionMigration.js';
 import type { StoredCompanion, CompanionBudget, Profile } from '../../../shared/contracts.js';
 
 const ACTIVE_COMPANION_LIMIT = 6;
@@ -25,7 +27,18 @@ const LIFECYCLE_ACTIONS = ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean',
 const OPERATION_ID = /^[a-zA-Z0-9-]{10,80}$/;
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const privateNoStore = (res) => res.set('Cache-Control', 'private, no-store');
-const respond = (res, state) => privateNoStore(res).json({ success: true, data: { companion: publicCompanion(state), capabilities: companionCapabilities() } });
+const respond = async (res, state: StoredCompanion) => {
+  const companion = publicCompanion(state);
+  if (companion.growth && state.progression?.historyStored) {
+    const pending = await readPetHistory(state.familyId, String(state._id), true);
+    companion.growth.pendingPresentationIds = pending.events.map((event) => event.growthEventId);
+    companion.growth.pendingCursor = pending.nextCursor;
+    const history = await readPetHistory(state.familyId, String(state._id), false, undefined, 100);
+    companion.growth.history = history.events.reverse();
+    companion.growth.historyCursor = history.nextCursor;
+  }
+  return privateNoStore(res).json({ success: true, data: { companion, capabilities: companionCapabilities() } });
+};
 const wrap = (handler) => async (req, res) => {
   try { await handler(req, res); }
   catch (error) { res.status(error.status || 500).json({ success: false, error: { code: 'COMPANION_ERROR', message: error.status ? error.message : 'Could not save your companion. Please try again.' } }); }
@@ -72,11 +85,12 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
   if (!state) throw fail(409, 'Your companion is busy with another moment. Please try again shortly.');
   try {
     if (state.recentOperations?.includes(operationId)) return state;
-    const mutated = refreshCareRequest(await change(state, token));
+    // Enrollment captures the baseline before this command awards any new XP.
+    const commandState = state.progression && petGameplayEnabled() ? enrollPetForms(state) : state;
+    const mutated = refreshCareRequest(await change(commandState, token));
     // XP forms are independent of age/lifecycle. This runs inside the same
     // leased receipt mutation, so a replay sees the stored choice and cannot reroll.
     const changed = mutated.progression && !petGameplayEnabled() ? mutated : evolveCompanion(mutated, state.xp);
-    const { _id, __v, lockToken, lockedUntil, budget, pendingChat, ...fields } = changed;
     let saved: StoredCompanion | null = null;
     const session = await mongoose.startSession();
     try {
@@ -93,7 +107,10 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
             return;
           }
         }
-        saved = await Companion.findOneAndUpdate({ _id: companionId, lockToken: token }, {
+        const payload = context?.payload as { action?: string; eventIds?: string[] } | undefined;
+        const persisted = await persistPetGrowth(changed, session, payload?.action === 'growthAck' ? payload.eventIds : []);
+        const { _id, __v, lockToken, lockedUntil, budget, pendingChat, ...fields } = persisted;
+        saved = await Companion.findOneAndUpdate({ _id: companionId, lockToken: token, lockedUntil: { $gt: new Date() } }, {
           $set: { ...fields, updatedAt: new Date(), revision: state.revision + 1, recentOperations: [...(state.recentOperations || []), operationId].slice(-60) }
         }, { new: true, runValidators: true, session }).lean();
         if (!saved) throw fail(409, 'This moment expired before it could be saved. Please retry.');
@@ -175,7 +192,7 @@ export const getCompanion = wrap(async (req, res) => {
   let companion = await migrateCompanion(companionId);
   if (!companion || companion.familyId !== COMPANION_FAMILY_ID) throw fail(404, 'That companion could not be found.');
   companion = await persistLifecycleTransition(companion);
-  respond(res, companion);
+  await respond(res, companion);
 });
 
 export const getCompanionRitualNotice = wrap(async (req, res) => {
@@ -187,6 +204,24 @@ export const getCompanionRitualNotice = wrap(async (req, res) => {
   companion = await persistLifecycleTransition(companion);
   const now = new Date();
   privateNoStore(res).json({ success: true, data: { companionId, name: companion.name, ritual: currentDailyRitual(settledState(companion, now), now) } });
+});
+
+export const getCompanionHistory = wrap(async (req, res) => {
+  const companionId = req.query.id || COMPANION_KEY;
+  if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
+  const state = await Companion.findOne({ _id: companionId, familyId: COMPANION_FAMILY_ID }).lean();
+  if (!state) throw fail(404, 'That companion could not be found.');
+  const pending = req.path.endsWith('/pending');
+  if (req.query.cursor !== undefined && typeof req.query.cursor !== 'string') throw fail(400, 'Choose a valid cursor.');
+  // Reads never run enrollment or history migration.
+  if (state.progression && !state.progression.historyStored) {
+    const limit = req.query.limit === undefined ? 25 : Number(req.query.limit);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100 || req.query.cursor !== undefined) throw fail(400, 'Use a page size of 1–100; save a command before paging legacy history.');
+    const events = [...state.progression.events].filter((event) => !pending || !event.acknowledgedAt).sort((a, b) => pending ? a.presentationSequence - b.presentationSequence : b.presentationSequence - a.presentationSequence);
+    privateNoStore(res).json({ success: true, data: { events: events.slice(0, limit), nextCursor: null, migrationPending: true } }); return;
+  }
+  const page = await readPetHistory(COMPANION_FAMILY_ID, companionId, pending, req.query.cursor, req.query.limit);
+  privateNoStore(res).json({ success: true, data: page });
 });
 
 export const getCompanionRoster = wrap(async (req, res) => {
@@ -330,7 +365,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
       return petGameplayEnabled() ? grantTutorial(initializePetProgression(adopted as StoredCompanion, adoptedAt), adoptedAt) : adopted as StoredCompanion;
     }
     if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
-    if (state.archivedAt && action !== 'restore') throw fail(409, 'Restore this companion before sharing another moment.');
+    if (state.archivedAt && action !== 'restore' && action !== 'growthAck') throw fail(409, 'Restore this companion before sharing another moment.');
     if (action === 'archive') return { ...next, archivedAt: commandNow };
     if (action === 'restore') {
       if (!state.archivedAt) return next;
@@ -341,9 +376,9 @@ export const interactWithCompanion = wrap(async (req, res) => {
         : 0;
       return { ...next, archivedAt: null, needsUpdatedAt: commandNow, restUntil: remainingRestMs ? new Date(commandNow.getTime() + remainingRestMs) : null, behaviorState: remainingRestMs ? 'resting' : 'active', ...(next.lifecycle ? { lifecycle: { ...next.lifecycle, simulationAt: commandNow, lastEngagementAt: commandNow } } : {}) };
     }
-    if (next.lifecycle?.lifeStatus !== 'alive' && action !== 'forget') throw fail(409, 'This companion is now part of your family history. Their memories remain available.');
+    if (next.lifecycle?.lifeStatus !== 'alive' && action !== 'forget' && action !== 'growthAck') throw fail(409, 'This companion is now part of your family history. Their memories remain available.');
     if (action === 'visit') return next.progression ? settlePetRest(engageCompanion(next, commandNow), commandNow, actor) : engageCompanion(next, commandNow);
-    if (action === 'growthAck') return acknowledgeGrowth(next, req.body.eventIds, commandNow);
+    if (action === 'growthAck') return next; // Ownership and acknowledgment are checked in the transaction.
     if (action === 'morphPreference' && next.progression) return { ...next, progression: { ...next.progression, morphPreference: req.body.preference } };
     if (action === 'promptChoice') return choosePetPrompt(next, req.body.choice, commandNow, actor, operationId);
     if (action === 'startActivity') return startPetActivity(engageCompanion(next, commandNow), req.body.family, req.body.capability || null, actor, commandNow);
@@ -354,11 +389,11 @@ export const interactWithCompanion = wrap(async (req, res) => {
     }
     if (action === 'customize') {
       if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
-      if (next.progression && req.body.appearance.species !== next.appearance?.species) throw fail(409, 'Species is part of this companion’s identity. Hatch a new companion to choose another species.');
+      if (next.progression && req.body.appearance.species !== next.progression.render.species) throw fail(409, 'Species is part of this companion’s identity. Hatch a new companion to choose another species.');
       return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), appearance: req.body.appearance };
     }
     if (action === 'appearance') {
-      if (next.progression && req.body.appearance.species !== next.appearance?.species) throw fail(409, 'Species is part of this companion’s identity.');
+      if (next.progression && req.body.appearance.species !== next.progression.render.species) throw fail(409, 'Species is part of this companion’s identity.');
       return { ...next, appearance: req.body.appearance };
     }
     if (action === 'chatColor') return { ...next, chatColor: req.body.color };
@@ -409,7 +444,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
       if (await Companion.countDocuments(activeFilter) >= ACTIVE_COMPANION_LIMIT) throw fail(409, 'Your companion family already has six active companions. Archive one before restoring another.');
       return mutate(token);
     }) : await mutate();
-    respond(res, saved);
+    await respond(res, saved);
   } catch (error) {
     if (generationReserved) await releaseGeneration(operationId, 'chats').catch(() => {});
     throw error;
