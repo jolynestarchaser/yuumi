@@ -9,6 +9,7 @@
   "scripts": {
     "test:pet-art": "node --import tsx --test src/components/companion/SoftPet.test.ts src/components/companion/artCatalog.test.ts",
     "art:export": "node --import tsx scripts/exportPetArt.ts",
+    "art:export-forms": "node --import tsx scripts/exportPetForms.ts",
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
