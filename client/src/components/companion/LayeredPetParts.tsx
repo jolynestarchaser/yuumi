@@ -6,6 +6,14 @@ import { useCreaturePlayback } from './voice/voicePlayback.js';
 import './layered-pet.css';
 
 type Props = ComponentProps<typeof SoftPet> & { voiceTargetId?: string; talkingPreview?: boolean; onImageError?: () => void };
+// Atlas-space facial landmarks, independent of attachment/rig sockets.
+// [eye centre x, eye centre y, mouth top y, eye-pair width, mouth width]
+const faceLayouts = {
+  child: [[137,195,224,94,34],[397,211,240,90,32],[640,192,221,88,32],[899,210,239,88,32],[136,531,560,84,30],[400,563,592,88,32],[660,548,577,88,32]],
+  custom: [[176,163,188,84,30],[455,163,188,78,28],[708,155,180,78,28],[992,163,188,78,28],[219,442,469,80,28],[608,451,477,76,28],[879,441,468,78,28]],
+  dragon: [[158,174,218,100,32],[406,173,218,94,30],[624,151,195,90,30],[885,174,218,94,30],[160,540,588,100,32],[402,553,597,92,30],[640,518,566,92,30]],
+  spirit: [[181,153,182,72,26],[448,153,182,68,24],[710,125,153,64,24],[985,154,184,68,24],[216,461,490,70,24],[541,503,531,66,24],[877,466,494,66,24]],
+} satisfies Partial<Record<Props['species'], number[][]>>;
 export default function LayeredPetParts({ species, render, activity = 'idle', face = 'gentle', appearance, voiceTargetId, talkingPreview = false, onImageError }: Props) {
   const atlas = layeredPetAtlases[species];
   const clipId = useId();
@@ -44,6 +52,12 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
   const bodyX = (512 - width) / 2, bodyY = 408 - height;
   const [faceX, faceY] = atlas.faces[cell]!;
   const noseX = bodyX + (faceX - frame[0]) * scale, noseY = bodyY + (faceY - frame[1]) * scale;
+  const layout = species in faceLayouts ? faceLayouts[species as keyof typeof faceLayouts][cell] : undefined;
+  const eyesX = layout ? bodyX + (layout[0]! - frame[0]) * scale : noseX;
+  const eyesY = layout ? bodyY + (layout[1]! - frame[1]) * scale : noseY - 22;
+  const eyeWidth = layout ? layout[3]! * scale : 100;
+  const mouthY = layout ? bodyY + (layout[2]! - frame[1]) * scale : noseY + 7;
+  const mouthScale = layout ? layout[4]! * scale / 40 : 1;
   const sockets = layeredSockets(species, cell);
   const growth = layeredGrowth(species, render);
   const source = `/assets/companions/layered-v1/${species}.png`;
@@ -90,17 +104,17 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
     {attachment(19,'gills','gillLeft',true)}{attachment(19,'gills','gillRight')}
     {attachment(17,'horns','hornLeft',true)}{attachment(17,'horns','hornRight')}
     {attachment(18,'crest','crest')}
-    <g className={`layered-eyes${sleeping || happy ? ' still' : ''}`} style={{ transformOrigin: `${noseX}px ${noseY - 20}px` }}>
-      {sprite(eyeCell,noseX - 50,noseY - 22 - (sleeping || happy ? 9 : 17.5),100, sleeping || happy ? 18 : 35)}
+    <g className={`layered-eyes${sleeping || happy ? ' still' : ''}`} style={{ transformOrigin: `${eyesX}px ${eyesY}px` }}>
+      {sprite(eyeCell,eyesX - eyeWidth / 2,eyesY - (sleeping || happy ? 9 : 17.5) * eyeWidth / 100,eyeWidth, (sleeping || happy ? 18 : 35) * eyeWidth / 100)}
     </g>
     <g className='layered-mouth'>
       {species === 'robot' ? <g transform={`translate(${noseX} ${noseY + 7})`} fill='#51405b' stroke='#51405b' strokeWidth='4' strokeLinecap='round'>
         {pose === 'smile' ? <path d='M-16 0 Q0 14 16 0' fill='none'/> : <ellipse cy='8' rx={pose === 'round' ? 9 : 17} ry='12'/>}
-      </g> : talkingPreview && !sleeping ? <>
+      </g> : <g transform={`translate(${eyesX} ${mouthY}) scale(${mouthScale}) translate(${-noseX} ${-noseY - 7})`}>{talkingPreview && !sleeping ? <>
         <g className='preview-mouth smile'>{sprite(13,noseX - 20,noseY + 7,40,16)}</g>
         <g className='preview-mouth open'>{sprite(14,noseX - 17,noseY + 7,34,28)}</g>
         <g className='preview-mouth round'>{sprite(15,noseX - 12,noseY + 7,24,26)}</g>
-      </> : sprite(pose === 'open' ? 14 : pose === 'round' ? 15 : 13,noseX - (pose === 'round' ? 12 : 20),noseY + 7,pose === 'round' ? 24 : 40,pose === 'smile' ? 16 : 28)}
+      </> : sprite(pose === 'open' ? 14 : pose === 'round' ? 15 : 13,noseX - (pose === 'round' ? 12 : 20),noseY + 7,pose === 'round' ? 24 : 40,pose === 'smile' ? 16 : 28)}</g>}
     </g>
   </g>;
 }
