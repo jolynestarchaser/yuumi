@@ -1,6 +1,6 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-10-02-companion-dressing-room',
+  id: '2026-10-02-companion-hub',
   title: 'A fresh look for every companion',
   subtitle: 'All your little friends, one art style, and a clearer place to make them yours.',
   features: [
@@ -11,8 +11,8 @@ export const currentRelease = Object.freeze({
     },
     {
       icon: 'pet' as const,
-      title: 'A clearer character editor',
-      description: 'The animated preview has its own stage, species choices are easier to scan, and save controls stay within reach. Changes stay in the preview until you save them for both of you.',
+      title: 'A new companion hub',
+      description: 'Care, chat, memories, design, and personality each have their own workspace. A compact companion switcher and clear navigation replace the crowded split view. Animated previews keep their own space.',
     },
     {
       icon: 'pet' as const,
