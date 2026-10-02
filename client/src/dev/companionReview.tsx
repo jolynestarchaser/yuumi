@@ -1,6 +1,7 @@
 // Vite-only review entry. No backend requests, live companions, or provider calls.
 import { createRoot } from 'react-dom/client';
 import CompanionWidget from '../components/companion/CompanionWidget.js';
+import CompanionArtReview from './CompanionArtReview.js';
 import { api } from '../lib/api.js';
 import { useAuthStore } from '../store/authStore.js';
 import type { PublicCompanion } from '../../../shared/contracts.js';
@@ -31,4 +32,4 @@ api.defaults.adapter = async (config) => {
   return { data: { ok: true, data }, status: 200, statusText: 'OK', headers: {}, config };
 };
 useAuthStore.setState({ profile: 'joe' });
-createRoot(document.getElementById('root')!).render(<CompanionWidget onClose={() => {}} onGoOut={() => {}} />);
+createRoot(document.getElementById('root')!).render(new URLSearchParams(window.location.search).has('art') ? <CompanionArtReview /> : <CompanionWidget onClose={() => {}} onGoOut={() => {}} />);

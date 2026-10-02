@@ -1,9 +1,19 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-10-02-companion-hub',
+  id: '2026-10-02-species-growth-kits',
   title: 'A fresh look for every companion',
   subtitle: 'All your little friends, one art style, and a clearer place to make them yours.',
   features: [
+    {
+      icon: 'pet' as const,
+      title: 'Species-specific walking and growth',
+      description: 'Companions stroll, hop, waddle, march, or drift. Growth parts fit their species, including robot cables, grippers, and boosters. Age changes proportions and elder details separately from XP.',
+    },
+    {
+      icon: 'pet' as const,
+      title: 'Dress them your way',
+      description: 'Save outfits, headwear, and hair independently of earned evolution. Robots use chassis covers instead of biological hair. Your companion keeps their age, memories, and progress.',
+    },
     {
       icon: 'pet' as const,
       title: 'Meet all 11 species',

@@ -169,7 +169,10 @@ export function validateAppearance(value: unknown): value is import('../../../sh
     && (appearance.theme === undefined || ['lavender', 'forest', 'ocean', 'sunset', 'starlight', 'candy', 'custom'].includes(appearance.theme as string))
     && (appearance.silhouette === undefined || ['round', 'bean', 'fluffy'].includes(appearance.silhouette as string))
     && (appearance.world === undefined || ['moon-garden', 'sunny-meadow', 'cloud-cove', 'pocket-workshop'].includes(appearance.world as string))
-    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait', 'species', 'bodyColor', 'accentColor', 'eyeColor', 'voice', 'customDescription', 'face', 'gender', 'theme', 'silhouette', 'world'].includes(key)));
+    && (appearance.outfit === undefined || ['none', 'tshirt', 'vest'].includes(appearance.outfit as string))
+    && (appearance.headwear === undefined || ['none', 'cap', 'bow'].includes(appearance.headwear as string))
+    && (appearance.hair === undefined || ['natural', 'swept', 'tuft'].includes(appearance.hair as string))
+    && Object.keys(appearance).every((key) => ['visualStyle', 'animated', 'usePortrait', 'species', 'bodyColor', 'accentColor', 'eyeColor', 'voice', 'customDescription', 'face', 'gender', 'theme', 'silhouette', 'world', 'outfit', 'headwear', 'hair'].includes(key)));
 }
 
 export function startingTraits(temperament: Temperament) {

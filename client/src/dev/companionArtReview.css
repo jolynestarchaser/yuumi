@@ -1,0 +1,11 @@
+.pet-kit-review { min-height:100vh; background:#faf5ff; color:#392b48; padding:24px; font-family:system-ui,sans-serif; }
+.pet-kit-review header { display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-bottom:24px; }
+.pet-kit-review h1,.pet-kit-review header p { flex-basis:100%; margin:0; }
+.pet-kit-review label { display:flex; gap:8px; align-items:center; }
+.pet-kit-review select { min-height:44px; background:white; color:#392b48; border:1px solid #c8b9d3; border-radius:8px; padding:8px; }
+.pet-kit-review-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr)); gap:16px; }
+.pet-kit-review article { background:#f0eaf5; border:1px solid #d8cce0; border-radius:20px; padding:16px; }
+.pet-kit-review article svg { margin:auto; max-width:100%; }
+.pet-kit-review h2 { margin:0; text-transform:capitalize; font-size:20px; }
+.pet-kit-review small { display:block; text-align:center; }
+.pet-kit-review li { margin-block:8px; }

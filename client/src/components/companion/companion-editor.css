@@ -22,3 +22,7 @@
   .companion-editor-footer { bottom: -16px; }
 }
 @media (max-width: 360px) { .companion-customizer .companion-customizer-preview { grid-template-columns: 1fr; } .companion-editor-stage { justify-self: center; } }
+.companion-species-kit { margin-block:16px; padding:16px; border:1px solid var(--companion-border,#d8cce0); border-radius:14px; background:#f0eaf5; color:#392b48; }
+.companion-species-kit ol { padding-left:24px; margin-block:10px; }
+.companion-species-kit li { margin-block:8px; }
+.companion-species-kit li span { display:inline-block; min-width:85px; font-weight:600; }

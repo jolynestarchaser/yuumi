@@ -27,21 +27,56 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
   const [turn, setTurn] = useState(0);
   const [reaction, setReaction] = useState<LifecycleCareAction | ''>('');
   const reactionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const travelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const roamerRef = useRef<HTMLElement>(null);
+  const xRef = useRef(16);
+  const [travelling, setTravelling] = useState(false);
+  const [facing, setFacing] = useState<'left' | 'right'>('right');
   const reduced = useReducedMotion();
   const supported = creatureVoiceSupported();
-  const moving = !paused && !reduced && companion?.appearance?.animated !== false && companion?.mood !== 'sleepy';
+  const moving = Boolean(companion) && !paused && !reduced && !busy && !reaction && companion?.appearance?.animated !== false && companion?.mood !== 'sleepy' && companion?.behaviorState !== 'resting';
+  const duration = companion ? roamingDuration(companion) : 8;
   useEffect(() => {
-    const clamp = () => setX((value) => Math.max(8, Math.min(value, window.innerWidth - 216)));
+    if (!moving) {
+      if (travelTimer.current) clearTimeout(travelTimer.current);
+      // Freeze at the visible position, not the old transition destination.
+      const visibleX = roamerRef.current?.getBoundingClientRect().left ?? xRef.current;
+      xRef.current = visibleX;
+      setX(visibleX);
+      setTravelling(false);
+    }
+  }, [moving]);
+  useEffect(() => {
+    const clamp = () => { const next = Math.max(8, Math.min(xRef.current, window.innerWidth - 216)); xRef.current = next; setX(next); setTravelling(false); };
     window.addEventListener('resize', clamp);
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       setTurn((value) => value + 1);
-      if (moving) setX(8 + Math.random() * Math.max(0, window.innerWidth - 224));
+      if (moving) {
+        const next = 8 + Math.random() * Math.max(0, window.innerWidth - 224);
+        const current = roamerRef.current?.getBoundingClientRect().left ?? xRef.current;
+        if (Math.abs(next - current) < 8) return;
+        setFacing(next < current ? 'left' : 'right');
+        xRef.current = next;
+        setTravelling(true);
+        setX(next);
+        if (travelTimer.current) clearTimeout(travelTimer.current);
+        travelTimer.current = setTimeout(() => setTravelling(false), duration * 1000);
+      }
     }, 12000);
-    return () => { clearInterval(timer); window.removeEventListener('resize', clamp); };
-  }, [moving]);
+    return () => { clearInterval(timer); if (travelTimer.current) clearTimeout(travelTimer.current); window.removeEventListener('resize', clamp); };
+  }, [moving, duration, companion?.id]);
   useEffect(() => () => { if (reactionTimer.current) clearTimeout(reactionTimer.current); }, []);
-  useEffect(() => { if (reactionTimer.current) clearTimeout(reactionTimer.current); setReaction(''); setTurn(0); }, [companion?.id]);
+  useEffect(() => {
+    if (reactionTimer.current) clearTimeout(reactionTimer.current);
+    if (travelTimer.current) clearTimeout(travelTimer.current);
+    const visibleX = roamerRef.current?.getBoundingClientRect().left ?? xRef.current;
+    xRef.current = visibleX;
+    setX(visibleX);
+    setTravelling(false);
+    setReaction('');
+    setTurn(0);
+  }, [companion?.id]);
   useEffect(() => {
     if (turn > 0 && turn % 5 === 0 && companion?.lifecycle?.lifeStatus === 'alive') {
       playCreatureVoice('idle', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
@@ -62,9 +97,9 @@ function Roamer({ onOpen, onHome }: { onOpen: () => void; onHome: () => void }) 
     playCreatureVoice(requestAction === 'rest' ? 'sleepy' : 'care_response', { ...companion.appearance, voice });
     reactionTimer.current = setTimeout(() => setReaction(''), 2600);
   }
-  return <aside className={`companion-roamer ${moving ? 'walking' : ''}`} style={{ left: x, transitionDuration: moving ? `${roamingDuration(companion)}s` : undefined }} aria-label={companion.name} lang={language}>
+  return <aside ref={roamerRef} className={`companion-roamer ${moving ? 'walking' : ''}`} style={{ left: x, transition: travelling ? `left ${duration}s linear` : 'none' }} aria-label={companion.name} lang={language}>
     <div className='companion-speech'><strong>{companion.name}</strong><p>{words}</p>{companion.request && <button className='companion-roamer-care' type='button' onClick={() => void careHere()} disabled={Boolean(busy) || !companion.allowedActions?.includes(requestAction)} aria-label={t('Care for {name}', { name: companion.name })}><CareIcon size={14} /><span>{t(companion.request.text)}</span></button>}{voice.enabled && supported && <button type='button' onClick={() => { unlockCreatureVoice(); playCreatureVoice('greeting', { ...companion.appearance, voice }, true); }} aria-label={t('Hear a greeting chirp')}><Volume2 size={14} />{t('Chirp')}</button>}</div>
-    <button className='companion-roamer-pet' type='button' onClick={onOpen} aria-label={t('Chat')}><CompanionAvatar companion={companion} small reaction={reaction} /></button>
+    <button className='companion-roamer-pet' type='button' onClick={onOpen} aria-label={t('Chat')}><CompanionAvatar companion={companion} small reaction={reaction} walking={moving && travelling} facing={facing} /></button>
     <div className='companion-roamer-actions'>
       <button type='button' onClick={() => setPaused(!paused)} aria-label={t(paused ? 'Walk' : 'Pause walking')}>{paused ? <Play size={15} /> : <Pause size={15} />}</button>
       <button type='button' onClick={onOpen} aria-label={t('Chat')}><MessageCircle size={15} /></button>

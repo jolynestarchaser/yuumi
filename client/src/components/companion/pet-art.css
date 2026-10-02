@@ -10,7 +10,29 @@
 .activity-thinking .pet-art-root { animation:pet-art-think 2.5s ease-in-out infinite; }
 .companion-avatar.level-up:has(.companion-soft-pet) .companion-avatar-motion { animation:none; }
 .level-up .pet-art-root { animation:pet-art-reveal 1.2s cubic-bezier(.23,1,.32,1); }
+.pet-is-walking .pet-art-root { animation:pet-art-stride var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-leg { transform-box:fill-box; transform-origin:center top; animation:pet-art-step var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-leg.near { animation-delay:calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .pet-art-paw { transform-origin:0 0; animation:pet-art-arm var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-paw.near { animation-delay:calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .pet-art-tail { transform-origin:0 0; animation:pet-art-follow var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking[data-gait='hop'] .pet-art-root { animation-name:pet-art-travel-hop; }
+.pet-is-walking[data-gait='hop'] .pet-art-leg.near { animation-delay:0s; }
+.pet-is-walking[data-gait='waddle'] .pet-art-root { animation-name:pet-art-waddle; }
+.pet-is-walking[data-gait='float'] .pet-art-root { animation-name:pet-art-float; }
+.pet-is-walking[data-gait='float'] .pet-art-leg { animation-name:pet-art-hover-feet; }
+.pet-is-walking[data-gait='march'] .pet-art-root { animation-timing-function:linear; }
+.pet-is-walking[data-species='robot'] .pet-art-leg { animation-timing-function:steps(4,end); }
+.pet-is-walking[data-gait='trot'] .pet-art-root { animation-name:pet-art-trot; }
 .motion-paused .companion-soft-pet * { animation:none !important; }
+@keyframes pet-art-stride { 0%,50%,100% { transform:translateY(0); } 25%,75% { transform:translateY(-5px); } }
+@keyframes pet-art-step { 0%,100% { transform:translate(0,0) rotate(-12deg); } 50% { transform:translate(5px,-6px) rotate(12deg); } }
+@keyframes pet-art-arm { 0%,100% { transform:rotate(-13deg); } 50% { transform:rotate(13deg); } }
+@keyframes pet-art-travel-hop { 0%,100% { transform:scale(1.04,.96); } 40%,60% { transform:translateY(-22px) scale(.98,1.02); } }
+@keyframes pet-art-waddle { 0%,100% { transform:rotate(-4deg); } 50% { transform:rotate(4deg) translateY(-4px); } }
+@keyframes pet-art-float { 0%,100% { transform:translateY(-8px) rotate(-2deg); } 50% { transform:translateY(-22px) rotate(2deg); } }
+@keyframes pet-art-hover-feet { 0%,100% { transform:rotate(-6deg); } 50% { transform:rotate(6deg); } }
+@keyframes pet-art-trot { 0%,50%,100% { transform:translateY(0) rotate(-2deg); } 25%,75% { transform:translateY(-9px) rotate(2deg); } }
 @keyframes pet-art-breathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.015,.99); } }
 @keyframes pet-art-rest { 0%,100% { transform:translateY(3px) scale(1,.98); } 50% { transform:translateY(4px) scale(1.01,.97); } }
 @keyframes pet-art-blink { 0%,43%,47%,100% { transform:scaleY(1); } 45% { transform:scaleY(.08); } }

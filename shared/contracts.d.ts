@@ -81,6 +81,9 @@ export interface CompanionAppearance {
   customDescription?: string; face?: CompanionFace; gender?: 'unspecified' | 'female' | 'male' | 'nonbinary';
   theme?: CompanionTheme; silhouette?: 'round' | 'bean' | 'fluffy';
   world?: CompanionWorld;
+  outfit?: 'none' | 'tshirt' | 'vest';
+  headwear?: 'none' | 'cap' | 'bow';
+  hair?: 'natural' | 'swept' | 'tuft';
 }
 export type Temperament = 'curious' | 'gentle' | 'playful';
 export type CompanionMood = 'curious' | 'happy' | 'cozy' | 'sleepy' | 'playful';
