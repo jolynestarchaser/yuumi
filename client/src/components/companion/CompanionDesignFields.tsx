@@ -25,7 +25,7 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
   const supported = creatureVoiceSupported();
   const species = value.species || 'spirit';
   const kit = speciesArtKits[species];
-  const illustrationNote = t('Illustrated artwork uses its authored palette, shape and wardrobe. Your saved customization preferences are preserved for the layered-art update.');
+  const illustrationNote = t('Faces and saved growth now use layered artwork. Palette, shape and wardrobe still use the authored design; your saved preferences are preserved.');
   return <fieldset className='companion-design-fields' disabled={disabled}>
     <legend>{t('Make them yours')}</legend>
     <nav className='companion-design-nav' aria-label={t('Design sections')}>
@@ -48,11 +48,11 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
 
     <div className='companion-design-panel' hidden={panel !== 'details'}>
       <p role='note'>{illustrationNote}</p>
+      <fieldset className='companion-creation-fieldset'><legend>{t('Expression')}</legend><div className='companion-chip-grid'>{companionFaces.filter(({ id }) => ['gentle', 'happy', 'sleepy'].includes(id)).map(({ id, label }) => <button key={id} type='button' aria-pressed={(value.face || 'gentle') === id} onClick={() => onChange({ ...value, face: id })}>{t(label)}</button>)}</div></fieldset>
       <fieldset disabled className='companion-creation-fieldset'><legend>{t('Illustrated customization — coming later')}</legend>
       <fieldset className='companion-creation-fieldset'><legend>{t(species === 'robot' ? 'Chassis cover' : 'Outfit')}</legend><div className='companion-chip-grid'>{([['none', 'None'], ['tshirt', species === 'robot' ? 'Panel cover' : 'T-shirt'], ['vest', 'Vest']] as const).map(([id, label]) => <button key={id} type='button' aria-pressed={(value.outfit || 'none') === id} onClick={() => onChange({ ...value, outfit: id })}>{t(label)}</button>)}</div></fieldset>
       <fieldset className='companion-creation-fieldset'><legend>{t('Headwear')}</legend><div className='companion-chip-grid'>{([['none', 'None'], ['cap', 'Cap'], ['bow', 'Bow']] as const).map(([id, label]) => <button key={id} type='button' aria-pressed={(value.headwear || 'none') === id} onClick={() => onChange({ ...value, headwear: id })}>{t(label)}</button>)}</div></fieldset>
       {species !== 'robot' && <fieldset className='companion-creation-fieldset'><legend>{t(species === 'child' ? 'Hair' : 'Head tuft')}</legend><div className='companion-chip-grid'>{(species === 'child' ? [['natural', 'Natural'], ['swept', 'Swept'], ['tuft', 'Tuft']] as const : [['natural', 'Natural'], ['tuft', 'Tuft']] as const).map(([id, label]) => <button key={id} type='button' aria-pressed={(value.hair || 'natural') === id} onClick={() => onChange({ ...value, hair: id })}>{t(label)}</button>)}</div></fieldset>}
-      <fieldset className='companion-creation-fieldset'><legend>{t('Expression')}</legend><div className='companion-chip-grid'>{companionFaces.map(({ id, label }) => <button key={id} type='button' aria-pressed={(value.face || 'gentle') === id} onClick={() => onChange({ ...value, face: id })}>{t(label)}</button>)}</div></fieldset>
       <fieldset className='companion-creation-fieldset'><legend>{t('Body shape')}</legend><div className='companion-chip-grid'>{companionShapes.map(({ id, label }) => <button key={id} type='button' aria-pressed={(value.silhouette || 'round') === id} onClick={() => onChange({ ...value, silhouette: id })}>{t(label)}</button>)}</div></fieldset>
       </fieldset>
       <label className='companion-design-gender'>{t('Gender')}<select value={value.gender || 'unspecified'} onChange={(event) => onChange({ ...value, gender: event.target.value as CompanionAppearance['gender'] })}>{([['unspecified', 'Unspecified'], ['female', 'Female'], ['male', 'Male'], ['nonbinary', 'Nonbinary']] as const).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></label>

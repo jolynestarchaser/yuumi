@@ -1,8 +1,8 @@
 // Acknowledgments are per profile and browser. Dismissing the dialog marks it read.
 export const currentRelease = Object.freeze({
-  id: '2026-10-02-illustrated-companions',
+  id: '2026-10-02-layered-companions',
   title: 'A fresh look for every companion',
-  subtitle: 'Moodboard-inspired illustrated companions, with soft shading and distinct evolution looks.',
+  subtitle: 'Layered faces, moving limbs, and visible saved growth for every species.',
   features: [
     {
       icon: 'pet' as const,
@@ -12,7 +12,7 @@ export const currentRelease = Object.freeze({
     {
       icon: 'pet' as const,
       title: 'Your progress stays yours',
-      description: 'Species, age, memories, and saved evolution data stay intact. This illustration pass uses authored colors and wardrobe; saved customization preferences remain preserved while layered artwork is developed.',
+      description: 'Saved anatomy and precursor detail IDs now grow coherent illustrated attachments. Species and age stay independent of evolution. Every new saved precursor ID adds growth, without client rerolls.',
     },
     {
       icon: 'pet' as const,
@@ -26,8 +26,8 @@ export const currentRelease = Object.freeze({
     },
     {
       icon: 'pet' as const,
-      title: 'Still moving, still your companion',
-      description: 'Illustrated cutouts breathe, hop, waddle, march, or float with species-specific timing. Age changes size and cadence independently of evolution. Animation-off and reduced motion remain supported; articulated limbs and evolving facial animation need layered rigs.',
+      title: 'Smiles, chirps, and little steps',
+      description: 'Separate eyes and mouths show smiles and sleepy expressions. Talking mouths follow creature chirps, while individual legs move with species-specific gaits. Animation-off and reduced motion remain supported.',
     },
   ],
 });

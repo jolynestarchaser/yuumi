@@ -1,4 +1,9 @@
 {
+  "Layered faces, moving limbs, and visible saved growth for every species.": "สีหน้าแยกชั้น ขาที่ขยับได้ และการเติบโตจากข้อมูลที่บันทึกไว้สำหรับทุกสายพันธุ์",
+  "Saved anatomy and precursor detail IDs now grow coherent illustrated attachments. Species and age stay independent of evolution. Every new saved precursor ID adds growth, without client rerolls.": "ส่วนร่างกายและรหัสรายละเอียดก่อนวิวัฒนาการที่บันทึกไว้แสดงการเติบโตของชิ้นส่วนภาพประกอบ สายพันธุ์และอายุยังแยกจากวิวัฒนาการ รหัสใหม่แต่ละรหัสเพิ่มการเติบโตโดยไม่สุ่มใหม่บนหน้าจอ",
+  "Smiles, chirps, and little steps": "รอยยิ้ม เสียงร้อง และก้าวเล็ก ๆ",
+  "Separate eyes and mouths show smiles and sleepy expressions. Talking mouths follow creature chirps, while individual legs move with species-specific gaits. Animation-off and reduced motion remain supported.": "ตาและปากแยกชั้นแสดงรอยยิ้มและสีหน้าง่วง ปากขยับตามเสียงร้องของน้อง ขาแต่ละข้างขยับตามจังหวะของสายพันธุ์ ยังปิดแอนิเมชันและลดการเคลื่อนไหวได้",
+  "Faces and saved growth now use layered artwork. Palette, shape and wardrobe still use the authored design; your saved preferences are preserved.": "สีหน้าและการเติบโตที่บันทึกไว้ใช้ภาพแยกชั้นแล้ว สี รูปร่าง และชุดยังใช้แบบที่ออกแบบไว้ โดยค่าปรับแต่งเดิมยังอยู่ครบ",
   "Illustrated artwork uses its authored palette, shape and wardrobe. Your saved customization preferences are preserved for the layered-art update.": "ภาพประกอบใช้สี รูปร่าง และชุดที่ออกแบบไว้ ค่าปรับแต่งที่บันทึกไว้ยังคงเก็บไว้สำหรับการอัปเดตงานภาพแบบแยกชั้น",
   "Illustrated customization — coming later": "ปรับแต่งภาพประกอบ — จะมาในภายหลัง",
   "Moodboard-inspired illustrated companions, with soft shading and distinct evolution looks.": "เพื่อนตัวน้อยในสไตล์ภาพประกอบตามมู้ดบอร์ด พร้อมแสงเงานุ่มและร่างวิวัฒนาการที่แตกต่าง",

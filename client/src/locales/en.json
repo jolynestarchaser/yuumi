@@ -1,4 +1,9 @@
 {
+  "Layered faces, moving limbs, and visible saved growth for every species.": "Layered faces, moving limbs, and visible saved growth for every species.",
+  "Saved anatomy and precursor detail IDs now grow coherent illustrated attachments. Species and age stay independent of evolution. Every new saved precursor ID adds growth, without client rerolls.": "Saved anatomy and precursor detail IDs now grow coherent illustrated attachments. Species and age stay independent of evolution. Every new saved precursor ID adds growth, without client rerolls.",
+  "Smiles, chirps, and little steps": "Smiles, chirps, and little steps",
+  "Separate eyes and mouths show smiles and sleepy expressions. Talking mouths follow creature chirps, while individual legs move with species-specific gaits. Animation-off and reduced motion remain supported.": "Separate eyes and mouths show smiles and sleepy expressions. Talking mouths follow creature chirps, while individual legs move with species-specific gaits. Animation-off and reduced motion remain supported.",
+  "Faces and saved growth now use layered artwork. Palette, shape and wardrobe still use the authored design; your saved preferences are preserved.": "Faces and saved growth now use layered artwork. Palette, shape and wardrobe still use the authored design; your saved preferences are preserved.",
   "New form! Level {level}": "New form! Level {level}",
   "Current form: level {level} · {path}": "Current form: level {level} · {path}",
   "Next form at level {level}. Every level changes your companion's shape.": "Next form at level {level}. Every level changes your companion's shape.",

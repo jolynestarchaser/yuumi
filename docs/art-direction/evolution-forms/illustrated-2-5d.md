@@ -1,5 +1,9 @@
 # Illustrated 2.5D runtime pass
 
+Historical first pass. Layered faces, limbs and saved growth are now implemented
+in [layered-2-5d.md](layered-2-5d.md); the limitations below describe this earlier
+full-body renderer, which remains only as a missing-texture fallback.
+
 2026-10-02: all eleven species now use generated transparent painted atlases in
 `client/public/assets/companions/illustrated-v1/`. Each contains eight poses:
 base, resting base, nature compact/agile, celestial compact/agile, adventurer

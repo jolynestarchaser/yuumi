@@ -1,0 +1,35 @@
+.layered-leg,.layered-attachment { transform-box: view-box; transform-origin: 0 0; }
+.pet-is-walking .layered-leg { animation: layered-step var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .layered-leg.right { animation-delay: calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .layered-leg.far.left { animation-delay: calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .layered-leg.far.right { animation-delay: 0s; }
+.pet-is-walking[data-gait='hop'] .layered-leg { animation: layered-hop-legs var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking[data-gait='float'] .layered-leg { animation: layered-hover-legs 2.3s ease-in-out infinite; }
+.pet-is-walking[data-species='robot'] .layered-leg { animation-timing-function: linear; }
+.layered-tail { animation: layered-tail 3.7s ease-in-out infinite; }
+.layered-wings { animation: layered-wing 3.1s ease-in-out infinite; }
+.layered-eyes { transform-box: view-box; animation: layered-blink 6.3s linear 2s infinite; }
+.layered-eyes.still { animation: none; }
+.layered-mouth { transform-box: fill-box; transform-origin: center; }
+.reaction-feed .layered-mouth { animation: layered-chew .22s ease-in-out 4; }
+.reaction-cuddle .layered-eyes.still { animation: layered-eye-squeeze .65s ease-out 1; }
+@keyframes layered-chew { 50% { transform: scale(1.12,.65); } }
+@keyframes layered-eye-squeeze { 40% { transform: scaleY(.6); } }
+.preview-mouth { opacity: 0; animation: layered-mouth-preview .9s steps(1,end) infinite; }
+.preview-mouth.open { animation-delay: -.3s; }
+.preview-mouth.round { animation-delay: -.6s; }
+@keyframes layered-step { 0%,100% { transform: rotate(-10deg); } 25% { transform: rotate(0) translateY(-8px); } 50% { transform: rotate(10deg); } 75% { transform: rotate(0); } }
+@keyframes layered-hop-legs { 0%,100% { transform: scaleY(.93); } 45% { transform: translateY(-5px) rotate(-8deg); } }
+@keyframes layered-hover-legs { 50% { transform: rotate(5deg); } }
+@keyframes layered-tail { 50% { transform: rotate(4deg); } }
+@keyframes layered-wing { 50% { transform: rotate(-5deg); } }
+@keyframes layered-blink { 0%,44%,47%,100% { transform: scaleY(1); } 45%,46% { transform: scaleY(.05); } }
+@keyframes layered-mouth-preview { 0%,32% { opacity: 1; } 33%,100% { opacity: 0; } }
+.companion-illustrated-pet[data-animated='false'] .preview-mouth,
+.motion-paused .preview-mouth { opacity: 0; }
+.companion-illustrated-pet[data-animated='false'] .preview-mouth.smile,
+.motion-paused .preview-mouth.smile { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .preview-mouth { opacity: 0; }
+  .preview-mouth.smile { opacity: 1; }
+}

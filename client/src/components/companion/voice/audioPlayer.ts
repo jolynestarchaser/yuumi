@@ -1,9 +1,11 @@
 import type { CompanionAppearance } from '../../../../../shared/contracts.js';
 import { vocalizations, vocalizationPriority, type Syllable, type VocalizationIntent } from './vocalizations.js';
 import { canPlayVocalization } from './voicePolicy.js';
+import { finishCreaturePlayback, publishCreaturePlayback } from './voicePlayback.js';
 
 let context: AudioContext | null = null;
 let current: AudioBufferSourceNode | null = null;
+let currentGain: GainNode | null = null;
 let activeUntil = 0;
 let activePriority = -1;
 let lastPlayed = 0;
@@ -72,11 +74,14 @@ function clip(audio: AudioContext, intent: VocalizationIntent, variant: number, 
 export function stopCreatureVoice() {
   pendingPlay++;
   if (current) { current.onended = null; current.stop(); current.disconnect(); current = null; }
+  currentGain?.disconnect();
+  currentGain = null;
   activeUntil = 0;
   activePriority = -1;
+  publishCreaturePlayback(null);
 }
 
-export function playCreatureVoice(intent: VocalizationIntent, appearance?: CompanionAppearance, preview = false) {
+export function playCreatureVoice(intent: VocalizationIntent, appearance?: CompanionAppearance, preview = false, targetId?: string) {
   if (!preview && appearance?.voice?.enabled === false) return false;
   if (typeof document !== 'undefined' && document.hidden) return false;
   // Ambient chirps never create an audio context or attempt autoplay on their own.
@@ -85,7 +90,7 @@ export function playCreatureVoice(intent: VocalizationIntent, appearance?: Compa
   if (!audio) return false;
   if (audio.state === 'suspended') {
     const request = ++pendingPlay;
-    void audio.resume().then(() => { if (request === pendingPlay) playCreatureVoice(intent, appearance, preview); }).catch(() => {});
+    void audio.resume().then(() => { if (request === pendingPlay) playCreatureVoice(intent, appearance, preview, targetId); }).catch(() => {});
     return false;
   }
   if (audio.state !== 'running') return false;
@@ -101,13 +106,24 @@ export function playCreatureVoice(intent: VocalizationIntent, appearance?: Compa
   const energy = intent === 'sleepy' || intent === 'idle' ? .55 : intent === 'thinking' || intent === 'working' ? .7 : intent === 'success' || intent === 'happy' ? 1 : .85;
   gain.gain.value = .62 * energy * Math.max(0, Math.min(1, appearance?.voice?.volume ?? .8));
   source.connect(gain).connect(audio.destination);
-  source.onended = () => { if (current === source) { current = null; activePriority = -1; activeUntil = 0; } source.disconnect(); gain.disconnect(); };
+  const token = pendingPlay;
+  source.onended = () => { if (current === source) { current = null; currentGain = null; activePriority = -1; activeUntil = 0; finishCreaturePlayback(token); } source.disconnect(); gain.disconnect(); };
   current = source;
+  currentGain = gain;
   activePriority = priority;
   activeUntil = now + source.buffer.duration * 1000;
   lastPlayed = now;
   lastPriority = priority;
   lastIntent.set(intent, now);
   source.start();
+  const speed = Math.max(.8, Math.min(1.2, appearance?.voice?.rate || .95));
+  let atMs = 0;
+  const syllables = vocalizations[intent][variant].map((part) => {
+    const durationMs = part.duration / speed * 1000;
+    const entry = { atMs, durationMs, mouth: part.sound === 'mo' || part.sound === 'pyo' ? 'round' as const : 'open' as const };
+    atMs += durationMs + (part.pause || 0) / speed * 1000;
+    return entry;
+  });
+  publishCreaturePlayback({ token, targetId, species: appearance?.species || 'spirit', startedAt: performance.now(), durationMs: source.buffer.duration * 1000, syllables });
   return true;
 }

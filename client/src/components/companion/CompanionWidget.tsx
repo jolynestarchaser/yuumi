@@ -85,7 +85,7 @@ function CompanionChat({ companion, capabilities, profile, busy, act, onVoiceEve
     <div className='companion-chat-legend'><span className='joe'><i />Joe</span><span className='focus'><i />Focus</span><label><i style={{ backgroundColor: companion.chatColor || '#cdb2ea' }} />{companion.name}<input aria-label={t('{name} chat color', { name: companion.name })} type='color' value={companion.chatColor || '#cdb2ea'} disabled={Boolean(busy)} onChange={(event) => act({ action: 'chatColor', color: event.target.value })} /></label></div>
     <div className='companion-conversation' role='log' aria-label={t('Shared companion conversation')} aria-live='polite'>
       {!companion.turns.length && <div className='companion-empty'><Sparkles size={28} /><p>{t('Tell me about your day. I’m collecting our little stories.')}</p></div>}
-      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} style={turn.actor === 'companion' ? { '--companion-chat-color': companion.chatColor || '#cdb2ea' } : undefined} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? t("Joe") : t("Focus")}</small><CompanionText text={turn.text} />{turn.actor === 'companion' && supported && voice.enabled && <button type='button' className='companion-listen' onClick={() => { unlockCreatureVoice(); playCreatureVoice('happy', { ...companion.appearance, voice }, true); }} aria-label={t('Hear a happy chirp')}><Volume2 size={12} />{t('Chirp')}</button>}</article>)}
+      {companion.turns.map((turn, index) => <article className={`companion-bubble ${turn.actor}`} style={turn.actor === 'companion' ? { '--companion-chat-color': companion.chatColor || '#cdb2ea' } : undefined} key={`${turn.id}-${index}`}><small>{turn.actor === 'companion' ? companion.name : turn.actor === 'joe' ? t("Joe") : t("Focus")}</small><CompanionText text={turn.text} />{turn.actor === 'companion' && supported && voice.enabled && <button type='button' className='companion-listen' onClick={() => { unlockCreatureVoice(); playCreatureVoice('happy', { ...companion.appearance, voice }, true, companion.id); }} aria-label={t('Hear a happy chirp')}><Volume2 size={12} />{t('Chirp')}</button>}</article>)}
       {busy === 'chat' && <p className='companion-thinking' role='status'>{t('{name} is finding the words…', { name: companion.name })}</p>}<div ref={end} />
     </div>
     {!capabilities.chat && <p className='companion-offline'>{t('AI chat isn’t connected yet. You can still play, care, and make memories.')}</p>}
@@ -150,7 +150,7 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
     if (!companion?.id) return;
     const previous = previousBehavior.current;
     if (previous?.id === companion.id && previous.state === 'resting' && companion.behaviorState !== 'resting') {
-      playCreatureVoice('wake', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
+      playCreatureVoice('wake', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) }, false, companion.id);
       setVoiceActivity('success');
       if (voiceTimer.current) clearTimeout(voiceTimer.current);
       voiceTimer.current = setTimeout(() => setVoiceActivity(null), 2400);
@@ -160,20 +160,20 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
   useEffect(() => { if (companion?.lifecycle?.lifeStatus !== 'alive' && (tab === 'design' || tab === 'personality')) setTab('memories'); }, [companion?.lifecycle?.lifeStatus, tab]);
   async function care(action: LifecycleCareAction) {
     unlockCreatureVoice();
-    if (companion) playCreatureVoice(action === 'explore' ? 'searching' : action === 'rest' ? 'sleepy' : 'working', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
+    if (companion) playCreatureVoice(action === 'explore' ? 'searching' : action === 'rest' ? 'sleepy' : 'working', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) }, false, companion.id);
     if (reactionTimer.current) clearTimeout(reactionTimer.current);
     setCareStatus('');
     setReaction('');
     if (await act({ action }) && active.current) {
       setReaction(action);
-      if (companion) playCreatureVoice(action === 'rest' ? 'sleepy' : 'care_response', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
+      if (companion) playCreatureVoice(action === 'rest' ? 'sleepy' : 'care_response', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) }, false, companion.id);
       setCareStatus(t('{action} went well.', { action: t(careActions.find(([key]) => key === action)?.[2] || action) }));
       reactionTimer.current = setTimeout(() => { setReaction(''); setCareStatus(''); }, 2600);
-    } else if (active.current && companion) playCreatureVoice('confused', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
+    } else if (active.current && companion) playCreatureVoice('confused', { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) }, false, companion.id);
   }
   function voiceEvent(intent: VocalizationIntent, activity?: CompanionActivity) {
     if (!companion) return;
-    playCreatureVoice(intent, { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) });
+    playCreatureVoice(intent, { ...companion.appearance, voice: companionVoiceProfile(companion.appearance, companion.traits, companion.needs) }, false, companion.id);
     if (activity) {
       setVoiceActivity(activity);
       if (voiceTimer.current) clearTimeout(voiceTimer.current);

@@ -14,3 +14,5 @@
 .pet-kit-review h2 { margin:0; text-transform:capitalize; font-size:20px; }
 .pet-kit-review small { display:block; text-align:center; }
 .pet-kit-review li { margin-block:8px; }
+.pet-kit-review article button { display:block; margin:12px auto 8px; min-height:44px; padding:8px 12px; border:1px solid #c8b9d3; border-radius:8px; background:white; color:#392b48; cursor:pointer; }
+.pet-kit-review button:focus-visible { outline:2px solid #785895; outline-offset:3px; }
