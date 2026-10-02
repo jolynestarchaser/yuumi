@@ -6,7 +6,11 @@ Creator/tool: Codex, authored vector paths; no traced or external imagery, fonts
 paid generation, or external SVG resources. Rights follow the repository's ownership;
 no third-party license is introduced.
 
-The sheet shows one preview route for cat, dog, frog, dragon, and duck at Lv1–10.
+The sheets show all 11 species: cat, dog, frog, dragon, duck, forest spirit,
+bunny, fox, robot, storybook child, and custom (an authored cloud base).
+All use the same outlined renderer, including companions saved in legacy pixel mode.
+The creation and editing pickers both expose the complete species list.
+The growth sheet shows one preview route for each at Lv1–10.
 Tail/crest develops at Lv2–3, paws at Lv4–6, and wings/horns/gills at Lv7–10.
 Final previews retain their precursors. Saved render parts override preview defaults
 and retain earlier mature parts. This renderer consumes state; it does not choose
@@ -28,8 +32,8 @@ Animation uses transforms for breath, blink, wing follow-through, feed, play, sl
 thought, and level reveal. Animation-off and reduced motion produce static poses.
 Path states swap discretely; path interpolation is not enabled.
 
-Run `npm run art:export --prefix client` to regenerate 50 standalone editable SVGs
-and `growth-review.svg`. Run `npm run test:pet-art --prefix client` for renderer
+Run `npm run art:export --prefix client` to regenerate 110 standalone editable SVGs,
+`species-review.svg`, and `growth-review.svg`. Run `npm run test:pet-art --prefix client` for renderer
 checks. The PNG is a static review export of the same SVG sheet.
 
 Status: rigged review candidate, not production-approved random pools. The preview

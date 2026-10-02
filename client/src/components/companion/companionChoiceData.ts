@@ -5,9 +5,13 @@ export const creatureBases: { id: CompanionSpecies; label: string; note: string 
   { id: 'spirit', label: 'Forest spirit', note: 'Leaf-eared and curious' },
   { id: 'bunny', label: 'Bunny', note: 'A soft little hopper' },
   { id: 'cat', label: 'Cat', note: 'Paws, naps, and mischief' },
+  { id: 'dog', label: 'Dog', note: 'Floppy ears and a loyal heart' },
+  { id: 'frog', label: 'Frog', note: 'Wide smiles and pond adventures' },
+  { id: 'duck', label: 'Duck', note: 'Little paddles and happy waddles' },
   { id: 'fox', label: 'Fox', note: 'Bright-eyed and quick' },
   { id: 'dragon', label: 'Dragon', note: 'Tiny wings, big heart' },
   { id: 'robot', label: 'Robot', note: 'A pocket-sized friend' },
+  { id: 'child', label: 'Storybook child', note: 'A familiar little friend' },
   { id: 'custom', label: 'Make my own', note: 'Describe your little creature' },
 ];
 

@@ -1,7 +1,6 @@
-import type { CompanionState, LifecycleCareAction, PublicCompanion } from '../../../../shared/contracts.js';
+import type { CompanionAppearance, CompanionState, LifecycleCareAction, PublicCompanion } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
-import PixelCompanion from './PixelCompanion.js';
-import SoftPet, { SOFT_PET_SPECIES, type PetArtRender } from './SoftPet.js';
+import SoftPet, { petArtPalette, type PetArtRender } from './SoftPet.js';
 import './pet-art.css';
 import { visualFormFor } from './visualForm.js';
 import { artRecipeFor } from './artCatalog.js';
@@ -26,10 +25,12 @@ const activityCue = {
 
 export default function CompanionAvatar({ companion, small = false, decorative = false, reaction = '', activity, levelUp = false }: { companion: ArtCharacter; small?: boolean; decorative?: boolean; reaction?: LifecycleCareAction | ''; activity?: CompanionActivity; levelUp?: boolean }) {
   const { t } = useCompanionLanguage();
-  const appearance = companion.appearance || { visualStyle: 'soft' as const, animated: true, usePortrait: false };
+  // Legacy pixel preferences remain readable, but all companions use outlined art.
+  const appearance: CompanionAppearance = { ...(companion.appearance || { animated: true }), visualStyle: 'soft' as const, usePortrait: false };
   const visualForm = visualFormFor({ ...companion, xp: companion.xp || 0 });
   const { species, lifeStage, xpPath, xpTier } = visualForm;
-  const outlined = (SOFT_PET_SPECIES as readonly string[]).includes(species) && appearance.visualStyle === 'soft';
+  appearance.bodyColor ||= petArtPalette[species];
+  appearance.accentColor ||= species === 'spirit' ? '#a9cbaa' : species === 'frog' ? '#AEDBF0' : '#F6A4B6';
   const savedRender = companion.growth?.render?.species === species ? companion.growth.render : undefined;
   const level = Math.floor(Math.max(0, companion.xp || 0) / 80) + 1;
   const artRecipe = artRecipeFor(species, xpPath, level);
@@ -39,13 +40,7 @@ export default function CompanionAvatar({ companion, small = false, decorative =
   const cue = state === 'idle' ? null : activityCue[state];
   return <div className={`companion-avatar species-${species} stage-${lifeStage} path-${xpPath} xp-tier-${xpTier} growth-shape-${growthShape} growth-ring-${growthRing} growth-${artRecipe.growthFamilyId} style-${appearance.visualStyle} ${levelUp ? 'level-up' : ''} ${appearance.animated ? '' : 'motion-paused'} ${small ? 'small' : ''} mood-${companion.mood} form-${companion.form} activity-${state} reaction-${reaction}`} data-art-recipe={artRecipe.id} data-growth-family={artRecipe.growthFamilyId} data-growth-level={artRecipe.level} style={{ '--creature-body': appearance.bodyColor || (species === 'child' ? '#f7d8be' : '#dcc6f2'), '--creature-accent': appearance.accentColor || (species === 'spirit' ? '#a9cbaa' : '#e9d0df'), '--creature-eye': appearance.eyeColor || '#41334d' }} role={decorative ? 'presentation' : 'img'} aria-hidden={decorative || undefined} aria-label={decorative ? undefined : `${companion.name || t('Your companion')}, ${t(companion.mood)}, ${cue ? t(cue.label) : t('Idle')}, ${t(appearance.visualStyle)}`}>
     <div className={`companion-avatar-motion face-${appearance.face || 'gentle'} silhouette-${appearance.silhouette || 'round'}`}>
-      {appearance.visualStyle === 'pixel' ? <PixelCompanion species={species} face={appearance.face || 'gentle'} activity={state} lifeStage={lifeStage} xpTier={xpTier} path={xpPath} level={level} growthFamily={artRecipe.growthFamilyId} /> : outlined ? <SoftPet species={species} face={appearance.face || 'gentle'} activity={state} level={level} render={savedRender} /> : <div className='companion-creature'>
-        <i className='creature-tail' /><i className='creature-wing left' /><i className='creature-wing right' />
-        <i className='creature-ear left' /><i className='creature-ear right' />
-        <i className='creature-arm left' /><i className='creature-arm right' />
-        <div className='creature-body'><span className='creature-belly' aria-hidden='true' />{lifeStage !== 'hatchling' && <span className='creature-markings' aria-hidden='true'>✦</span>}{(lifeStage === 'grown' || lifeStage === 'elder') && <span className='creature-crown' aria-hidden='true'>✧</span>}<span className='creature-star'>✦</span><div className='creature-face'><i /><b /><i /></div><div className='creature-cheeks'><i /><i /></div></div>
-        <i className='creature-foot left' /><i className='creature-foot right' />
-      </div>}
+      <SoftPet species={species} face={appearance.face || 'gentle'} activity={state} level={level} render={savedRender} silhouette={appearance.silhouette} />
     </div>
     <span className='companion-spark one'>✧</span><span className='companion-spark two'>✦</span><span className='companion-spark three'>·</span>
     {cue && !small && <span className='companion-activity-cue' aria-hidden='true'><cue.Icon size={14} strokeWidth={2.2} /><span>{t(cue.label)}</span></span>}

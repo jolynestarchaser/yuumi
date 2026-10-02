@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
-import type { CompanionAppearance, CompanionSpecies } from '../../../../shared/contracts.js';
+import type { CompanionAppearance } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
 import { companionFaces, companionShapes, companionWorlds, creatureBases } from './companionChoiceData.js';
 import { companionVoiceProfile } from './companionVoiceProfile.js';
@@ -14,7 +14,6 @@ const panels: { id: DesignPanel; label: string }[] = [
   { id: 'details', label: 'Little details' }, { id: 'colors', label: 'Colors' },
   { id: 'voice', label: 'Voice' },
 ];
-const editableBases = [...creatureBases, { id: 'child' as CompanionSpecies, label: 'Storybook child', note: 'A familiar little friend' }];
 
 export default function CompanionDesignFields({ value, onChange, disabled = false }: {
   value: CompanionAppearance; onChange: (value: CompanionAppearance) => void; disabled?: boolean;
@@ -31,7 +30,7 @@ export default function CompanionDesignFields({ value, onChange, disabled = fals
 
     <div className='companion-design-panel' hidden={panel !== 'creature'}>
       <fieldset className='companion-creation-fieldset'><legend>{t('Base creature')}</legend>
-        <div className='companion-base-grid'>{editableBases.map(({ id, label, note }) => <button key={id} type='button' className='companion-base-card' aria-pressed={(value.species || 'spirit') === id} onClick={() => onChange({ ...value, species: id })}><span aria-hidden='true'><CompanionAvatar small decorative companion={{ name: label, form: 'creature', mood: 'curious', appearance: { ...value, species: id, animated: false } }} /></span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div>
+        <div className='companion-base-grid'>{creatureBases.map(({ id, label, note }) => <button key={id} type='button' className='companion-base-card' aria-pressed={(value.species || 'spirit') === id} onClick={() => onChange({ ...value, visualStyle: 'soft', species: id })}><span aria-hidden='true'><CompanionAvatar small decorative companion={{ name: label, form: 'creature', mood: 'curious', appearance: { ...value, species: id, animated: false } }} /></span><strong>{t(label)}</strong><small>{t(note)}</small></button>)}</div>
       </fieldset>
       {value.species === 'custom' && <label className='companion-design-description'>{t('Describe your creature')}<textarea maxLength={500} value={value.customDescription || ''} placeholder={t('A cloud jellyfish with four tiny paws…')} onChange={(event) => onChange({ ...value, customDescription: event.target.value })} /></label>}
     </div>
