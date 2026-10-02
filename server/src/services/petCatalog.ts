@@ -3,7 +3,7 @@ import type { CareVector, CompanionSpecies, PetCapability, PetGrowthFamily, PetR
 export const PET_CONFIG_VERSION = 'pet-balance-v1.1';
 export const PET_CATALOG_VERSION = 'pet-svg-v1.1';
 export const PET_RNG_VERSION = 'hmac-sha256-53-v1';
-export const LIVE_LEVEL_CAP = 10;
+export const LIVE_LEVEL_CAP: number | null = null;
 export const CARE_AXES = ['affection', 'play', 'curiosity', 'calm', 'nature', 'balance'] as const;
 export const SEGMENTS = [{ from: 1, to: 3 }, { from: 3, to: 6 }, { from: 6, to: 10 }] as const;
 export const vector = (values: number[]): CareVector => Object.fromEntries(CARE_AXES.map((axis, i) => [axis, values[i] || 0])) as CareVector;
@@ -53,10 +53,18 @@ export function validatePetCatalog() {
 
 export function xpThreshold(level: number): number {
   if (!Number.isSafeInteger(level) || level < 1) throw new Error('Invalid pet level.');
-  return 100 * (level - 1) + 12.5 * (level - 1) * (level - 2);
+  const threshold = 100 * (level - 1) + 12.5 * (level - 1) * (level - 2);
+  if (!Number.isSafeInteger(threshold)) throw new Error('Pet XP threshold overflow.');
+  return threshold;
 }
 export function petLevel(xp: number, legacyLevel: number | null = null): number {
-  let level = 1;
-  while (level < LIVE_LEVEL_CAP && xp >= xpThreshold(level + 1)) level++;
-  return Math.max(level, legacyLevel || 1);
+  if (!Number.isSafeInteger(xp) || xp < 0) throw new Error('Invalid pet XP.');
+  if (legacyLevel !== null && (!Number.isSafeInteger(legacyLevel) || legacyLevel < 1)) throw new Error('Invalid legacy pet level.');
+  let level = Math.floor(2 * xp / (87.5 + Math.sqrt(87.5 * 87.5 + 50 * xp))) + 1;
+  // At most two corrections handle floating-point rounding at exact boundaries.
+  for (let i = 0; i < 2 && xpThreshold(level) > xp; i++) level--;
+  for (let i = 0; i < 2 && xpThreshold(level + 1) <= xp; i++) level++;
+  level = Math.max(level, legacyLevel || 1);
+  xpThreshold(level + 1); // Overflow is an integrity failure, never a gameplay cap.
+  return level;
 }

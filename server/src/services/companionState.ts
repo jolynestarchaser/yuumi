@@ -188,7 +188,7 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
   const growthStage = safe.lifecycle?.stage || growthStageForLevel(level);
   const visualForm = visualFormFor({ ...safe, progression });
-  const formId = formIdFor(visualForm.species, visualForm.lifeStage, visualForm.xpPath, level);
+  const formId = progression?.render.bodyForm?.id || formIdFor(visualForm.species, visualForm.lifeStage, visualForm.xpPath, level);
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : growthStage === 'elder' ? 'Elder companion' : 'Grown companion';
   const active = safe.careRequest?.state === 'active' ? safe.careRequest : undefined;
   const request = safe.lifecycle?.lifeStatus !== 'alive' ? null : active ? { id: active.id, action: active.action, state: active.state, text: active.action === 'feed' ? 'Could we have a little snack together?' : active.action === 'play' ? 'Will you play a tiny game with me?' : active.action === 'rest' ? 'I think a cozy nap would help me recharge.' : active.action === 'clean' ? 'Could you help me freshen up?' : active.action === 'medicine' ? 'I do not feel well. Could you help with medicine?' : 'Can I have a little cuddle?', urgency: ['feed', 'medicine'].includes(active.action) ? 'soon' as const : 'gentle' as const }
@@ -200,13 +200,14 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const activePlan = progression?.plans.find((entry) => entry.status !== 'completed') || null;
   const growth = progression ? {
     version: 1 as const, level, appearanceLevel: progression.appearanceLevel, levelCap: LIVE_LEVEL_CAP,
-    nextThreshold: level >= LIVE_LEVEL_CAP ? null : xpThreshold(level + 1), levelThreshold: xpThreshold(level),
+    nextThreshold: xpThreshold(level + 1), levelThreshold: xpThreshold(level),
     dailyXp: day && new Date(day.nextResetAt).getTime() > now.getTime() ? day.xp : 0, dailyXpCap: 240,
     nextRewardResetAt: day && new Date(day.nextResetAt).getTime() > now.getTime() ? day.nextResetAt : rewardCalendar(now).nextResetAt,
     ageHours: safe.bornAt ? Math.max(0, (now.getTime() - new Date(safe.bornAt).getTime()) / 3_600_000) : 0,
     ageVerified: progression.ageVerified, morphPreference: progression.morphPreference, careProfile: careProfile(progression, now),
     bond: progression.bond, trust: progression.trust, habitIds: progression.habitIds, render: progression.render,
-    activePlan, history: progression.events, pendingPresentationIds: progression.events.filter((entry) => !entry.acknowledgedAt).map((entry) => entry.growthEventId),
+    activePlan, formPlan: progression.formPlan || null, catchUpPending: progression.catchUpPending || false,
+    history: progression.events.slice(-100), pendingPresentationIds: progression.events.filter((entry) => !entry.acknowledgedAt).slice(0, 25).map((entry) => entry.growthEventId),
     contentBlocked: progression.contentBlocked, legacyLevel: progression.legacyLevel, activity: progression.activity,
   } : undefined;
   return { ...safe, ...(growth ? { growth } : {}), id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, visualForm, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
