@@ -69,7 +69,7 @@ export interface ApiFailure { success: false; error: { code: string; message: st
 export interface RequestError { response?: { data?: { error?: { message?: string } } }; code?: string; message?: string }
 
 export type CompanionForm = 'pet' | 'child' | 'creature';
-export type CompanionSpecies = 'spirit' | 'bunny' | 'cat' | 'fox' | 'dragon' | 'robot' | 'child' | 'custom';
+export type CompanionSpecies = 'spirit' | 'bunny' | 'cat' | 'dog' | 'frog' | 'duck' | 'fox' | 'dragon' | 'robot' | 'child' | 'custom';
 export type CompanionVoicePreset = 'natural' | 'spark' | 'fairy' | 'dragon' | 'robot' | 'custom';
 export type CompanionFace = 'gentle' | 'happy' | 'sleepy' | 'mischievous' | 'starry';
 export type CompanionTheme = 'lavender' | 'forest' | 'ocean' | 'sunset' | 'starlight' | 'candy' | 'custom';
@@ -138,11 +138,14 @@ export interface CompanionState {
   lifecycleEvents?: CompanionLifecycleEvent[];
   lifecycle?: CompanionLifecycle;
   dailyRitual?: CompanionDailyRitual;
+  growth?: PetGrowthPublic;
   memories: CompanionMemory[]; turns: CompanionTurn[]; portrait: CompanionPortrait | null; revision: number;
 }
 export interface CompanionBudget { day: string; chats: number; portraits: number; lastChat?: Timestamp; lastPortrait?: Timestamp }
 export interface StoredCompanion extends CompanionState {
+  progression?: PetProgression;
   _id?: string; __v?: number; budget?: CompanionBudget;
+  pendingChat?: { operationId: string; token: string; expiresAt: Timestamp } | null;
   lastCare?: Partial<Record<Profile, Timestamp>>; recentOperations?: string[]; lockToken?: string; lockedUntil?: Timestamp;
   familyId?: string; schemaVersion?: number; archivedAt?: Timestamp | null; needsUpdatedAt?: Timestamp; createdOperationId?: string;
 }
@@ -164,4 +167,72 @@ export type CompanionAction =
   | { action: 'inspiration'; text: string; expectedRevision: number }
   | { action: 'forget'; memoryId: string }
   | { action: 'archive' | 'restore' }
-  | { action: 'retire'; expectedRevision: number };
+  | { action: 'retire'; expectedRevision: number }
+  | { action: 'growthAck'; eventIds: string[] }
+  | { action: 'morphPreference'; preference: 'gentle' | 'adventurous' }
+  | { action: 'promptChoice'; choice: 'company' | 'nature' | 'quiet' }
+  | { action: 'startActivity'; family: 'rhythm' | 'find' | 'explore'; capability?: PetCapability }
+  | { action: 'activityStep'; sessionId: string; answer: number };
+
+export type CareAxis = 'affection' | 'play' | 'curiosity' | 'calm' | 'nature' | 'balance';
+export type CareVector = Record<CareAxis, number>;
+export type PetRarity = 'common' | 'uncommon' | 'rare';
+export type PetGrowthFamily = 'tail' | 'crest' | 'paws' | 'wings' | 'horns' | 'gills';
+export type PetCapability = 'greeting' | 'grasp' | 'float' | 'sense' | 'water';
+export interface PetRenderSpec {
+  catalogVersion: string; species: CompanionSpecies; level: number;
+  parts: Partial<Record<PetGrowthFamily, { step: number; variant: 'neutral' | 'soft' | 'petal' | 'star' | 'basic' }>>;
+  capabilityIds: PetCapability[];
+  legacy: boolean;
+}
+export interface PetGrowthPlan {
+  planId: string; segmentId: string; fromLevel: number; toLevel: number;
+  growthFamilyId: PetGrowthFamily; continuityTags: string[];
+  minorStepSpecIds: Record<string, string>; allowedFinalRecipeIds: string[];
+  fallbackRecipeId: string; planSnapshotId: string; configVersion: string;
+  catalogVersion: string; rngVersion: string; status: 'active' | 'completed' | 'contentBlocked';
+}
+export interface PetGrowthEvent {
+  growthEventId: string; level: number; kind: 'minor' | 'evolution'; planId: string;
+  stepSpecId: string | null; beforeRenderRef: string; afterRenderRef: string;
+  before: PetRenderSpec; after: PetRenderSpec; changedPartIds: string[];
+  newCapabilityIds: PetCapability[]; presentationSequence: number; appliedAt: Timestamp;
+  acknowledgedAt: Timestamp | null; rarity?: PetRarity; recipeId?: string;
+  reasonTags: CareAxis[];
+}
+export interface PetActivitySession {
+  sessionId: string; family: 'rhythm' | 'find' | 'explore'; capability: PetCapability | null;
+  targets: number[]; answers: number[]; startedAt: Timestamp; expiresAt: Timestamp; actor: Profile;
+}
+export interface PetGrowthPublic {
+  version: 1; level: number; appearanceLevel: number; levelCap: number;
+  nextThreshold: number | null; levelThreshold: number; dailyXp: number; dailyXpCap: number;
+  nextRewardResetAt: Timestamp; ageHours: number; ageVerified: boolean;
+  morphPreference: 'gentle' | 'adventurous'; careProfile: CareVector;
+  bond: number; trust: number; habitIds: string[]; render: PetRenderSpec;
+  activePlan: PetGrowthPlan | null; history: PetGrowthEvent[]; pendingPresentationIds: string[];
+  contentBlocked: string | null; legacyLevel: number | null; activity: PetActivitySession | null;
+}
+export interface PetCareEvidence { eventId: string; at: Timestamp; category: string; vector: CareVector; units: number }
+export interface PetRewardDay {
+  id: string; nextResetAt: Timestamp; xp: number; bond: number; trust: number;
+  counts: Record<string, number>; diversityGranted: boolean; evidence: PetCareEvidence[];
+}
+export interface PetGrowthAudit {
+  id: string; kind: 'plan' | 'final'; snapshotId: string; at: Timestamp;
+  profile: CareVector; candidates: { id: string; weight: number }[]; selectedId: string;
+  effectiveTiers?: Partial<Record<PetRarity, number>>;
+  configVersion: string; catalogVersion: string; rngVersion: string;
+}
+export interface PetProgression {
+  version: 1; seedSecret: string; genome: CareVector; ageVerified: boolean;
+  configVersion: string; catalogVersion: string; rngVersion: string;
+  appearanceLevel: number; legacyLevel: number | null; legacyDiscoveryPending: boolean;
+  tutorialGranted: boolean; morphPreference: 'gentle' | 'adventurous'; pityCommonCount: number;
+  render: PetRenderSpec; plans: PetGrowthPlan[]; events: PetGrowthEvent[]; audit: PetGrowthAudit[];
+  days: PetRewardDay[]; bond: number; trust: number; habitIds: string[];
+  personality: { sociability: number; energyDisposition: number; curiosityDisposition: number; boldness: number; routinePreference: number };
+  lastRewardAt: Partial<Record<string, Timestamp>>; restStartedAt: Timestamp | null;
+  contentBlocked: string | null; activity: PetActivitySession | null;
+  blockedSnapshot?: { level: number; snapshotId: string; profile: CareVector } | null;
+}

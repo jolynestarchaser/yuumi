@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { simulateCompanion } from './companionSimulation.js';
 import { currentDailyRitual } from './companionRitual.js';
 import { formIdFor, visualFormFor } from './companionEvolution.js';
+import { careProfile, rewardCalendar } from './petCare.js';
+import { LIVE_LEVEL_CAP, petLevel, xpThreshold } from './petCatalog.js';
 import type { StoredCompanion, PublicCompanion, Profile, CompanionMood, CareAction, LifecycleCareAction, CompanionSetup, Temperament, CompanionGrowthStage, CompanionState } from '../../../shared/contracts.js';
 
 export const COMPANION_KEY = 'joe-and-focus';
@@ -158,7 +160,7 @@ export function validateAppearance(value: unknown): value is import('../../../sh
     && Object.keys(voice).every((key) => ['enabled', 'language', 'voiceURI', 'rate', 'pitch', 'preset', 'volume'].includes(key)));
   return Boolean(['soft', 'pixel'].includes(appearance.visualStyle as string)
     && typeof appearance.animated === 'boolean' && typeof appearance.usePortrait === 'boolean'
-    && (appearance.species === undefined || ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'].includes(appearance.species as string))
+    && (appearance.species === undefined || ['spirit', 'bunny', 'cat', 'dog', 'frog', 'duck', 'fox', 'dragon', 'robot', 'child', 'custom'].includes(appearance.species as string))
     && color(appearance.bodyColor) && color(appearance.accentColor) && color(appearance.eyeColor) && validVoice
     && (appearance.customDescription === undefined || (typeof appearance.customDescription === 'string' && appearance.customDescription.length <= 500))
     && (appearance.species !== 'custom' || (typeof appearance.customDescription === 'string' && appearance.customDescription.trim().length > 0))
@@ -177,12 +179,12 @@ export function startingTraits(temperament: Temperament) {
 export function publicCompanion(state: StoredCompanion, now = new Date()): PublicCompanion {
   const simulation = state.lifecycle ? simulateCompanion(state, now) : null;
   const settled = simulation?.state || settledState(state, now);
-  const { _id, __v, lockToken, lockedUntil, budget, lastCare, recentOperations, familyId, schemaVersion, needsUpdatedAt, createdOperationId, ...safe } = settled;
+  const { _id, __v, lockToken, lockedUntil, budget, lastCare, recentOperations, familyId, schemaVersion, needsUpdatedAt, createdOperationId, progression, pendingChat, ...safe } = settled;
   const needs = Object.fromEntries(Object.entries(safe.needs).map(([key, value]) => [key, Math.round(value)])) as CompanionState['needs'];
-  const level = Math.floor(safe.xp / 80) + 1;
+  const level = progression ? petLevel(safe.xp, progression.legacyLevel) : Math.floor(safe.xp / 80) + 1;
   const wishes = ['Show me something that made you smile today.', 'Could we make up a tiny adventure together?', 'Tell me a song you love. I want to imagine its colors.', 'What should we name our imaginary moon garden?'];
   const growthStage = safe.lifecycle?.stage || growthStageForLevel(level);
-  const visualForm = visualFormFor(safe);
+  const visualForm = visualFormFor({ ...safe, progression });
   const formId = formIdFor(visualForm.species, visualForm.lifeStage, visualForm.xpPath, level);
   const stage = growthStage === 'hatchling' ? 'Hatchling' : growthStage === 'child' ? 'Little adventurer' : growthStage === 'juvenile' ? 'Young explorer' : growthStage === 'elder' ? 'Elder companion' : 'Grown companion';
   const active = safe.careRequest?.state === 'active' ? safe.careRequest : undefined;
@@ -191,5 +193,18 @@ export function publicCompanion(state: StoredCompanion, now = new Date()): Publi
   const medicineReady = safe.lifecycle?.healthCondition === 'ill' && safe.needs.health < 100 && (!safe.lifecycle.lastMedicineAt || now.getTime() - new Date(safe.lifecycle.lastMedicineAt).getTime() >= 6 * 3_600_000);
   const resting = safe.behaviorState === 'resting' && safe.restUntil && new Date(safe.restUntil).getTime() > now.getTime();
   const allowedActions: LifecycleCareAction[] = safe.lifecycle?.lifeStatus === 'alive' ? ['feed', 'play', 'cuddle', ...(!resting ? ['rest' as const] : []), 'explore', 'clean', ...(medicineReady ? ['medicine' as const] : [])] : [];
-  return { ...safe, id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, visualForm, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
+  const day = progression?.days.at(-1);
+  const activePlan = progression?.plans.find((entry) => entry.status !== 'completed') || null;
+  const growth = progression ? {
+    version: 1 as const, level, appearanceLevel: progression.appearanceLevel, levelCap: LIVE_LEVEL_CAP,
+    nextThreshold: level >= LIVE_LEVEL_CAP ? null : xpThreshold(level + 1), levelThreshold: xpThreshold(level),
+    dailyXp: day && new Date(day.nextResetAt).getTime() > now.getTime() ? day.xp : 0, dailyXpCap: 240,
+    nextRewardResetAt: day && new Date(day.nextResetAt).getTime() > now.getTime() ? day.nextResetAt : rewardCalendar(now).nextResetAt,
+    ageHours: safe.bornAt ? Math.max(0, (now.getTime() - new Date(safe.bornAt).getTime()) / 3_600_000) : 0,
+    ageVerified: progression.ageVerified, morphPreference: progression.morphPreference, careProfile: careProfile(progression, now),
+    bond: progression.bond, trust: progression.trust, habitIds: progression.habitIds, render: progression.render,
+    activePlan, history: progression.events, pendingPresentationIds: progression.events.filter((entry) => !entry.acknowledgedAt).map((entry) => entry.growthEventId),
+    contentBlocked: progression.contentBlocked, legacyLevel: progression.legacyLevel, activity: progression.activity,
+  } : undefined;
+  return { ...safe, ...(growth ? { growth } : {}), id: String(_id || COMPANION_KEY), needs, level, growthStage, formId, visualForm, stage, wish: wishes[(Math.floor(now.getTime() / 86_400_000) + Math.floor(safe.traits.curiosity)) % wishes.length], request, allowedActions, dailyRitual: currentDailyRitual(settled, now) || undefined, automaticallyPaused: simulation?.automaticallyPaused || false };
 }

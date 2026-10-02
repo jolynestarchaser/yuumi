@@ -1,8 +1,10 @@
 import { randomInt } from 'node:crypto';
+import { applyPetGrowth } from './petProgression.js';
+import { petLevel } from './petCatalog.js';
 import type { StoredCompanion, CompanionEvolution, CompanionSpecies, CompanionGrowthStage, CompanionVisualForm } from '../../../shared/contracts.js';
 
 const raceBias: Record<CompanionSpecies, [number, number, number]> = {
-  spirit: [4, 8, 0], bunny: [0, 8, 4], cat: [4, 0, 8], fox: [4, 0, 8],
+  spirit: [4, 8, 0], bunny: [0, 8, 4], cat: [4, 0, 8], dog: [4, 8, 0], frog: [8, 4, 0], duck: [4, 8, 0], fox: [4, 0, 8],
   dragon: [8, 4, 0], robot: [8, 0, 4], child: [4, 4, 4], custom: [4, 4, 4]
 };
 const paths: CompanionEvolution['path'][] = ['explorer', 'guardian', 'trickster'];
@@ -20,8 +22,8 @@ export function xpTierForLevel(level: number): CompanionVisualForm['xpTier'] {
 }
 
 /** Derives the current recipe without turning legacy history into new events. */
-export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appearance' | 'evolutions' | 'stageOutcomes' | 'lifecycle'>): CompanionVisualForm {
-  const level = Math.floor(Math.max(0, state.xp || 0) / 80) + 1;
+export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appearance' | 'evolutions' | 'stageOutcomes' | 'lifecycle' | 'progression'>): CompanionVisualForm {
+  const level = state.progression ? petLevel(state.xp, state.progression.legacyLevel) : Math.floor(Math.max(0, state.xp || 0) / 80) + 1;
   const species = state.appearance?.species || (state.form === 'pet' ? 'bunny' : state.form === 'child' ? 'child' : 'spirit');
   const tier = xpTierForLevel(level);
   const earned = state.evolutions?.filter((entry) => entry.level <= level && entry.level >= 2).sort((a, b) => b.level - a.level)[0];
@@ -35,6 +37,7 @@ export function visualFormFor(state: Pick<StoredCompanion, 'xp' | 'form' | 'appe
 // Called inside the existing atomic lease, after a successful XP-earning action.
 // Only server state determines growth; retries never reroll an earned evolution.
 export function evolveCompanion(state: StoredCompanion, previousXp: number, random = () => randomInt(1_000_000) / 1_000_000, now = new Date()): StoredCompanion {
+  if (state.progression) return applyPetGrowth(state, now);
   const previousLevel = Math.floor(previousXp / 80) + 1;
   const level = Math.floor(state.xp / 80) + 1;
   if (level <= previousLevel) return state;

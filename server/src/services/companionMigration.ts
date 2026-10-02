@@ -1,6 +1,8 @@
 import Companion from '../models/Companion.js';
 import CompanionFamily from '../models/CompanionFamily.js';
 import { randomUUID } from 'node:crypto';
+import { initializePetProgression } from './petProgression.js';
+import { petGameplayEnabled } from './petRollout.js';
 import { COMPANION_FAMILY_ID, COMPANION_SCHEMA_VERSION, growthStageForLevel } from './companionState.js';
 import type { StoredCompanion } from '../../../shared/contracts.js';
 
@@ -12,6 +14,12 @@ export function companionMigrationPatch(state: Partial<StoredCompanion>, now = n
   if (!state.familyId) patch.familyId = COMPANION_FAMILY_ID;
   if (state.schemaVersion !== COMPANION_SCHEMA_VERSION) patch.schemaVersion = COMPANION_SCHEMA_VERSION;
   if (state.archivedAt === undefined) patch.archivedAt = null;
+  if (petGameplayEnabled() && !state.progression && (state.bornAt || state.xp > 0) && state.lifecycle?.lifeStatus === 'alive') {
+    const migrated = initializePetProgression(state as StoredCompanion, now, true);
+    patch.progression = migrated.progression;
+    patch.xp = migrated.xp;
+    if (!state.bornAt) patch.bornAt = migrated.bornAt;
+  }
   if (!state.needsUpdatedAt) patch.needsUpdatedAt = state.updatedAt || now;
   if (state.needs?.comfort === undefined) patch['needs.comfort'] = 75;
   if (state.needs?.hygiene === undefined) patch['needs.hygiene'] = 100;
@@ -39,6 +47,7 @@ export function companionMigrationPatch(state: Partial<StoredCompanion>, now = n
 export async function migrateCompanion(companionId: string) {
   const state = await Companion.findById(companionId).lean();
   if (!state) return null;
+  if (state.familyId && state.familyId !== COMPANION_FAMILY_ID) return null;
   const patch = companionMigrationPatch(state);
   if (Object.keys(patch).length) {
     const guard = state.revision === undefined
@@ -61,7 +70,7 @@ export async function migrateCompanion(companionId: string) {
 }
 
 export async function migrateCompanionRoster({ dryRun = false }: { dryRun?: boolean } = {}) {
-  const companions = await Companion.find({}).lean();
+  const companions = await Companion.find({ $or: [{ familyId: COMPANION_FAMILY_ID }, { familyId: { $exists: false } }] }).lean();
   let changed = 0;
   for (const companion of companions) {
     const patch = companionMigrationPatch(companion);

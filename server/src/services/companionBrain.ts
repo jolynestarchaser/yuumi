@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { MOODS } from './companionState.js';
 import { companionPrompt, THAI_PERSONALITY_RULES } from './companionPrompt.js';
 import { validateCompanionReply } from './companionReplyValidation.js';
+import { chatWithPet } from './petDialogue.js';
 import type { UploadApiResponse } from 'cloudinary';
 import type { StoredCompanion, Profile, BrainReply, CompanionPortrait } from '../../../shared/contracts.js';
 
@@ -81,6 +82,7 @@ export function parseBrainReply(parts: GeminiPart[]): BrainReply {
 }
 
 export async function chatWithCompanion(state: StoredCompanion, actor: Profile, message: string, language: 'th' | 'en' = 'en') {
+  if (state.progression) return chatWithPet(state, actor, message, language, generateContent, process.env.GEMINI_CHAT_MODEL || DEFAULT_GEMINI_CHAT_MODEL);
   const prompt = companionPrompt(state, actor, message, language);
   const model = process.env.GEMINI_CHAT_MODEL || DEFAULT_GEMINI_CHAT_MODEL;
   const thinkingConfig = chatThinkingConfig(model);

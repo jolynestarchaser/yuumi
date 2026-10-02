@@ -26,6 +26,9 @@ const schema = new mongoose.Schema<StoredCompanion>({
   traits: { curiosity: bounded(50), affection: bounded(50), playfulness: bounded(50) },
   bonds: { joe: { type: Number, default: 0, min: 0 }, focus: { type: Number, default: 0, min: 0 } },
   xp: { type: Number, default: 0, min: 0 }, mood: { type: String, enum: MOODS, default: 'curious' },
+  // Private engine state is validated by pure rules, never accepted from a request.
+  progression: { type: mongoose.Schema.Types.Mixed, default: undefined },
+  pendingChat: { type: mongoose.Schema.Types.Mixed, default: undefined },
   behaviorState: { type: String, enum: ['active', 'resting'], default: 'active' }, restUntil: { type: Date, default: null },
   careRequest: { id: String, action: { type: String, enum: ['feed', 'play', 'cuddle', 'rest', 'explore', 'clean', 'medicine'] }, state: { type: String, enum: ['active', 'fulfilled', 'resolved', 'superseded'] }, createdAt: Date, fulfilledAt: Date, fulfilledBy: { type: String, enum: ['joe', 'focus'] } },
   dailyRitual: { type: new mongoose.Schema({
@@ -51,7 +54,7 @@ const schema = new mongoose.Schema<StoredCompanion>({
       visualStyle: { type: String, enum: ['soft', 'pixel'], required: true },
       animated: { type: Boolean, required: true },
       usePortrait: { type: Boolean, required: true },
-      species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'] },
+      species: { type: String, enum: ['spirit', 'bunny', 'cat', 'dog', 'frog', 'duck', 'fox', 'dragon', 'robot', 'child', 'custom'] },
       customDescription: { type: String, maxlength: 500 },
       face: { type: String, enum: ['gentle', 'happy', 'sleepy', 'mischievous', 'starry'] },
       gender: { type: String, enum: ['unspecified', 'female', 'male', 'nonbinary'] },
@@ -69,7 +72,7 @@ const schema = new mongoose.Schema<StoredCompanion>({
   turns: { type: [turnSchema], default: [], validate: (rows) => rows.length <= 60 },
   evolutions: { type: [new mongoose.Schema({
     level: { type: Number, min: 2, required: true },
-    species: { type: String, enum: ['spirit', 'bunny', 'cat', 'fox', 'dragon', 'robot', 'child', 'custom'], required: true },
+    species: { type: String, enum: ['spirit', 'bunny', 'cat', 'dog', 'frog', 'duck', 'fox', 'dragon', 'robot', 'child', 'custom'], required: true },
     path: { type: String, enum: ['explorer', 'guardian', 'trickster'], required: true },
     at: { type: Date, required: true }
   }, { _id: false })], default: [], validate: (rows) => rows.length <= 40 },

@@ -1,9 +1,12 @@
 import type { CompanionSpecies, PublicCompanion } from '../../../../shared/contracts.js';
 
-const speciesWords: Record<CompanionSpecies, [string, string]> = {
+const speciesWords: Record<CompanionSpecies | 'dog' | 'frog' | 'duck', [string, string]> = {
   spirit: ['The leaves are whispering today.', 'I found a quiet corner of our world.'],
   bunny: ['A little hop, then a little pause.', 'Could we see what is beyond that flower?'],
   cat: ['I am keeping an eye on this sunny spot.', 'Perhaps I will follow you for a while.'],
+  dog: ['I found a friendly path for us.', 'Can we trot over to that bright corner?'],
+  frog: ['That puddle is making a very interesting ripple.', 'I can hear a tiny pond-song nearby.'],
+  duck: ['I spotted a soft place to float for a moment.', 'Shall we waddle toward that little shine?'],
   fox: ['I have a tiny idea for our next walk.', 'What do you think is around that corner?'],
   dragon: ['I can guard this little path.', 'One brave step at a time.'],
   robot: ['Walk check: all systems curious.', 'I have mapped a new corner to explore.'],

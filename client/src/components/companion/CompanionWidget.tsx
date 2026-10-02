@@ -90,7 +90,7 @@ function CompanionChat({ companion, capabilities, profile, busy, act, onVoiceEve
     {!capabilities.chat && <p className='companion-offline'>{t('AI chat isn’t connected yet. You can still play, care, and make memories.')}</p>}
     {companion.lifecycle?.lifeStatus === 'alive' && <form className='companion-chat-form' onSubmit={async (event) => { event.preventDefault(); unlockCreatureVoice(); onVoiceEvent('thinking'); if (await act({ action: 'chat', text: draft.trim(), language })) { setDraft(''); onVoiceEvent('success', 'success'); } else onVoiceEvent('confused', 'error'); }}>
       <textarea aria-label={t('Tell {name} something…', { name: companion.name })} value={draft} maxLength={1000} placeholder={t('Tell {name} something…', { name: companion.name })} onChange={(event) => setDraft(event.target.value)} disabled={Boolean(busy)} />
-      <button type='submit' aria-label={t('Send message')} disabled={Boolean(busy) || !capabilities.chat || !draft.trim()}><Send size={18} /></button>
+      <button type='submit' aria-label={t('Send message')} disabled={Boolean(busy) || (!capabilities.chat && !companion.growth) || !draft.trim()}><Send size={18} /></button>
     </form>}
     <small className='companion-privacy'>{t('Chats become shared memories. Gemini receives your companion’s context when you send. Manage memories in the journal.')}</small>
   </div>;
@@ -203,14 +203,14 @@ function CompanionPanel({ onClose, onGoOut }: { onClose: () => void; onGoOut?: (
         <div className='companion-needs'>
           {Object.entries(companion.needs).map(([need, value]) => <label key={need}><span>{t(need)}<b>{value}</b></span><progress value={value} max={100} /></label>)}
           {companion.lifecycle?.lifeStatus === 'alive' && (companion.behaviorState === 'resting' || companion.needs.energy < 35) && <p className='companion-energy-hint' role='status'>
-            {t(companion.behaviorState === 'resting' ? 'Resting now. Energy keeps recovering during this nap.' : 'Low energy? Cuddle gives 8 now. Nap gives 20 now and 24 over 45 minutes.')}
+            {t(companion.behaviorState === 'resting' ? 'Resting now. Energy keeps recovering during this nap.' : companion.growth ? 'A nap restores energy over time. Its reward arrives after 20 minutes.' : 'Low energy? Cuddle gives 8 now. Nap gives 20 now and 24 over 45 minutes.')}
           </p>}
         </div>
         {companion.request && <button type='button' className={`companion-request ${companion.request.urgency}`} disabled={Boolean(busy) || !companion.allowedActions?.includes(companion.request.action)} onClick={() => care(companion.request!.action)}><span>{t('I need')}</span><strong>{t(companion.request.text)}</strong><small>{t(careActions.find(([action]) => action === companion.request!.action)?.[2] || 'Explore')}</small></button>}
         <h4 className='companion-card-heading'><PawPrint size={15} />{t('Care together')}</h4>
         {companion.lifecycle?.lifeStatus === 'alive' ? <div className='companion-care'>{careActions.filter(([action]) => companion.allowedActions?.includes(action)).map(([action, Icon, label]) => <button type='button' key={action} disabled={Boolean(busy)} onClick={() => care(action)}><Icon size={19} /><span>{t(label)}</span></button>)}</div> : <div className='companion-memorial' role='status'><strong>{t('A beloved part of our family history')}</strong><p>{t(companion.lifecycle?.lifeStatus === 'retired' ? 'Retired peacefully' : 'Remembered with love')}</p><button type='button' className='companion-secondary' disabled={Boolean(busy)} onClick={() => { setPredecessorId(companion.id); setCreating(true); }}>{t('Welcome a successor')}</button></div>}
         {onGoOut && companion.lifecycle?.lifeStatus === 'alive' && <button type='button' className='companion-secondary companion-go-out' onClick={onGoOut}>{t('Go out and walk')}</button>}
-        <CompanionGrowth companion={companion} />
+        <CompanionGrowth companion={companion} busy={busy} act={act} />
         <details className='companion-display-options'><summary><Settings2 size={15} />{t('Display settings')}</summary><CompanionAppearancePicker value={companion.appearance || defaultAppearance} disabled={Boolean(busy) || companion.lifecycle?.lifeStatus !== 'alive'} onChange={(appearance) => { void act({ action: 'appearance', appearance }); }} /></details>
         <div className='companion-thought'><span>{t('ON MY MIND')}</span><CompanionText key={companion.thought} text={companion.thought} /></div>
         {companion.dailyRitual && <div className={`companion-ritual ${companion.dailyRitual.completedAt ? 'is-complete' : ''}`}>

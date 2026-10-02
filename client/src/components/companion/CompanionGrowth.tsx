@@ -1,8 +1,11 @@
 import type { PublicCompanion } from '../../../../shared/contracts.js';
 import { useCompanionLanguage } from './companionLanguage.js';
+import PetGameplay from './PetGameplay.js';
+import type { CompanionAct } from './types.js';
 
-export default function CompanionGrowth({ companion }: { companion: PublicCompanion }) {
+export default function CompanionGrowth({ companion, busy = '', act }: { companion: PublicCompanion; busy?: string; act?: CompanionAct }) {
   const { t } = useCompanionLanguage();
+  if (companion.growth && act) return <PetGameplay companion={companion} busy={busy} act={act} />;
   const levelXp = companion.xp % 80;
   const evolution = companion.evolutions?.at(-1);
   const form = companion.visualForm;

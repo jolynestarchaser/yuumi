@@ -1,9 +1,12 @@
 import type { CompanionAppearance, CompanionSpecies, CompanionVoice } from '../../../../shared/contracts.js';
 
-const speciesVoices: Record<CompanionSpecies, Pick<CompanionVoice, 'preset' | 'rate' | 'pitch'>> = {
+const speciesVoices: Record<CompanionSpecies | 'dog' | 'frog' | 'duck', Pick<CompanionVoice, 'preset' | 'rate' | 'pitch'>> = {
   spirit: { preset: 'fairy', rate: .88, pitch: 1.55 },
   bunny: { preset: 'fairy', rate: 1.08, pitch: 1.45 },
   cat: { preset: 'natural', rate: .94, pitch: 1.16 },
+  dog: { preset: 'natural', rate: .98, pitch: .98 },
+  frog: { preset: 'fairy', rate: .86, pitch: 1.05 },
+  duck: { preset: 'spark', rate: 1.02, pitch: 1.28 },
   fox: { preset: 'spark', rate: 1.12, pitch: 1.35 },
   dragon: { preset: 'dragon', rate: .82, pitch: .78 },
   robot: { preset: 'robot', rate: .76, pitch: 1.02 },

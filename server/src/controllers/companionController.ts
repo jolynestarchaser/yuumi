@@ -12,6 +12,12 @@ import { applyLifecycleCare, addXp } from '../services/companionRewards.js';
 import { retireCompanion } from '../services/companionLifecycle.js';
 import { completeDailyRitual, currentDailyRitual } from '../services/companionRitual.js';
 import { assertReceiptPayload, mutationIdentity } from '../services/companionMutation.js';
+import { acknowledgeGrowth, initializePetProgression } from '../services/petProgression.js';
+import { grantTutorial, rewardPetAction } from '../services/petCare.js';
+import { petLevel } from '../services/petCatalog.js';
+import { applyPetCare, choosePetPrompt, completePetActivityStep, settlePetRest, startPetActivity } from '../services/petActions.js';
+import { fallbackPetReply, validatePetReplyAbilities } from '../services/petDialogue.js';
+import { petGameplayEnabled } from '../services/petRollout.js';
 import type { StoredCompanion, CompanionBudget, Profile } from '../../../shared/contracts.js';
 
 const ACTIVE_COMPANION_LIMIT = 6;
@@ -69,8 +75,8 @@ export async function withCompanionLock(operationId: string, change: (state: Sto
     const mutated = refreshCareRequest(await change(state, token));
     // XP forms are independent of age/lifecycle. This runs inside the same
     // leased receipt mutation, so a replay sees the stored choice and cannot reroll.
-    const changed = evolveCompanion(mutated, state.xp);
-    const { _id, __v, lockToken, lockedUntil, budget, ...fields } = changed;
+    const changed = mutated.progression && !petGameplayEnabled() ? mutated : evolveCompanion(mutated, state.xp);
+    const { _id, __v, lockToken, lockedUntil, budget, pendingChat, ...fields } = changed;
     let saved: StoredCompanion | null = null;
     const session = await mongoose.startSession();
     try {
@@ -167,7 +173,7 @@ export const getCompanion = wrap(async (req, res) => {
   if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
   if (companionId === COMPANION_KEY) await ensureLegacyCompanion();
   let companion = await migrateCompanion(companionId);
-  if (!companion) throw fail(404, 'That companion could not be found.');
+  if (!companion || companion.familyId !== COMPANION_FAMILY_ID) throw fail(404, 'That companion could not be found.');
   companion = await persistLifecycleTransition(companion);
   respond(res, companion);
 });
@@ -177,7 +183,7 @@ export const getCompanionRitualNotice = wrap(async (req, res) => {
   if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
   if (companionId === COMPANION_KEY) await ensureLegacyCompanion();
   let companion = await migrateCompanion(companionId);
-  if (!companion) throw fail(404, 'That companion could not be found.');
+  if (!companion || companion.familyId !== COMPANION_FAMILY_ID) throw fail(404, 'That companion could not be found.');
   companion = await persistLifecycleTransition(companion);
   const now = new Date();
   privateNoStore(res).json({ success: true, data: { companionId, name: companion.name, ritual: currentDailyRitual(settledState(companion, now), now) } });
@@ -187,8 +193,8 @@ export const getCompanionRoster = wrap(async (req, res) => {
   await ensureLegacyCompanion();
   await migrateCompanionRoster();
   const includeArchived = req.query.archived === 'true';
-  const companions = await Companion.find({ familyId: COMPANION_FAMILY_ID, ...(includeArchived ? {} : { archivedAt: null }) }, { _id: 1, name: 1, bornAt: 1, archivedAt: 1, mood: 1, xp: 1, appearance: 1, form: 1, revision: 1 }).sort({ bornAt: 1 }).lean();
-  privateNoStore(res).json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, archivedAt: companion.archivedAt, mood: companion.mood, level: Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })), activeLimit: ACTIVE_COMPANION_LIMIT } });
+  const companions = await Companion.find({ familyId: COMPANION_FAMILY_ID, ...(includeArchived ? {} : { archivedAt: null }) }, { _id: 1, name: 1, bornAt: 1, archivedAt: 1, mood: 1, xp: 1, appearance: 1, form: 1, revision: 1, 'progression.legacyLevel': 1 }).sort({ bornAt: 1 }).lean();
+  privateNoStore(res).json({ success: true, data: { companions: companions.map((companion) => ({ id: companion._id, name: companion.name, bornAt: companion.bornAt, archivedAt: companion.archivedAt, mood: companion.mood, level: companion.progression ? petLevel(companion.xp, companion.progression.legacyLevel) : Math.floor(companion.xp / 80) + 1, form: companion.form, appearance: companion.appearance, revision: companion.revision })), activeLimit: ACTIVE_COMPANION_LIMIT } });
 });
 
 export const createCompanion = wrap(async (req, res) => {
@@ -241,7 +247,8 @@ export const createCompanion = wrap(async (req, res) => {
         }
         state.name = req.body.name.trim(); state.form = req.body.form; state.seed = req.body.seed.trim();
         state.traits = startingTraits(req.body.temperament); state.appearance = req.body.appearance || state.appearance; state.bornAt = new Date();
-        const rows = await Companion.create([{ ...state, _id: id, createdOperationId: req.body.operationId }], { session });
+        const initialized = petGameplayEnabled() ? grantTutorial(initializePetProgression({ ...state, _id: id }, new Date()), new Date()) : { ...state, _id: id };
+        const rows = await Companion.create([{ ...evolveCompanion(initialized, 0), createdOperationId: req.body.operationId }], { session });
         const createdRow = rows[0].toObject();
         result = createdRow;
         await CompanionOperationReceipt.create([{ ...identity, outcomeCompanionId: id, outcomeRevision: createdRow.revision }], { session });
@@ -258,7 +265,13 @@ export const interactWithCompanion = wrap(async (req, res) => {
   const actor = req.desktop.profile;
   if (!validOperationId(operationId)) throw fail(400, 'A valid operation ID is required.');
   if (!validCompanionId(companionId)) throw fail(400, 'Choose a valid companion.');
-  if (!['adopt', 'customize', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', 'archive', 'restore', 'visit', 'retire', ...LIFECYCLE_ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (!['adopt', 'customize', 'inspiration', 'chat', 'chatColor', 'appearance', 'portrait', 'forget', 'archive', 'restore', 'visit', 'retire', 'growthAck', 'morphPreference', 'promptChoice', 'startActivity', 'activityStep', ...LIFECYCLE_ACTIONS].includes(action)) throw fail(400, 'Choose a supported companion action.');
+  if (expectedRevision !== undefined && (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0)) throw fail(400, 'A valid companion revision is required.');
+  if (action === 'growthAck' && (!Array.isArray(req.body.eventIds) || req.body.eventIds.length > 40 || req.body.eventIds.some((id) => typeof id !== 'string' || id.length > 150))) throw fail(400, 'Choose valid growth events.');
+  if (action === 'morphPreference' && !['gentle', 'adventurous'].includes(req.body.preference)) throw fail(400, 'Choose a supported growth preference.');
+  if (action === 'promptChoice' && !['company', 'nature', 'quiet'].includes(req.body.choice)) throw fail(400, 'Choose a supported conversation prompt.');
+  if (action === 'startActivity' && (!['rhythm', 'find', 'explore'].includes(req.body.family) || req.body.capability !== undefined && !['greeting', 'grasp', 'float', 'sense', 'water'].includes(req.body.capability))) throw fail(400, 'Choose a supported activity.');
+  if (action === 'activityStep' && (typeof req.body.sessionId !== 'string' || req.body.sessionId.length > 80 || !Number.isInteger(req.body.answer) || req.body.answer < 0 || req.body.answer > 2)) throw fail(400, 'Choose a valid activity step.');
   if (action === 'customize' && (!validateSetup({ ...req.body, temperament: 'curious' }) || !validateAppearance(req.body.appearance))) throw fail(400, 'Choose a valid name, description, form, and appearance.');
   if (action === 'appearance' && !validateAppearance(req.body.appearance)) throw fail(400, 'Choose soft or pixel art and valid animation settings.');
   if (action === 'adopt' && !validateSetup(req.body)) throw fail(400, 'Choose a name (up to 32 characters), form, and description (up to 500 characters).');
@@ -266,31 +279,55 @@ export const interactWithCompanion = wrap(async (req, res) => {
   if (action === 'chat' && (typeof text !== 'string' || !text.trim() || text.trim().length > 1000)) throw fail(400, 'Write a message between 1 and 1,000 characters.');
   if (action === 'chat' && language !== undefined && !['th', 'en'].includes(language)) throw fail(400, 'Choose a supported chat language.');
   if (action === 'chatColor' && (typeof req.body?.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(req.body.color))) throw fail(400, 'Choose a valid companion chat color.');
-  if (action === 'chat' && !companionCapabilities().chat) throw fail(503, 'Gemini chat is not connected yet. Add GEMINI_API_KEY on the server.');
   if (action === 'portrait') throw fail(410, 'Portrait generation has been retired. Your companion now grows through built-in animated forms.');
   if (action === 'forget' && (typeof memoryId !== 'string' || memoryId.length > 80)) throw fail(400, 'Choose a valid memory.');
   if (action === 'retire' && !Number.isSafeInteger(expectedRevision)) throw fail(400, 'A valid companion revision is required.');
   let generationReserved = false;
+  let preparedReply: Awaited<ReturnType<typeof chatWithCompanion>> | null = null;
+  let chatToken: string | null = null;
   if (action === 'chat') {
     const identity = mutationIdentity(COMPANION_FAMILY_ID, companionId, operationId, actor, req.body);
     const receipt = await CompanionOperationReceipt.findOne({ familyId: COMPANION_FAMILY_ID, companionId, operationId }).lean();
     if (receipt) assertReceiptPayload(receipt, identity);
     else {
       const candidate = await migrateCompanion(companionId);
-      if (!candidate) throw fail(404, 'That companion could not be found.');
+      if (!candidate || candidate.familyId !== COMPANION_FAMILY_ID) throw fail(404, 'That companion could not be found.');
       if (!candidate.bornAt || candidate.archivedAt || candidate.lifecycle?.lifeStatus !== 'alive') throw fail(409, 'This companion is not available for a new conversation.');
-      await reserveGeneration(operationId, 'chats');
-      generationReserved = true;
+      if (candidate.progression) {
+        if (expectedRevision !== undefined && expectedRevision !== candidate.revision) throw fail(409, 'Your companion changed. Refresh and try again.');
+        chatToken = randomUUID();
+        const reserved = await Companion.findOneAndUpdate({ _id: companionId, familyId: COMPANION_FAMILY_ID,
+          $or: [{ pendingChat: { $exists: false } }, { pendingChat: null }, { 'pendingChat.expiresAt': { $lte: new Date() } }] },
+          { $set: { pendingChat: { operationId, token: chatToken, expiresAt: new Date(Date.now() + 30_000) } } }, { new: true }).lean();
+        if (!reserved) throw fail(409, 'A conversation is already waiting for a reply.');
+        try {
+          if (!companionCapabilities().chat) throw fail(503, 'AI unavailable');
+          await reserveGeneration(operationId, 'chats'); generationReserved = true;
+          preparedReply = validatePetReplyAbilities(await chatWithCompanion(settledState(candidate), actor, text.trim(), language || 'en'), candidate, language || 'en');
+        } catch (error) {
+          if (error.status === 409) {
+            await Companion.updateOne({ _id: companionId, 'pendingChat.token': chatToken }, { $unset: { pendingChat: 1 } });
+            throw error;
+          }
+          preparedReply = fallbackPetReply(candidate, language || 'en');
+        }
+      } else {
+        if (!companionCapabilities().chat) throw fail(503, 'Gemini chat is not connected yet. Add GEMINI_API_KEY on the server.');
+        await reserveGeneration(operationId, 'chats'); generationReserved = true;
+      }
     }
   }
   const mutate = (familyToken?: string) => withCompanionLock(operationId, async (state) => {
     const commandNow = new Date();
+    if (expectedRevision !== undefined && expectedRevision !== state.revision && !(action === 'chat' && state.progression)) throw fail(409, 'Your companion changed. Refresh and try again.');
+    if (action === 'chat' && state.progression && chatToken && (state.pendingChat?.token !== chatToken || new Date(state.pendingChat.expiresAt).getTime() <= Date.now())) throw fail(409, 'The conversation reservation expired. Try again.');
     let next = settledState(state, commandNow);
     if (action === 'adopt') {
       if (state.bornAt) throw fail(409, 'Your shared companion has already hatched. Reopen the widget to meet them.');
       const adoptedAt = commandNow;
-      return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), appearance: req.body.appearance || next.appearance, bornAt: adoptedAt, needsUpdatedAt: adoptedAt,
+      const adopted = { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), traits: startingTraits(req.body.temperament), appearance: req.body.appearance || next.appearance, bornAt: adoptedAt, needsUpdatedAt: adoptedAt,
         lifecycle: next.lifecycle ? { ...next.lifecycle, simulatedAgeHours: 0, lowNeedExposureHours: 0, simulationAt: adoptedAt, lastEngagementAt: adoptedAt, protectionUntil: null, terminalAt: null, terminalReason: null, lifeStatus: 'alive', healthCondition: 'well', stage: 'hatchling', stageCareCount: 0 } : next.lifecycle };
+      return petGameplayEnabled() ? grantTutorial(initializePetProgression(adopted as StoredCompanion, adoptedAt), adoptedAt) : adopted as StoredCompanion;
     }
     if (!state.bornAt) throw fail(409, 'Hatch your shared companion first.');
     if (state.archivedAt && action !== 'restore') throw fail(409, 'Restore this companion before sharing another moment.');
@@ -305,16 +342,25 @@ export const interactWithCompanion = wrap(async (req, res) => {
       return { ...next, archivedAt: null, needsUpdatedAt: commandNow, restUntil: remainingRestMs ? new Date(commandNow.getTime() + remainingRestMs) : null, behaviorState: remainingRestMs ? 'resting' : 'active', ...(next.lifecycle ? { lifecycle: { ...next.lifecycle, simulationAt: commandNow, lastEngagementAt: commandNow } } : {}) };
     }
     if (next.lifecycle?.lifeStatus !== 'alive' && action !== 'forget') throw fail(409, 'This companion is now part of your family history. Their memories remain available.');
-    if (action === 'visit') return engageCompanion(next, commandNow);
+    if (action === 'visit') return next.progression ? settlePetRest(engageCompanion(next, commandNow), commandNow, actor) : engageCompanion(next, commandNow);
+    if (action === 'growthAck') return acknowledgeGrowth(next, req.body.eventIds, commandNow);
+    if (action === 'morphPreference' && next.progression) return { ...next, progression: { ...next.progression, morphPreference: req.body.preference } };
+    if (action === 'promptChoice') return choosePetPrompt(next, req.body.choice, commandNow, actor, operationId);
+    if (action === 'startActivity') return startPetActivity(engageCompanion(next, commandNow), req.body.family, req.body.capability || null, actor, commandNow);
+    if (action === 'activityStep') return completePetActivityStep(engageCompanion(next, commandNow), req.body.sessionId, req.body.answer, actor, commandNow, operationId);
     if (action === 'retire') {
       if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed. Refresh before retiring.');
       return retireCompanion(next, commandNow);
     }
     if (action === 'customize') {
       if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
+      if (next.progression && req.body.appearance.species !== next.appearance?.species) throw fail(409, 'Species is part of this companion’s identity. Hatch a new companion to choose another species.');
       return { ...next, name: req.body.name.trim(), form: req.body.form, seed: req.body.seed.trim(), appearance: req.body.appearance };
     }
-    if (action === 'appearance') return { ...next, appearance: req.body.appearance };
+    if (action === 'appearance') {
+      if (next.progression && req.body.appearance.species !== next.appearance?.species) throw fail(409, 'Species is part of this companion’s identity.');
+      return { ...next, appearance: req.body.appearance };
+    }
     if (action === 'chatColor') return { ...next, chatColor: req.body.color };
     if (action === 'inspiration') {
       if (expectedRevision !== state.revision) throw fail(409, 'Your companion changed while you were editing. Refresh and try again.');
@@ -325,7 +371,11 @@ export const interactWithCompanion = wrap(async (req, res) => {
       return forgetMemory(next, memoryId);
     }
     if (LIFECYCLE_ACTIONS.includes(action)) {
-      if (state.lastCare?.[actor] && commandNow.getTime() - new Date(state.lastCare[actor]).getTime() < 5000) throw fail(429, 'Let your companion enjoy this moment. Try again in a few seconds.');
+      if (state.lastCare?.[actor] && commandNow.getTime() - new Date(state.lastCare[actor]).getTime() < (state.progression ? 60_000 : 5000)) throw fail(429, 'Let your companion enjoy this moment. Try again in a little while.');
+      if (next.progression) {
+        const cared = applyPetCare(next, action, commandNow, actor, operationId);
+        return { ...completeDailyRitual(remember(cared, actor, action, `${displayName(actor)} chose to ${action} with me.`, commandNow), action, actor, commandNow), lastCare: { ...state.lastCare, [actor]: commandNow } };
+      }
       if (state.lifecycle) {
         const cared = applyLifecycleCare(next, action, commandNow, actor);
         const withMemory = remember(cared, actor, action, `${displayName(actor)} chose to ${action} with me.`, commandNow);
@@ -334,9 +384,15 @@ export const interactWithCompanion = wrap(async (req, res) => {
       return { ...completeDailyRitual(careFor(state, actor, action, commandNow), action, actor, commandNow), lastCare: { ...state.lastCare, [actor]: commandNow } };
     }
     if (action === 'chat') {
-      const reply = await chatWithCompanion(next, actor, text.trim(), language || 'en');
+      const reply = next.progression ? validatePetReplyAbilities(preparedReply || fallbackPetReply(next, language || 'en'), next, language || 'en') : await chatWithCompanion(next, actor, text.trim(), language || 'en');
       const id = randomUUID();
       next = remember(next, actor, 'conversation', text.trim(), new Date(), id);
+      if (next.progression) {
+        next = rewardPetAction(engageCompanion(next, commandNow), 'chat', commandNow, operationId, actor);
+        const cutoff = commandNow.getTime() - 14 * 86_400_000;
+        return { ...next, mood: reply.mood, thought: reply.thought,
+          turns: [...next.turns.filter((turn) => new Date(turn.at).getTime() >= cutoff), { id, actor, text: text.trim(), at: commandNow }, { id, actor: 'companion', text: reply.reply, at: commandNow }].slice(-60) };
+      }
       const day = new Date().toISOString().slice(0, 10);
       const budget = next.xpBudget?.day === day ? next.xpBudget : { day, care: 0, chat: 0 };
       const chatReward = next.lifecycle ? 4 : budget.chat < 12 ? 4 : 0;
@@ -357,5 +413,7 @@ export const interactWithCompanion = wrap(async (req, res) => {
   } catch (error) {
     if (generationReserved) await releaseGeneration(operationId, 'chats').catch(() => {});
     throw error;
+  } finally {
+    if (chatToken) await Companion.updateOne({ _id: companionId, 'pendingChat.token': chatToken }, { $unset: { pendingChat: 1 } }).catch(() => {});
   }
 });

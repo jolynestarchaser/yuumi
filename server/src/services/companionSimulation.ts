@@ -1,4 +1,5 @@
 import { advanceLifecycle } from './companionLifecycle.js';
+import { simulatePet } from './petSimulation.js';
 import { randomUUID } from 'node:crypto';
 import { HOUR_MS, MAX_OFFLINE_HOURS, NATURAL_DEATH_HOURS, NEED_RATES, REST_ENERGY_PER_HOUR, RETURN_PROTECTION_HOURS } from './companionRules.js';
 import type { CompanionLifecycleEvent, StoredCompanion } from '../../../shared/contracts.js';
@@ -14,6 +15,7 @@ export interface SimulationResult { state: StoredCompanion; automaticallyPaused:
 
 /** Settles version-three lifecycle time without persistence or provider access. */
 export function simulateCompanion(input: StoredCompanion, now: Date, idFactory: () => string = randomUUID): SimulationResult {
+  if (input.progression) return simulatePet(input, now);
   const lifecycle = input.lifecycle;
   if (!lifecycle || !input.bornAt || input.archivedAt || lifecycle.lifeStatus !== 'alive') return { state: input, automaticallyPaused: false };
   const nowMs = time(now, 'Simulation time');

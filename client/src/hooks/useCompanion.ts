@@ -3,7 +3,7 @@ import { api } from '../lib/api.js';
 import { mergeCompanionSnapshot, operationKey, readCompanionRoster, readCompanionSnapshot, readRememberedCompanion, rememberCompanion, resolveCompanionId, type CompanionSnapshots } from '../lib/companionState.js';
 import type { ApiResponse, CompanionSnapshot, CompanionAction, CompanionRosterSummary, CompanionSetup, PublicCompanion } from '../../../shared/contracts.js';
 
-type PendingOperation = { signature: string; id: string };
+type PendingOperation = { signature: string; id: string; revision?: number };
 const browserStorage = () => {
   try { return globalThis.localStorage; } catch { return undefined; }
 };
@@ -118,15 +118,16 @@ export default function useCompanion({ engage = false }: { engage?: boolean } = 
     setErrors((current) => ({ ...current, [targetId]: '' }));
     const signature = operationKey(targetId, action, values);
     const previous = pendingOperations.current.get(targetId);
-    if (previous?.signature !== signature) pendingOperations.current.set(targetId, { signature, id: crypto.randomUUID() });
+    if (previous?.signature !== signature) pendingOperations.current.set(targetId, { signature, id: crypto.randomUUID(), revision: snapshots[targetId]?.companion.growth ? snapshots[targetId].companion.revision : undefined });
     const pending = pendingOperations.current.get(targetId)!;
     try {
-      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { ...command, companionId: targetId, operationId: pending.id });
+      const response = await api.post<ApiResponse<CompanionSnapshot>>('/companions/actions', { ...command, ...(pending.revision === undefined ? {} : { expectedRevision: pending.revision }), companionId: targetId, operationId: pending.id });
       apply(targetId, response.data.data);
       if (pendingOperations.current.get(targetId)?.id === pending.id) pendingOperations.current.delete(targetId);
       return true;
     } catch (err) {
-      const requestError = err as { response?: { data?: { error?: { message?: string } } } };
+      const requestError = err as { response?: { status?: number; data?: { error?: { message?: string } } } };
+      if (requestError.response?.status === 409) { pendingOperations.current.delete(targetId); void refresh(); }
       if (mounted.current) setErrors((current) => ({ ...current, [targetId]: requestError.response?.data?.error?.message || 'Could not save this moment. Try again; your draft is still here.' }));
       return false;
     } finally {
