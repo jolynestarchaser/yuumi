@@ -14,6 +14,7 @@ export const speciesWingPaths: Partial<Record<CompanionSpecies, string[]>> = {
 } satisfies Partial<Record<CompanionSpecies, string[]>>;
 export const robotHornPaths = ['', 'M0 0V-24H13V0Z', 'M0 0V-43H14V0Z', 'M0 0V-52H14V-18H29V-38H41V0Z', 'M0 0V-66H15V-22H31V-49H45V-13H58V-34H71V0Z'];
 export const robotTailPaths = ['M0 0h20v12H0Z', 'M0 0h38v-28h15v44H0Z', 'M0 0h47v-38h18v51H0Z'];
+export const robotGillPaths = ['', 'M0 0H-25V15H0Z', 'M0-8H-38V6H-15V22H0Z', 'M0-12H-48V0H-23V13H-41V25H0Z', 'M0-18H-58V-6H-24V8H-49V20H-18V34H0Z'];
 export const robotPawPaths = ['M-12 0h24v29h-24Z', 'M-14 0h28v38h-28Z', 'M-15 0h30v22h-7v26H-8V22h-7Z', 'M-16 0h32v23h10v24H13V34H-13v13h-13V23h10Z'];
 export const childHornPaths = ['', 'M0 0L-5-18L5-28L14-18L10 0Z', 'M0 0L-8-23L4-41L18-23L12 0Z', 'M0 0L-14-26L-2-52L15-33L28-42L23-14L12 0Z', 'M0 0L-17-29L-5-59L12-39L37-53L30-24L47-15L20-9L12 0Z'];
 const webbed = ['M0 0Q-20 8-16 27L0 35L17 27Q20 8 0 0Z', 'M0 0L-24 30L-11 42L0 29L12 42L24 30Z', 'M0 0L-34 29L-23 44L-10 31L0 50L12 32L25 45L34 29Z', 'M0 0L-40 27L-27 50L-13 36L0 58L14 36L29 50L40 27Z'];

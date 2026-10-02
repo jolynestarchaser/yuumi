@@ -1,11 +1,13 @@
-import type { PetBodyForm } from '../../../../shared/contracts.js';
+import type { CompanionSpecies, PetBodyForm } from '../../../../shared/contracts.js';
+import { organicBodyForms } from './petOrganicForms.js';
 
-export const FORM_SOCKET_NAMES = ['tail', 'crest', 'pawLeft', 'pawRight', 'wingLeft', 'wingRight', 'hornLeft', 'hornRight', 'gillLeft', 'gillRight'] as const;
-export type FormSocketName = typeof FORM_SOCKET_NAMES[number];
-export interface FormSocket { anchor: { x: number; y: number }; pivot: { x: number; y: number } }
+import { formSockets } from './petFormSockets.js';
+import type { FormSocket, FormSocketName } from './petFormSockets.js';
+export { FORM_SOCKET_NAMES, formSockets } from './petFormSockets.js';
+export type { FormSocket, FormSocketName } from './petFormSockets.js';
 export interface AuthoredBodyForm {
   id: string;
-  species: 'robot';
+  species: CompanionSpecies;
   style: PetBodyForm['style'];
   body: PetBodyForm['body'];
   rendererVersion: 'pet-form-v1';
@@ -14,16 +16,7 @@ export interface AuthoredBodyForm {
   sockets: Record<FormSocketName, FormSocket>;
 }
 
-function sockets(width: number, shoulderY: number, crownY: number): Record<FormSocketName, FormSocket> {
-  const point = (x: number, y: number): FormSocket => ({ anchor: { x, y }, pivot: { x, y } });
-  return {
-    tail: point(256 + width, 378), crest: point(256, crownY),
-    pawLeft: point(256 - width, shoulderY), pawRight: point(256 + width, shoulderY),
-    wingLeft: point(256 - width, shoulderY - 31), wingRight: point(256 + width, shoulderY - 31),
-    hornLeft: point(191, crownY), hornRight: point(321, crownY),
-    gillLeft: point(132, shoulderY - 40), gillRight: point(380, shoulderY - 40),
-  };
-}
+const sockets = formSockets;
 
 // Individually drawn chassis contours; these drafts are not server-selection eligible yet.
 const robotContours = [
@@ -35,8 +28,13 @@ const robotContours = [
   { style: 'adventurer', body: 'agile', headPath: 'M176 157L209 140H303L337 157L349 295L326 334H187L163 295Z', bodyPath: 'M201 313H312L339 345L322 391L305 438H208L190 391L173 345Z', sockets: sockets(94, 345, 140) },
 ] satisfies Omit<AuthoredBodyForm, 'id' | 'species' | 'rendererVersion'>[];
 export const robotBodyForms: AuthoredBodyForm[] = robotContours.map((form) => ({ ...form, id: `robot_${form.style}_${form.body}_v1`, species: 'robot', rendererVersion: 'pet-form-v1' }));
+export const petBodyForms: AuthoredBodyForm[] = [...robotBodyForms, ...organicBodyForms];
+export const FORM_CATALOG_VERSION = 'pet-forms-v1';
+export function formDetailIds(form: Pick<AuthoredBodyForm, 'id'>): string[] {
+  return Array.from({ length: 9 }, (_, index) => `${form.id}_detail_${index + 1}`);
+}
 
 export function resolveBodyForm(species: string, form: PetBodyForm | undefined): AuthoredBodyForm | undefined {
-  if (!form || form.rendererVersion !== 'pet-form-v1' || species !== 'robot') return undefined;
-  return robotBodyForms.find((rig) => rig.id === form.id && rig.style === form.style && rig.body === form.body);
+  if (!form || form.rendererVersion !== 'pet-form-v1') return undefined;
+  return petBodyForms.find((rig) => rig.species === species && rig.id === form.id && rig.style === form.style && rig.body === form.body);
 }

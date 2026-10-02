@@ -6,6 +6,11 @@
 .pet-kit-review-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr)); gap:16px; }
 .pet-kit-review article { background:#f0eaf5; border:1px solid #d8cce0; border-radius:20px; padding:16px; }
 .pet-kit-review article svg { margin:auto; max-width:100%; }
+.pet-kit-review article .companion-soft-pet { width:var(--review-size,128px); height:var(--review-size,128px); }
+.pet-kit-review article { overflow:hidden; }
+.pet-kit-review article code { display:block; overflow-wrap:anywhere; font-size:11px; margin-top:12px; }
+.pet-kit-review article p { margin:4px 0 12px; }
+.pet-kit-review input[type='number'] { width:100px; min-height:44px; padding:8px; border:1px solid #c8b9d3; border-radius:8px; }
 .pet-kit-review h2 { margin:0; text-transform:capitalize; font-size:20px; }
 .pet-kit-review small { display:block; text-align:center; }
 .pet-kit-review li { margin-block:8px; }

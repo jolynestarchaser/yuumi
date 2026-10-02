@@ -1,0 +1,8189 @@
+{
+  "catalogVersion": "pet-forms-v1",
+  "forms": [
+    {
+      "id": "robot_nature_compact_v1",
+      "species": "robot",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_nature_compact_v1.svg",
+      "portraitPath": "portraits/robot_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 364,
+            "y": 378
+          },
+          "pivot": {
+            "x": 364,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 342
+          },
+          "pivot": {
+            "x": 148,
+            "y": 342
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 364,
+            "y": 342
+          },
+          "pivot": {
+            "x": 364,
+            "y": 342
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 311
+          },
+          "pivot": {
+            "x": 148,
+            "y": 311
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 364,
+            "y": 311
+          },
+          "pivot": {
+            "x": 364,
+            "y": 311
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 188.5,
+            "y": 146
+          },
+          "pivot": {
+            "x": 188.5,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 323.5,
+            "y": 146
+          },
+          "pivot": {
+            "x": 323.5,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 128,
+            "y": 302
+          },
+          "pivot": {
+            "x": 128,
+            "y": 302
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 384,
+            "y": 302
+          },
+          "pivot": {
+            "x": 384,
+            "y": 302
+          }
+        }
+      },
+      "detailIds": [
+        "robot_nature_compact_v1_detail_1",
+        "robot_nature_compact_v1_detail_2",
+        "robot_nature_compact_v1_detail_3",
+        "robot_nature_compact_v1_detail_4",
+        "robot_nature_compact_v1_detail_5",
+        "robot_nature_compact_v1_detail_6",
+        "robot_nature_compact_v1_detail_7",
+        "robot_nature_compact_v1_detail_8",
+        "robot_nature_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "robot_nature_agile_v1",
+      "species": "robot",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_nature_agile_v1.svg",
+      "portraitPath": "portraits/robot_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 339,
+            "y": 378
+          },
+          "pivot": {
+            "x": 339,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 138
+          },
+          "pivot": {
+            "x": 256,
+            "y": 138
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 336
+          },
+          "pivot": {
+            "x": 173,
+            "y": 336
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 339,
+            "y": 336
+          },
+          "pivot": {
+            "x": 339,
+            "y": 336
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 305
+          },
+          "pivot": {
+            "x": 173,
+            "y": 305
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 339,
+            "y": 305
+          },
+          "pivot": {
+            "x": 339,
+            "y": 305
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 204.125,
+            "y": 138
+          },
+          "pivot": {
+            "x": 204.125,
+            "y": 138
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 307.875,
+            "y": 138
+          },
+          "pivot": {
+            "x": 307.875,
+            "y": 138
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 153,
+            "y": 296
+          },
+          "pivot": {
+            "x": 153,
+            "y": 296
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 359,
+            "y": 296
+          },
+          "pivot": {
+            "x": 359,
+            "y": 296
+          }
+        }
+      },
+      "detailIds": [
+        "robot_nature_agile_v1_detail_1",
+        "robot_nature_agile_v1_detail_2",
+        "robot_nature_agile_v1_detail_3",
+        "robot_nature_agile_v1_detail_4",
+        "robot_nature_agile_v1_detail_5",
+        "robot_nature_agile_v1_detail_6",
+        "robot_nature_agile_v1_detail_7",
+        "robot_nature_agile_v1_detail_8",
+        "robot_nature_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "robot_celestial_compact_v1",
+      "species": "robot",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_celestial_compact_v1.svg",
+      "portraitPath": "portraits/robot_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 367,
+            "y": 378
+          },
+          "pivot": {
+            "x": 367,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 144
+          },
+          "pivot": {
+            "x": 256,
+            "y": 144
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 344
+          },
+          "pivot": {
+            "x": 145,
+            "y": 344
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 367,
+            "y": 344
+          },
+          "pivot": {
+            "x": 367,
+            "y": 344
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 313
+          },
+          "pivot": {
+            "x": 145,
+            "y": 313
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 367,
+            "y": 313
+          },
+          "pivot": {
+            "x": 367,
+            "y": 313
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186.625,
+            "y": 144
+          },
+          "pivot": {
+            "x": 186.625,
+            "y": 144
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 325.375,
+            "y": 144
+          },
+          "pivot": {
+            "x": 325.375,
+            "y": 144
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 125,
+            "y": 304
+          },
+          "pivot": {
+            "x": 125,
+            "y": 304
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 387,
+            "y": 304
+          },
+          "pivot": {
+            "x": 387,
+            "y": 304
+          }
+        }
+      },
+      "detailIds": [
+        "robot_celestial_compact_v1_detail_1",
+        "robot_celestial_compact_v1_detail_2",
+        "robot_celestial_compact_v1_detail_3",
+        "robot_celestial_compact_v1_detail_4",
+        "robot_celestial_compact_v1_detail_5",
+        "robot_celestial_compact_v1_detail_6",
+        "robot_celestial_compact_v1_detail_7",
+        "robot_celestial_compact_v1_detail_8",
+        "robot_celestial_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "robot_celestial_agile_v1",
+      "species": "robot",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_celestial_agile_v1.svg",
+      "portraitPath": "portraits/robot_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 339,
+            "y": 378
+          },
+          "pivot": {
+            "x": 339,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 139
+          },
+          "pivot": {
+            "x": 256,
+            "y": 139
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 333
+          },
+          "pivot": {
+            "x": 173,
+            "y": 333
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 339,
+            "y": 333
+          },
+          "pivot": {
+            "x": 339,
+            "y": 333
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 302
+          },
+          "pivot": {
+            "x": 173,
+            "y": 302
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 339,
+            "y": 302
+          },
+          "pivot": {
+            "x": 339,
+            "y": 302
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 204.125,
+            "y": 139
+          },
+          "pivot": {
+            "x": 204.125,
+            "y": 139
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 307.875,
+            "y": 139
+          },
+          "pivot": {
+            "x": 307.875,
+            "y": 139
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 153,
+            "y": 293
+          },
+          "pivot": {
+            "x": 153,
+            "y": 293
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 359,
+            "y": 293
+          },
+          "pivot": {
+            "x": 359,
+            "y": 293
+          }
+        }
+      },
+      "detailIds": [
+        "robot_celestial_agile_v1_detail_1",
+        "robot_celestial_agile_v1_detail_2",
+        "robot_celestial_agile_v1_detail_3",
+        "robot_celestial_agile_v1_detail_4",
+        "robot_celestial_agile_v1_detail_5",
+        "robot_celestial_agile_v1_detail_6",
+        "robot_celestial_agile_v1_detail_7",
+        "robot_celestial_agile_v1_detail_8",
+        "robot_celestial_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "robot_adventurer_compact_v1",
+      "species": "robot",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/robot_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 371,
+            "y": 378
+          },
+          "pivot": {
+            "x": 371,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 162
+          },
+          "pivot": {
+            "x": 256,
+            "y": 162
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 141,
+            "y": 345
+          },
+          "pivot": {
+            "x": 141,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 371,
+            "y": 345
+          },
+          "pivot": {
+            "x": 371,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 141,
+            "y": 314
+          },
+          "pivot": {
+            "x": 141,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 371,
+            "y": 314
+          },
+          "pivot": {
+            "x": 371,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 184.125,
+            "y": 162
+          },
+          "pivot": {
+            "x": 184.125,
+            "y": 162
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 327.875,
+            "y": 162
+          },
+          "pivot": {
+            "x": 327.875,
+            "y": 162
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 121,
+            "y": 305
+          },
+          "pivot": {
+            "x": 121,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 391,
+            "y": 305
+          },
+          "pivot": {
+            "x": 391,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "robot_adventurer_compact_v1_detail_1",
+        "robot_adventurer_compact_v1_detail_2",
+        "robot_adventurer_compact_v1_detail_3",
+        "robot_adventurer_compact_v1_detail_4",
+        "robot_adventurer_compact_v1_detail_5",
+        "robot_adventurer_compact_v1_detail_6",
+        "robot_adventurer_compact_v1_detail_7",
+        "robot_adventurer_compact_v1_detail_8",
+        "robot_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "robot_adventurer_agile_v1",
+      "species": "robot",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/robot_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/robot_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 350,
+            "y": 378
+          },
+          "pivot": {
+            "x": 350,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 140
+          },
+          "pivot": {
+            "x": 256,
+            "y": 140
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 345
+          },
+          "pivot": {
+            "x": 162,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 350,
+            "y": 345
+          },
+          "pivot": {
+            "x": 350,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 314
+          },
+          "pivot": {
+            "x": 162,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 350,
+            "y": 314
+          },
+          "pivot": {
+            "x": 350,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 197.25,
+            "y": 140
+          },
+          "pivot": {
+            "x": 197.25,
+            "y": 140
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 314.75,
+            "y": 140
+          },
+          "pivot": {
+            "x": 314.75,
+            "y": 140
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 305
+          },
+          "pivot": {
+            "x": 142,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 370,
+            "y": 305
+          },
+          "pivot": {
+            "x": 370,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "robot_adventurer_agile_v1_detail_1",
+        "robot_adventurer_agile_v1_detail_2",
+        "robot_adventurer_agile_v1_detail_3",
+        "robot_adventurer_agile_v1_detail_4",
+        "robot_adventurer_agile_v1_detail_5",
+        "robot_adventurer_agile_v1_detail_6",
+        "robot_adventurer_agile_v1_detail_7",
+        "robot_adventurer_agile_v1_detail_8",
+        "robot_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "cat_nature_compact_v1",
+      "species": "cat",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_nature_compact_v1.svg",
+      "portraitPath": "portraits/cat_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 364,
+            "y": 378
+          },
+          "pivot": {
+            "x": 364,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 151
+          },
+          "pivot": {
+            "x": 256,
+            "y": 151
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 342
+          },
+          "pivot": {
+            "x": 148,
+            "y": 342
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 364,
+            "y": 342
+          },
+          "pivot": {
+            "x": 364,
+            "y": 342
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 311
+          },
+          "pivot": {
+            "x": 148,
+            "y": 311
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 364,
+            "y": 311
+          },
+          "pivot": {
+            "x": 364,
+            "y": 311
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 188.5,
+            "y": 151
+          },
+          "pivot": {
+            "x": 188.5,
+            "y": 151
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 323.5,
+            "y": 151
+          },
+          "pivot": {
+            "x": 323.5,
+            "y": 151
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 128,
+            "y": 302
+          },
+          "pivot": {
+            "x": 128,
+            "y": 302
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 384,
+            "y": 302
+          },
+          "pivot": {
+            "x": 384,
+            "y": 302
+          }
+        }
+      },
+      "detailIds": [
+        "cat_nature_compact_v1_detail_1",
+        "cat_nature_compact_v1_detail_2",
+        "cat_nature_compact_v1_detail_3",
+        "cat_nature_compact_v1_detail_4",
+        "cat_nature_compact_v1_detail_5",
+        "cat_nature_compact_v1_detail_6",
+        "cat_nature_compact_v1_detail_7",
+        "cat_nature_compact_v1_detail_8",
+        "cat_nature_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "cat_nature_agile_v1",
+      "species": "cat",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_nature_agile_v1.svg",
+      "portraitPath": "portraits/cat_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 339,
+            "y": 378
+          },
+          "pivot": {
+            "x": 339,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 340
+          },
+          "pivot": {
+            "x": 173,
+            "y": 340
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 339,
+            "y": 340
+          },
+          "pivot": {
+            "x": 339,
+            "y": 340
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 173,
+            "y": 309
+          },
+          "pivot": {
+            "x": 173,
+            "y": 309
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 339,
+            "y": 309
+          },
+          "pivot": {
+            "x": 339,
+            "y": 309
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 204.125,
+            "y": 146
+          },
+          "pivot": {
+            "x": 204.125,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 307.875,
+            "y": 146
+          },
+          "pivot": {
+            "x": 307.875,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 153,
+            "y": 300
+          },
+          "pivot": {
+            "x": 153,
+            "y": 300
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 359,
+            "y": 300
+          },
+          "pivot": {
+            "x": 359,
+            "y": 300
+          }
+        }
+      },
+      "detailIds": [
+        "cat_nature_agile_v1_detail_1",
+        "cat_nature_agile_v1_detail_2",
+        "cat_nature_agile_v1_detail_3",
+        "cat_nature_agile_v1_detail_4",
+        "cat_nature_agile_v1_detail_5",
+        "cat_nature_agile_v1_detail_6",
+        "cat_nature_agile_v1_detail_7",
+        "cat_nature_agile_v1_detail_8",
+        "cat_nature_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "cat_celestial_compact_v1",
+      "species": "cat",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_celestial_compact_v1.svg",
+      "portraitPath": "portraits/cat_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 362,
+            "y": 378
+          },
+          "pivot": {
+            "x": 362,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 150,
+            "y": 347
+          },
+          "pivot": {
+            "x": 150,
+            "y": 347
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 362,
+            "y": 347
+          },
+          "pivot": {
+            "x": 362,
+            "y": 347
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 150,
+            "y": 316
+          },
+          "pivot": {
+            "x": 150,
+            "y": 316
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 362,
+            "y": 316
+          },
+          "pivot": {
+            "x": 362,
+            "y": 316
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 189.75,
+            "y": 146
+          },
+          "pivot": {
+            "x": 189.75,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 322.25,
+            "y": 146
+          },
+          "pivot": {
+            "x": 322.25,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 130,
+            "y": 307
+          },
+          "pivot": {
+            "x": 130,
+            "y": 307
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 382,
+            "y": 307
+          },
+          "pivot": {
+            "x": 382,
+            "y": 307
+          }
+        }
+      },
+      "detailIds": [
+        "cat_celestial_compact_v1_detail_1",
+        "cat_celestial_compact_v1_detail_2",
+        "cat_celestial_compact_v1_detail_3",
+        "cat_celestial_compact_v1_detail_4",
+        "cat_celestial_compact_v1_detail_5",
+        "cat_celestial_compact_v1_detail_6",
+        "cat_celestial_compact_v1_detail_7",
+        "cat_celestial_compact_v1_detail_8",
+        "cat_celestial_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "cat_celestial_agile_v1",
+      "species": "cat",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_celestial_agile_v1.svg",
+      "portraitPath": "portraits/cat_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 336,
+            "y": 378
+          },
+          "pivot": {
+            "x": 336,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 145
+          },
+          "pivot": {
+            "x": 256,
+            "y": 145
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 176,
+            "y": 345
+          },
+          "pivot": {
+            "x": 176,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 336,
+            "y": 345
+          },
+          "pivot": {
+            "x": 336,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 176,
+            "y": 314
+          },
+          "pivot": {
+            "x": 176,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 336,
+            "y": 314
+          },
+          "pivot": {
+            "x": 336,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 206,
+            "y": 145
+          },
+          "pivot": {
+            "x": 206,
+            "y": 145
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 306,
+            "y": 145
+          },
+          "pivot": {
+            "x": 306,
+            "y": 145
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 156,
+            "y": 305
+          },
+          "pivot": {
+            "x": 156,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 356,
+            "y": 305
+          },
+          "pivot": {
+            "x": 356,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "cat_celestial_agile_v1_detail_1",
+        "cat_celestial_agile_v1_detail_2",
+        "cat_celestial_agile_v1_detail_3",
+        "cat_celestial_agile_v1_detail_4",
+        "cat_celestial_agile_v1_detail_5",
+        "cat_celestial_agile_v1_detail_6",
+        "cat_celestial_agile_v1_detail_7",
+        "cat_celestial_agile_v1_detail_8",
+        "cat_celestial_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "cat_adventurer_compact_v1",
+      "species": "cat",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/cat_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 369,
+            "y": 378
+          },
+          "pivot": {
+            "x": 369,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 155
+          },
+          "pivot": {
+            "x": 256,
+            "y": 155
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 143,
+            "y": 348
+          },
+          "pivot": {
+            "x": 143,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 369,
+            "y": 348
+          },
+          "pivot": {
+            "x": 369,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 143,
+            "y": 317
+          },
+          "pivot": {
+            "x": 143,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 369,
+            "y": 317
+          },
+          "pivot": {
+            "x": 369,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 185.375,
+            "y": 155
+          },
+          "pivot": {
+            "x": 185.375,
+            "y": 155
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 326.625,
+            "y": 155
+          },
+          "pivot": {
+            "x": 326.625,
+            "y": 155
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 123,
+            "y": 308
+          },
+          "pivot": {
+            "x": 123,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 389,
+            "y": 308
+          },
+          "pivot": {
+            "x": 389,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "cat_adventurer_compact_v1_detail_1",
+        "cat_adventurer_compact_v1_detail_2",
+        "cat_adventurer_compact_v1_detail_3",
+        "cat_adventurer_compact_v1_detail_4",
+        "cat_adventurer_compact_v1_detail_5",
+        "cat_adventurer_compact_v1_detail_6",
+        "cat_adventurer_compact_v1_detail_7",
+        "cat_adventurer_compact_v1_detail_8",
+        "cat_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "cat_adventurer_agile_v1",
+      "species": "cat",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/cat_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/cat_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 350,
+            "y": 378
+          },
+          "pivot": {
+            "x": 350,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 152
+          },
+          "pivot": {
+            "x": 256,
+            "y": 152
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 346
+          },
+          "pivot": {
+            "x": 162,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 350,
+            "y": 346
+          },
+          "pivot": {
+            "x": 350,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 315
+          },
+          "pivot": {
+            "x": 162,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 350,
+            "y": 315
+          },
+          "pivot": {
+            "x": 350,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 197.25,
+            "y": 152
+          },
+          "pivot": {
+            "x": 197.25,
+            "y": 152
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 314.75,
+            "y": 152
+          },
+          "pivot": {
+            "x": 314.75,
+            "y": 152
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 306
+          },
+          "pivot": {
+            "x": 142,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 370,
+            "y": 306
+          },
+          "pivot": {
+            "x": 370,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "cat_adventurer_agile_v1_detail_1",
+        "cat_adventurer_agile_v1_detail_2",
+        "cat_adventurer_agile_v1_detail_3",
+        "cat_adventurer_agile_v1_detail_4",
+        "cat_adventurer_agile_v1_detail_5",
+        "cat_adventurer_agile_v1_detail_6",
+        "cat_adventurer_agile_v1_detail_7",
+        "cat_adventurer_agile_v1_detail_8",
+        "cat_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "dog_nature_compact_v1",
+      "species": "dog",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_nature_compact_v1.svg",
+      "portraitPath": "portraits/dog_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 370,
+            "y": 378
+          },
+          "pivot": {
+            "x": 370,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 150
+          },
+          "pivot": {
+            "x": 256,
+            "y": 150
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 344
+          },
+          "pivot": {
+            "x": 142,
+            "y": 344
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 370,
+            "y": 344
+          },
+          "pivot": {
+            "x": 370,
+            "y": 344
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 313
+          },
+          "pivot": {
+            "x": 142,
+            "y": 313
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 370,
+            "y": 313
+          },
+          "pivot": {
+            "x": 370,
+            "y": 313
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 184.75,
+            "y": 150
+          },
+          "pivot": {
+            "x": 184.75,
+            "y": 150
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 327.25,
+            "y": 150
+          },
+          "pivot": {
+            "x": 327.25,
+            "y": 150
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 122,
+            "y": 304
+          },
+          "pivot": {
+            "x": 122,
+            "y": 304
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 390,
+            "y": 304
+          },
+          "pivot": {
+            "x": 390,
+            "y": 304
+          }
+        }
+      },
+      "detailIds": [
+        "dog_nature_compact_v1_detail_1",
+        "dog_nature_compact_v1_detail_2",
+        "dog_nature_compact_v1_detail_3",
+        "dog_nature_compact_v1_detail_4",
+        "dog_nature_compact_v1_detail_5",
+        "dog_nature_compact_v1_detail_6",
+        "dog_nature_compact_v1_detail_7",
+        "dog_nature_compact_v1_detail_8",
+        "dog_nature_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "dog_nature_agile_v1",
+      "species": "dog",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_nature_agile_v1.svg",
+      "portraitPath": "portraits/dog_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 342,
+            "y": 378
+          },
+          "pivot": {
+            "x": 342,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 148
+          },
+          "pivot": {
+            "x": 256,
+            "y": 148
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 170,
+            "y": 345
+          },
+          "pivot": {
+            "x": 170,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 342,
+            "y": 345
+          },
+          "pivot": {
+            "x": 342,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 170,
+            "y": 314
+          },
+          "pivot": {
+            "x": 170,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 342,
+            "y": 314
+          },
+          "pivot": {
+            "x": 342,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 202.25,
+            "y": 148
+          },
+          "pivot": {
+            "x": 202.25,
+            "y": 148
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 309.75,
+            "y": 148
+          },
+          "pivot": {
+            "x": 309.75,
+            "y": 148
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 150,
+            "y": 305
+          },
+          "pivot": {
+            "x": 150,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 362,
+            "y": 305
+          },
+          "pivot": {
+            "x": 362,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "dog_nature_agile_v1_detail_1",
+        "dog_nature_agile_v1_detail_2",
+        "dog_nature_agile_v1_detail_3",
+        "dog_nature_agile_v1_detail_4",
+        "dog_nature_agile_v1_detail_5",
+        "dog_nature_agile_v1_detail_6",
+        "dog_nature_agile_v1_detail_7",
+        "dog_nature_agile_v1_detail_8",
+        "dog_nature_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "dog_celestial_compact_v1",
+      "species": "dog",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_celestial_compact_v1.svg",
+      "portraitPath": "portraits/dog_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 366,
+            "y": 378
+          },
+          "pivot": {
+            "x": 366,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 153
+          },
+          "pivot": {
+            "x": 256,
+            "y": 153
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 146,
+            "y": 348
+          },
+          "pivot": {
+            "x": 146,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 366,
+            "y": 348
+          },
+          "pivot": {
+            "x": 366,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 146,
+            "y": 317
+          },
+          "pivot": {
+            "x": 146,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 366,
+            "y": 317
+          },
+          "pivot": {
+            "x": 366,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 187.25,
+            "y": 153
+          },
+          "pivot": {
+            "x": 187.25,
+            "y": 153
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 324.75,
+            "y": 153
+          },
+          "pivot": {
+            "x": 324.75,
+            "y": 153
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 126,
+            "y": 308
+          },
+          "pivot": {
+            "x": 126,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 386,
+            "y": 308
+          },
+          "pivot": {
+            "x": 386,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "dog_celestial_compact_v1_detail_1",
+        "dog_celestial_compact_v1_detail_2",
+        "dog_celestial_compact_v1_detail_3",
+        "dog_celestial_compact_v1_detail_4",
+        "dog_celestial_compact_v1_detail_5",
+        "dog_celestial_compact_v1_detail_6",
+        "dog_celestial_compact_v1_detail_7",
+        "dog_celestial_compact_v1_detail_8",
+        "dog_celestial_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "dog_celestial_agile_v1",
+      "species": "dog",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_celestial_agile_v1.svg",
+      "portraitPath": "portraits/dog_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 338,
+            "y": 378
+          },
+          "pivot": {
+            "x": 338,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 174,
+            "y": 339
+          },
+          "pivot": {
+            "x": 174,
+            "y": 339
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 338,
+            "y": 339
+          },
+          "pivot": {
+            "x": 338,
+            "y": 339
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 174,
+            "y": 308
+          },
+          "pivot": {
+            "x": 174,
+            "y": 308
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 338,
+            "y": 308
+          },
+          "pivot": {
+            "x": 338,
+            "y": 308
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 204.75,
+            "y": 147
+          },
+          "pivot": {
+            "x": 204.75,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 307.25,
+            "y": 147
+          },
+          "pivot": {
+            "x": 307.25,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 299
+          },
+          "pivot": {
+            "x": 154,
+            "y": 299
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 358,
+            "y": 299
+          },
+          "pivot": {
+            "x": 358,
+            "y": 299
+          }
+        }
+      },
+      "detailIds": [
+        "dog_celestial_agile_v1_detail_1",
+        "dog_celestial_agile_v1_detail_2",
+        "dog_celestial_agile_v1_detail_3",
+        "dog_celestial_agile_v1_detail_4",
+        "dog_celestial_agile_v1_detail_5",
+        "dog_celestial_agile_v1_detail_6",
+        "dog_celestial_agile_v1_detail_7",
+        "dog_celestial_agile_v1_detail_8",
+        "dog_celestial_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "dog_adventurer_compact_v1",
+      "species": "dog",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/dog_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 372,
+            "y": 378
+          },
+          "pivot": {
+            "x": 372,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 159
+          },
+          "pivot": {
+            "x": 256,
+            "y": 159
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 350
+          },
+          "pivot": {
+            "x": 140,
+            "y": 350
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 372,
+            "y": 350
+          },
+          "pivot": {
+            "x": 372,
+            "y": 350
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 319
+          },
+          "pivot": {
+            "x": 140,
+            "y": 319
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 372,
+            "y": 319
+          },
+          "pivot": {
+            "x": 372,
+            "y": 319
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 183.5,
+            "y": 159
+          },
+          "pivot": {
+            "x": 183.5,
+            "y": 159
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 328.5,
+            "y": 159
+          },
+          "pivot": {
+            "x": 328.5,
+            "y": 159
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 120,
+            "y": 310
+          },
+          "pivot": {
+            "x": 120,
+            "y": 310
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 392,
+            "y": 310
+          },
+          "pivot": {
+            "x": 392,
+            "y": 310
+          }
+        }
+      },
+      "detailIds": [
+        "dog_adventurer_compact_v1_detail_1",
+        "dog_adventurer_compact_v1_detail_2",
+        "dog_adventurer_compact_v1_detail_3",
+        "dog_adventurer_compact_v1_detail_4",
+        "dog_adventurer_compact_v1_detail_5",
+        "dog_adventurer_compact_v1_detail_6",
+        "dog_adventurer_compact_v1_detail_7",
+        "dog_adventurer_compact_v1_detail_8",
+        "dog_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "dog_adventurer_agile_v1",
+      "species": "dog",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dog_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/dog_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 353,
+            "y": 378
+          },
+          "pivot": {
+            "x": 353,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 151
+          },
+          "pivot": {
+            "x": 256,
+            "y": 151
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 159,
+            "y": 346
+          },
+          "pivot": {
+            "x": 159,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 353,
+            "y": 346
+          },
+          "pivot": {
+            "x": 353,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 159,
+            "y": 315
+          },
+          "pivot": {
+            "x": 159,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 353,
+            "y": 315
+          },
+          "pivot": {
+            "x": 353,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 195.375,
+            "y": 151
+          },
+          "pivot": {
+            "x": 195.375,
+            "y": 151
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 316.625,
+            "y": 151
+          },
+          "pivot": {
+            "x": 316.625,
+            "y": 151
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 306
+          },
+          "pivot": {
+            "x": 139,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 373,
+            "y": 306
+          },
+          "pivot": {
+            "x": 373,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "dog_adventurer_agile_v1_detail_1",
+        "dog_adventurer_agile_v1_detail_2",
+        "dog_adventurer_agile_v1_detail_3",
+        "dog_adventurer_agile_v1_detail_4",
+        "dog_adventurer_agile_v1_detail_5",
+        "dog_adventurer_agile_v1_detail_6",
+        "dog_adventurer_agile_v1_detail_7",
+        "dog_adventurer_agile_v1_detail_8",
+        "dog_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "frog_nature_compact_v1",
+      "species": "frog",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_nature_compact_v1.svg",
+      "portraitPath": "portraits/frog_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 389,
+            "y": 378
+          },
+          "pivot": {
+            "x": 389,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 235
+          },
+          "pivot": {
+            "x": 256,
+            "y": 235
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 123,
+            "y": 350
+          },
+          "pivot": {
+            "x": 123,
+            "y": 350
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 389,
+            "y": 350
+          },
+          "pivot": {
+            "x": 389,
+            "y": 350
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 123,
+            "y": 319
+          },
+          "pivot": {
+            "x": 123,
+            "y": 319
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 389,
+            "y": 319
+          },
+          "pivot": {
+            "x": 389,
+            "y": 319
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 172.875,
+            "y": 235
+          },
+          "pivot": {
+            "x": 172.875,
+            "y": 235
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 339.125,
+            "y": 235
+          },
+          "pivot": {
+            "x": 339.125,
+            "y": 235
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 103,
+            "y": 310
+          },
+          "pivot": {
+            "x": 103,
+            "y": 310
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 409,
+            "y": 310
+          },
+          "pivot": {
+            "x": 409,
+            "y": 310
+          }
+        }
+      },
+      "detailIds": [
+        "frog_nature_compact_v1_detail_1",
+        "frog_nature_compact_v1_detail_2",
+        "frog_nature_compact_v1_detail_3",
+        "frog_nature_compact_v1_detail_4",
+        "frog_nature_compact_v1_detail_5",
+        "frog_nature_compact_v1_detail_6",
+        "frog_nature_compact_v1_detail_7",
+        "frog_nature_compact_v1_detail_8",
+        "frog_nature_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "frog_nature_agile_v1",
+      "species": "frog",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_nature_agile_v1.svg",
+      "portraitPath": "portraits/frog_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 367,
+            "y": 378
+          },
+          "pivot": {
+            "x": 367,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 230
+          },
+          "pivot": {
+            "x": 256,
+            "y": 230
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 357
+          },
+          "pivot": {
+            "x": 145,
+            "y": 357
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 367,
+            "y": 357
+          },
+          "pivot": {
+            "x": 367,
+            "y": 357
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 326
+          },
+          "pivot": {
+            "x": 145,
+            "y": 326
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 367,
+            "y": 326
+          },
+          "pivot": {
+            "x": 367,
+            "y": 326
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186.625,
+            "y": 230
+          },
+          "pivot": {
+            "x": 186.625,
+            "y": 230
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 325.375,
+            "y": 230
+          },
+          "pivot": {
+            "x": 325.375,
+            "y": 230
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 125,
+            "y": 317
+          },
+          "pivot": {
+            "x": 125,
+            "y": 317
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 387,
+            "y": 317
+          },
+          "pivot": {
+            "x": 387,
+            "y": 317
+          }
+        }
+      },
+      "detailIds": [
+        "frog_nature_agile_v1_detail_1",
+        "frog_nature_agile_v1_detail_2",
+        "frog_nature_agile_v1_detail_3",
+        "frog_nature_agile_v1_detail_4",
+        "frog_nature_agile_v1_detail_5",
+        "frog_nature_agile_v1_detail_6",
+        "frog_nature_agile_v1_detail_7",
+        "frog_nature_agile_v1_detail_8",
+        "frog_nature_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "frog_celestial_compact_v1",
+      "species": "frog",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_celestial_compact_v1.svg",
+      "portraitPath": "portraits/frog_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 385,
+            "y": 378
+          },
+          "pivot": {
+            "x": 385,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 233
+          },
+          "pivot": {
+            "x": 256,
+            "y": 233
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 127,
+            "y": 358
+          },
+          "pivot": {
+            "x": 127,
+            "y": 358
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 385,
+            "y": 358
+          },
+          "pivot": {
+            "x": 385,
+            "y": 358
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 127,
+            "y": 327
+          },
+          "pivot": {
+            "x": 127,
+            "y": 327
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 385,
+            "y": 327
+          },
+          "pivot": {
+            "x": 385,
+            "y": 327
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 175.375,
+            "y": 233
+          },
+          "pivot": {
+            "x": 175.375,
+            "y": 233
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 336.625,
+            "y": 233
+          },
+          "pivot": {
+            "x": 336.625,
+            "y": 233
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 107,
+            "y": 318
+          },
+          "pivot": {
+            "x": 107,
+            "y": 318
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 405,
+            "y": 318
+          },
+          "pivot": {
+            "x": 405,
+            "y": 318
+          }
+        }
+      },
+      "detailIds": [
+        "frog_celestial_compact_v1_detail_1",
+        "frog_celestial_compact_v1_detail_2",
+        "frog_celestial_compact_v1_detail_3",
+        "frog_celestial_compact_v1_detail_4",
+        "frog_celestial_compact_v1_detail_5",
+        "frog_celestial_compact_v1_detail_6",
+        "frog_celestial_compact_v1_detail_7",
+        "frog_celestial_compact_v1_detail_8",
+        "frog_celestial_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "frog_celestial_agile_v1",
+      "species": "frog",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_celestial_agile_v1.svg",
+      "portraitPath": "portraits/frog_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 363,
+            "y": 378
+          },
+          "pivot": {
+            "x": 363,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 232
+          },
+          "pivot": {
+            "x": 256,
+            "y": 232
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 149,
+            "y": 353
+          },
+          "pivot": {
+            "x": 149,
+            "y": 353
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 363,
+            "y": 353
+          },
+          "pivot": {
+            "x": 363,
+            "y": 353
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 149,
+            "y": 322
+          },
+          "pivot": {
+            "x": 149,
+            "y": 322
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 363,
+            "y": 322
+          },
+          "pivot": {
+            "x": 363,
+            "y": 322
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 189.125,
+            "y": 232
+          },
+          "pivot": {
+            "x": 189.125,
+            "y": 232
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 322.875,
+            "y": 232
+          },
+          "pivot": {
+            "x": 322.875,
+            "y": 232
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 129,
+            "y": 313
+          },
+          "pivot": {
+            "x": 129,
+            "y": 313
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 383,
+            "y": 313
+          },
+          "pivot": {
+            "x": 383,
+            "y": 313
+          }
+        }
+      },
+      "detailIds": [
+        "frog_celestial_agile_v1_detail_1",
+        "frog_celestial_agile_v1_detail_2",
+        "frog_celestial_agile_v1_detail_3",
+        "frog_celestial_agile_v1_detail_4",
+        "frog_celestial_agile_v1_detail_5",
+        "frog_celestial_agile_v1_detail_6",
+        "frog_celestial_agile_v1_detail_7",
+        "frog_celestial_agile_v1_detail_8",
+        "frog_celestial_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "frog_adventurer_compact_v1",
+      "species": "frog",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/frog_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 393,
+            "y": 378
+          },
+          "pivot": {
+            "x": 393,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 234
+          },
+          "pivot": {
+            "x": 256,
+            "y": 234
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 119,
+            "y": 360
+          },
+          "pivot": {
+            "x": 119,
+            "y": 360
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 393,
+            "y": 360
+          },
+          "pivot": {
+            "x": 393,
+            "y": 360
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 119,
+            "y": 329
+          },
+          "pivot": {
+            "x": 119,
+            "y": 329
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 393,
+            "y": 329
+          },
+          "pivot": {
+            "x": 393,
+            "y": 329
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 170.375,
+            "y": 234
+          },
+          "pivot": {
+            "x": 170.375,
+            "y": 234
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 341.625,
+            "y": 234
+          },
+          "pivot": {
+            "x": 341.625,
+            "y": 234
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 99,
+            "y": 320
+          },
+          "pivot": {
+            "x": 99,
+            "y": 320
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 413,
+            "y": 320
+          },
+          "pivot": {
+            "x": 413,
+            "y": 320
+          }
+        }
+      },
+      "detailIds": [
+        "frog_adventurer_compact_v1_detail_1",
+        "frog_adventurer_compact_v1_detail_2",
+        "frog_adventurer_compact_v1_detail_3",
+        "frog_adventurer_compact_v1_detail_4",
+        "frog_adventurer_compact_v1_detail_5",
+        "frog_adventurer_compact_v1_detail_6",
+        "frog_adventurer_compact_v1_detail_7",
+        "frog_adventurer_compact_v1_detail_8",
+        "frog_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "frog_adventurer_agile_v1",
+      "species": "frog",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/frog_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/frog_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 367,
+            "y": 378
+          },
+          "pivot": {
+            "x": 367,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 231
+          },
+          "pivot": {
+            "x": 256,
+            "y": 231
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 359
+          },
+          "pivot": {
+            "x": 145,
+            "y": 359
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 367,
+            "y": 359
+          },
+          "pivot": {
+            "x": 367,
+            "y": 359
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 328
+          },
+          "pivot": {
+            "x": 145,
+            "y": 328
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 367,
+            "y": 328
+          },
+          "pivot": {
+            "x": 367,
+            "y": 328
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186.625,
+            "y": 231
+          },
+          "pivot": {
+            "x": 186.625,
+            "y": 231
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 325.375,
+            "y": 231
+          },
+          "pivot": {
+            "x": 325.375,
+            "y": 231
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 125,
+            "y": 319
+          },
+          "pivot": {
+            "x": 125,
+            "y": 319
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 387,
+            "y": 319
+          },
+          "pivot": {
+            "x": 387,
+            "y": 319
+          }
+        }
+      },
+      "detailIds": [
+        "frog_adventurer_agile_v1_detail_1",
+        "frog_adventurer_agile_v1_detail_2",
+        "frog_adventurer_agile_v1_detail_3",
+        "frog_adventurer_agile_v1_detail_4",
+        "frog_adventurer_agile_v1_detail_5",
+        "frog_adventurer_agile_v1_detail_6",
+        "frog_adventurer_agile_v1_detail_7",
+        "frog_adventurer_agile_v1_detail_8",
+        "frog_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "dragon_nature_compact_v1",
+      "species": "dragon",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_nature_compact_v1.svg",
+      "portraitPath": "portraits/dragon_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 372,
+            "y": 378
+          },
+          "pivot": {
+            "x": 372,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 150
+          },
+          "pivot": {
+            "x": 256,
+            "y": 150
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 346
+          },
+          "pivot": {
+            "x": 140,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 372,
+            "y": 346
+          },
+          "pivot": {
+            "x": 372,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 315
+          },
+          "pivot": {
+            "x": 140,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 372,
+            "y": 315
+          },
+          "pivot": {
+            "x": 372,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 183.5,
+            "y": 150
+          },
+          "pivot": {
+            "x": 183.5,
+            "y": 150
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 328.5,
+            "y": 150
+          },
+          "pivot": {
+            "x": 328.5,
+            "y": 150
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 120,
+            "y": 306
+          },
+          "pivot": {
+            "x": 120,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 392,
+            "y": 306
+          },
+          "pivot": {
+            "x": 392,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_nature_compact_v1_detail_1",
+        "dragon_nature_compact_v1_detail_2",
+        "dragon_nature_compact_v1_detail_3",
+        "dragon_nature_compact_v1_detail_4",
+        "dragon_nature_compact_v1_detail_5",
+        "dragon_nature_compact_v1_detail_6",
+        "dragon_nature_compact_v1_detail_7",
+        "dragon_nature_compact_v1_detail_8",
+        "dragon_nature_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "dragon_nature_agile_v1",
+      "species": "dragon",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_nature_agile_v1.svg",
+      "portraitPath": "portraits/dragon_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 348,
+            "y": 378
+          },
+          "pivot": {
+            "x": 348,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 143
+          },
+          "pivot": {
+            "x": 256,
+            "y": 143
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 164,
+            "y": 339
+          },
+          "pivot": {
+            "x": 164,
+            "y": 339
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 348,
+            "y": 339
+          },
+          "pivot": {
+            "x": 348,
+            "y": 339
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 164,
+            "y": 308
+          },
+          "pivot": {
+            "x": 164,
+            "y": 308
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 348,
+            "y": 308
+          },
+          "pivot": {
+            "x": 348,
+            "y": 308
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 198.5,
+            "y": 143
+          },
+          "pivot": {
+            "x": 198.5,
+            "y": 143
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 313.5,
+            "y": 143
+          },
+          "pivot": {
+            "x": 313.5,
+            "y": 143
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 299
+          },
+          "pivot": {
+            "x": 144,
+            "y": 299
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 368,
+            "y": 299
+          },
+          "pivot": {
+            "x": 368,
+            "y": 299
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_nature_agile_v1_detail_1",
+        "dragon_nature_agile_v1_detail_2",
+        "dragon_nature_agile_v1_detail_3",
+        "dragon_nature_agile_v1_detail_4",
+        "dragon_nature_agile_v1_detail_5",
+        "dragon_nature_agile_v1_detail_6",
+        "dragon_nature_agile_v1_detail_7",
+        "dragon_nature_agile_v1_detail_8",
+        "dragon_nature_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "dragon_celestial_compact_v1",
+      "species": "dragon",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_celestial_compact_v1.svg",
+      "portraitPath": "portraits/dragon_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 368,
+            "y": 378
+          },
+          "pivot": {
+            "x": 368,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 145
+          },
+          "pivot": {
+            "x": 256,
+            "y": 145
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 348
+          },
+          "pivot": {
+            "x": 144,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 368,
+            "y": 348
+          },
+          "pivot": {
+            "x": 368,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 317
+          },
+          "pivot": {
+            "x": 144,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 368,
+            "y": 317
+          },
+          "pivot": {
+            "x": 368,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186,
+            "y": 145
+          },
+          "pivot": {
+            "x": 186,
+            "y": 145
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 326,
+            "y": 145
+          },
+          "pivot": {
+            "x": 326,
+            "y": 145
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 124,
+            "y": 308
+          },
+          "pivot": {
+            "x": 124,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 388,
+            "y": 308
+          },
+          "pivot": {
+            "x": 388,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_celestial_compact_v1_detail_1",
+        "dragon_celestial_compact_v1_detail_2",
+        "dragon_celestial_compact_v1_detail_3",
+        "dragon_celestial_compact_v1_detail_4",
+        "dragon_celestial_compact_v1_detail_5",
+        "dragon_celestial_compact_v1_detail_6",
+        "dragon_celestial_compact_v1_detail_7",
+        "dragon_celestial_compact_v1_detail_8",
+        "dragon_celestial_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "dragon_celestial_agile_v1",
+      "species": "dragon",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_celestial_agile_v1.svg",
+      "portraitPath": "portraits/dragon_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 338,
+            "y": 378
+          },
+          "pivot": {
+            "x": 338,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 141
+          },
+          "pivot": {
+            "x": 256,
+            "y": 141
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 174,
+            "y": 336
+          },
+          "pivot": {
+            "x": 174,
+            "y": 336
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 338,
+            "y": 336
+          },
+          "pivot": {
+            "x": 338,
+            "y": 336
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 174,
+            "y": 305
+          },
+          "pivot": {
+            "x": 174,
+            "y": 305
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 338,
+            "y": 305
+          },
+          "pivot": {
+            "x": 338,
+            "y": 305
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 204.75,
+            "y": 141
+          },
+          "pivot": {
+            "x": 204.75,
+            "y": 141
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 307.25,
+            "y": 141
+          },
+          "pivot": {
+            "x": 307.25,
+            "y": 141
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 296
+          },
+          "pivot": {
+            "x": 154,
+            "y": 296
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 358,
+            "y": 296
+          },
+          "pivot": {
+            "x": 358,
+            "y": 296
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_celestial_agile_v1_detail_1",
+        "dragon_celestial_agile_v1_detail_2",
+        "dragon_celestial_agile_v1_detail_3",
+        "dragon_celestial_agile_v1_detail_4",
+        "dragon_celestial_agile_v1_detail_5",
+        "dragon_celestial_agile_v1_detail_6",
+        "dragon_celestial_agile_v1_detail_7",
+        "dragon_celestial_agile_v1_detail_8",
+        "dragon_celestial_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "dragon_adventurer_compact_v1",
+      "species": "dragon",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/dragon_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 377,
+            "y": 378
+          },
+          "pivot": {
+            "x": 377,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 158
+          },
+          "pivot": {
+            "x": 256,
+            "y": 158
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 135,
+            "y": 354
+          },
+          "pivot": {
+            "x": 135,
+            "y": 354
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 377,
+            "y": 354
+          },
+          "pivot": {
+            "x": 377,
+            "y": 354
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 135,
+            "y": 323
+          },
+          "pivot": {
+            "x": 135,
+            "y": 323
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 377,
+            "y": 323
+          },
+          "pivot": {
+            "x": 377,
+            "y": 323
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 180.375,
+            "y": 158
+          },
+          "pivot": {
+            "x": 180.375,
+            "y": 158
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 331.625,
+            "y": 158
+          },
+          "pivot": {
+            "x": 331.625,
+            "y": 158
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 115,
+            "y": 314
+          },
+          "pivot": {
+            "x": 115,
+            "y": 314
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 397,
+            "y": 314
+          },
+          "pivot": {
+            "x": 397,
+            "y": 314
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_adventurer_compact_v1_detail_1",
+        "dragon_adventurer_compact_v1_detail_2",
+        "dragon_adventurer_compact_v1_detail_3",
+        "dragon_adventurer_compact_v1_detail_4",
+        "dragon_adventurer_compact_v1_detail_5",
+        "dragon_adventurer_compact_v1_detail_6",
+        "dragon_adventurer_compact_v1_detail_7",
+        "dragon_adventurer_compact_v1_detail_8",
+        "dragon_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "dragon_adventurer_agile_v1",
+      "species": "dragon",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/dragon_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/dragon_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 358,
+            "y": 378
+          },
+          "pivot": {
+            "x": 358,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 149
+          },
+          "pivot": {
+            "x": 256,
+            "y": 149
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 348
+          },
+          "pivot": {
+            "x": 154,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 358,
+            "y": 348
+          },
+          "pivot": {
+            "x": 358,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 317
+          },
+          "pivot": {
+            "x": 154,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 358,
+            "y": 317
+          },
+          "pivot": {
+            "x": 358,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 192.25,
+            "y": 149
+          },
+          "pivot": {
+            "x": 192.25,
+            "y": 149
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 319.75,
+            "y": 149
+          },
+          "pivot": {
+            "x": 319.75,
+            "y": 149
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 134,
+            "y": 308
+          },
+          "pivot": {
+            "x": 134,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 378,
+            "y": 308
+          },
+          "pivot": {
+            "x": 378,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "dragon_adventurer_agile_v1_detail_1",
+        "dragon_adventurer_agile_v1_detail_2",
+        "dragon_adventurer_agile_v1_detail_3",
+        "dragon_adventurer_agile_v1_detail_4",
+        "dragon_adventurer_agile_v1_detail_5",
+        "dragon_adventurer_agile_v1_detail_6",
+        "dragon_adventurer_agile_v1_detail_7",
+        "dragon_adventurer_agile_v1_detail_8",
+        "dragon_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "march"
+    },
+    {
+      "id": "duck_nature_compact_v1",
+      "species": "duck",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_nature_compact_v1.svg",
+      "portraitPath": "portraits/duck_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 373,
+            "y": 378
+          },
+          "pivot": {
+            "x": 373,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 150
+          },
+          "pivot": {
+            "x": 256,
+            "y": 150
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 350
+          },
+          "pivot": {
+            "x": 139,
+            "y": 350
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 373,
+            "y": 350
+          },
+          "pivot": {
+            "x": 373,
+            "y": 350
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 319
+          },
+          "pivot": {
+            "x": 139,
+            "y": 319
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 373,
+            "y": 319
+          },
+          "pivot": {
+            "x": 373,
+            "y": 319
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 182.875,
+            "y": 150
+          },
+          "pivot": {
+            "x": 182.875,
+            "y": 150
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 329.125,
+            "y": 150
+          },
+          "pivot": {
+            "x": 329.125,
+            "y": 150
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 119,
+            "y": 310
+          },
+          "pivot": {
+            "x": 119,
+            "y": 310
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 393,
+            "y": 310
+          },
+          "pivot": {
+            "x": 393,
+            "y": 310
+          }
+        }
+      },
+      "detailIds": [
+        "duck_nature_compact_v1_detail_1",
+        "duck_nature_compact_v1_detail_2",
+        "duck_nature_compact_v1_detail_3",
+        "duck_nature_compact_v1_detail_4",
+        "duck_nature_compact_v1_detail_5",
+        "duck_nature_compact_v1_detail_6",
+        "duck_nature_compact_v1_detail_7",
+        "duck_nature_compact_v1_detail_8",
+        "duck_nature_compact_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "duck_nature_agile_v1",
+      "species": "duck",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_nature_agile_v1.svg",
+      "portraitPath": "portraits/duck_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 355,
+            "y": 378
+          },
+          "pivot": {
+            "x": 355,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 347
+          },
+          "pivot": {
+            "x": 157,
+            "y": 347
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 355,
+            "y": 347
+          },
+          "pivot": {
+            "x": 355,
+            "y": 347
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 316
+          },
+          "pivot": {
+            "x": 157,
+            "y": 316
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 355,
+            "y": 316
+          },
+          "pivot": {
+            "x": 355,
+            "y": 316
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 194.125,
+            "y": 147
+          },
+          "pivot": {
+            "x": 194.125,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 317.875,
+            "y": 147
+          },
+          "pivot": {
+            "x": 317.875,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 307
+          },
+          "pivot": {
+            "x": 137,
+            "y": 307
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 375,
+            "y": 307
+          },
+          "pivot": {
+            "x": 375,
+            "y": 307
+          }
+        }
+      },
+      "detailIds": [
+        "duck_nature_agile_v1_detail_1",
+        "duck_nature_agile_v1_detail_2",
+        "duck_nature_agile_v1_detail_3",
+        "duck_nature_agile_v1_detail_4",
+        "duck_nature_agile_v1_detail_5",
+        "duck_nature_agile_v1_detail_6",
+        "duck_nature_agile_v1_detail_7",
+        "duck_nature_agile_v1_detail_8",
+        "duck_nature_agile_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "duck_celestial_compact_v1",
+      "species": "duck",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_celestial_compact_v1.svg",
+      "portraitPath": "portraits/duck_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 375,
+            "y": 378
+          },
+          "pivot": {
+            "x": 375,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 149
+          },
+          "pivot": {
+            "x": 256,
+            "y": 149
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 352
+          },
+          "pivot": {
+            "x": 137,
+            "y": 352
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 375,
+            "y": 352
+          },
+          "pivot": {
+            "x": 375,
+            "y": 352
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 321
+          },
+          "pivot": {
+            "x": 137,
+            "y": 321
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 375,
+            "y": 321
+          },
+          "pivot": {
+            "x": 375,
+            "y": 321
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 181.625,
+            "y": 149
+          },
+          "pivot": {
+            "x": 181.625,
+            "y": 149
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 330.375,
+            "y": 149
+          },
+          "pivot": {
+            "x": 330.375,
+            "y": 149
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 117,
+            "y": 312
+          },
+          "pivot": {
+            "x": 117,
+            "y": 312
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 395,
+            "y": 312
+          },
+          "pivot": {
+            "x": 395,
+            "y": 312
+          }
+        }
+      },
+      "detailIds": [
+        "duck_celestial_compact_v1_detail_1",
+        "duck_celestial_compact_v1_detail_2",
+        "duck_celestial_compact_v1_detail_3",
+        "duck_celestial_compact_v1_detail_4",
+        "duck_celestial_compact_v1_detail_5",
+        "duck_celestial_compact_v1_detail_6",
+        "duck_celestial_compact_v1_detail_7",
+        "duck_celestial_compact_v1_detail_8",
+        "duck_celestial_compact_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "duck_celestial_agile_v1",
+      "species": "duck",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_celestial_agile_v1.svg",
+      "portraitPath": "portraits/duck_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 345,
+            "y": 378
+          },
+          "pivot": {
+            "x": 345,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 144
+          },
+          "pivot": {
+            "x": 256,
+            "y": 144
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 344
+          },
+          "pivot": {
+            "x": 167,
+            "y": 344
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 345,
+            "y": 344
+          },
+          "pivot": {
+            "x": 345,
+            "y": 344
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 313
+          },
+          "pivot": {
+            "x": 167,
+            "y": 313
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 345,
+            "y": 313
+          },
+          "pivot": {
+            "x": 345,
+            "y": 313
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 200.375,
+            "y": 144
+          },
+          "pivot": {
+            "x": 200.375,
+            "y": 144
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 311.625,
+            "y": 144
+          },
+          "pivot": {
+            "x": 311.625,
+            "y": 144
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 304
+          },
+          "pivot": {
+            "x": 147,
+            "y": 304
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 365,
+            "y": 304
+          },
+          "pivot": {
+            "x": 365,
+            "y": 304
+          }
+        }
+      },
+      "detailIds": [
+        "duck_celestial_agile_v1_detail_1",
+        "duck_celestial_agile_v1_detail_2",
+        "duck_celestial_agile_v1_detail_3",
+        "duck_celestial_agile_v1_detail_4",
+        "duck_celestial_agile_v1_detail_5",
+        "duck_celestial_agile_v1_detail_6",
+        "duck_celestial_agile_v1_detail_7",
+        "duck_celestial_agile_v1_detail_8",
+        "duck_celestial_agile_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "duck_adventurer_compact_v1",
+      "species": "duck",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/duck_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 380,
+            "y": 378
+          },
+          "pivot": {
+            "x": 380,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 153
+          },
+          "pivot": {
+            "x": 256,
+            "y": 153
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 132,
+            "y": 357
+          },
+          "pivot": {
+            "x": 132,
+            "y": 357
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 380,
+            "y": 357
+          },
+          "pivot": {
+            "x": 380,
+            "y": 357
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 132,
+            "y": 326
+          },
+          "pivot": {
+            "x": 132,
+            "y": 326
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 380,
+            "y": 326
+          },
+          "pivot": {
+            "x": 380,
+            "y": 326
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 178.5,
+            "y": 153
+          },
+          "pivot": {
+            "x": 178.5,
+            "y": 153
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 333.5,
+            "y": 153
+          },
+          "pivot": {
+            "x": 333.5,
+            "y": 153
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 112,
+            "y": 317
+          },
+          "pivot": {
+            "x": 112,
+            "y": 317
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 400,
+            "y": 317
+          },
+          "pivot": {
+            "x": 400,
+            "y": 317
+          }
+        }
+      },
+      "detailIds": [
+        "duck_adventurer_compact_v1_detail_1",
+        "duck_adventurer_compact_v1_detail_2",
+        "duck_adventurer_compact_v1_detail_3",
+        "duck_adventurer_compact_v1_detail_4",
+        "duck_adventurer_compact_v1_detail_5",
+        "duck_adventurer_compact_v1_detail_6",
+        "duck_adventurer_compact_v1_detail_7",
+        "duck_adventurer_compact_v1_detail_8",
+        "duck_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "duck_adventurer_agile_v1",
+      "species": "duck",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/duck_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/duck_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 358,
+            "y": 378
+          },
+          "pivot": {
+            "x": 358,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 350
+          },
+          "pivot": {
+            "x": 154,
+            "y": 350
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 358,
+            "y": 350
+          },
+          "pivot": {
+            "x": 358,
+            "y": 350
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 154,
+            "y": 319
+          },
+          "pivot": {
+            "x": 154,
+            "y": 319
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 358,
+            "y": 319
+          },
+          "pivot": {
+            "x": 358,
+            "y": 319
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 192.25,
+            "y": 147
+          },
+          "pivot": {
+            "x": 192.25,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 319.75,
+            "y": 147
+          },
+          "pivot": {
+            "x": 319.75,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 134,
+            "y": 310
+          },
+          "pivot": {
+            "x": 134,
+            "y": 310
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 378,
+            "y": 310
+          },
+          "pivot": {
+            "x": 378,
+            "y": 310
+          }
+        }
+      },
+      "detailIds": [
+        "duck_adventurer_agile_v1_detail_1",
+        "duck_adventurer_agile_v1_detail_2",
+        "duck_adventurer_agile_v1_detail_3",
+        "duck_adventurer_agile_v1_detail_4",
+        "duck_adventurer_agile_v1_detail_5",
+        "duck_adventurer_agile_v1_detail_6",
+        "duck_adventurer_agile_v1_detail_7",
+        "duck_adventurer_agile_v1_detail_8",
+        "duck_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "waddle"
+    },
+    {
+      "id": "spirit_nature_compact_v1",
+      "species": "spirit",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_nature_compact_v1.svg",
+      "portraitPath": "portraits/spirit_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 368,
+            "y": 378
+          },
+          "pivot": {
+            "x": 368,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 148
+          },
+          "pivot": {
+            "x": 256,
+            "y": 148
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 348
+          },
+          "pivot": {
+            "x": 144,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 368,
+            "y": 348
+          },
+          "pivot": {
+            "x": 368,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 317
+          },
+          "pivot": {
+            "x": 144,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 368,
+            "y": 317
+          },
+          "pivot": {
+            "x": 368,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186,
+            "y": 148
+          },
+          "pivot": {
+            "x": 186,
+            "y": 148
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 326,
+            "y": 148
+          },
+          "pivot": {
+            "x": 326,
+            "y": 148
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 124,
+            "y": 308
+          },
+          "pivot": {
+            "x": 124,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 388,
+            "y": 308
+          },
+          "pivot": {
+            "x": 388,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_nature_compact_v1_detail_1",
+        "spirit_nature_compact_v1_detail_2",
+        "spirit_nature_compact_v1_detail_3",
+        "spirit_nature_compact_v1_detail_4",
+        "spirit_nature_compact_v1_detail_5",
+        "spirit_nature_compact_v1_detail_6",
+        "spirit_nature_compact_v1_detail_7",
+        "spirit_nature_compact_v1_detail_8",
+        "spirit_nature_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "spirit_nature_agile_v1",
+      "species": "spirit",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_nature_agile_v1.svg",
+      "portraitPath": "portraits/spirit_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 344,
+            "y": 378
+          },
+          "pivot": {
+            "x": 344,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 145
+          },
+          "pivot": {
+            "x": 256,
+            "y": 145
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 168,
+            "y": 341
+          },
+          "pivot": {
+            "x": 168,
+            "y": 341
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 344,
+            "y": 341
+          },
+          "pivot": {
+            "x": 344,
+            "y": 341
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 168,
+            "y": 310
+          },
+          "pivot": {
+            "x": 168,
+            "y": 310
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 344,
+            "y": 310
+          },
+          "pivot": {
+            "x": 344,
+            "y": 310
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 201,
+            "y": 145
+          },
+          "pivot": {
+            "x": 201,
+            "y": 145
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 311,
+            "y": 145
+          },
+          "pivot": {
+            "x": 311,
+            "y": 145
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 301
+          },
+          "pivot": {
+            "x": 148,
+            "y": 301
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 364,
+            "y": 301
+          },
+          "pivot": {
+            "x": 364,
+            "y": 301
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_nature_agile_v1_detail_1",
+        "spirit_nature_agile_v1_detail_2",
+        "spirit_nature_agile_v1_detail_3",
+        "spirit_nature_agile_v1_detail_4",
+        "spirit_nature_agile_v1_detail_5",
+        "spirit_nature_agile_v1_detail_6",
+        "spirit_nature_agile_v1_detail_7",
+        "spirit_nature_agile_v1_detail_8",
+        "spirit_nature_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "spirit_celestial_compact_v1",
+      "species": "spirit",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_celestial_compact_v1.svg",
+      "portraitPath": "portraits/spirit_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 364,
+            "y": 378
+          },
+          "pivot": {
+            "x": 364,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 150
+          },
+          "pivot": {
+            "x": 256,
+            "y": 150
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 347
+          },
+          "pivot": {
+            "x": 148,
+            "y": 347
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 364,
+            "y": 347
+          },
+          "pivot": {
+            "x": 364,
+            "y": 347
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 316
+          },
+          "pivot": {
+            "x": 148,
+            "y": 316
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 364,
+            "y": 316
+          },
+          "pivot": {
+            "x": 364,
+            "y": 316
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 188.5,
+            "y": 150
+          },
+          "pivot": {
+            "x": 188.5,
+            "y": 150
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 323.5,
+            "y": 150
+          },
+          "pivot": {
+            "x": 323.5,
+            "y": 150
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 128,
+            "y": 307
+          },
+          "pivot": {
+            "x": 128,
+            "y": 307
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 384,
+            "y": 307
+          },
+          "pivot": {
+            "x": 384,
+            "y": 307
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_celestial_compact_v1_detail_1",
+        "spirit_celestial_compact_v1_detail_2",
+        "spirit_celestial_compact_v1_detail_3",
+        "spirit_celestial_compact_v1_detail_4",
+        "spirit_celestial_compact_v1_detail_5",
+        "spirit_celestial_compact_v1_detail_6",
+        "spirit_celestial_compact_v1_detail_7",
+        "spirit_celestial_compact_v1_detail_8",
+        "spirit_celestial_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "spirit_celestial_agile_v1",
+      "species": "spirit",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_celestial_agile_v1.svg",
+      "portraitPath": "portraits/spirit_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 334,
+            "y": 378
+          },
+          "pivot": {
+            "x": 334,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 138
+          },
+          "pivot": {
+            "x": 256,
+            "y": 138
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 178,
+            "y": 336
+          },
+          "pivot": {
+            "x": 178,
+            "y": 336
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 334,
+            "y": 336
+          },
+          "pivot": {
+            "x": 334,
+            "y": 336
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 178,
+            "y": 305
+          },
+          "pivot": {
+            "x": 178,
+            "y": 305
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 334,
+            "y": 305
+          },
+          "pivot": {
+            "x": 334,
+            "y": 305
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 207.25,
+            "y": 138
+          },
+          "pivot": {
+            "x": 207.25,
+            "y": 138
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 304.75,
+            "y": 138
+          },
+          "pivot": {
+            "x": 304.75,
+            "y": 138
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 158,
+            "y": 296
+          },
+          "pivot": {
+            "x": 158,
+            "y": 296
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 354,
+            "y": 296
+          },
+          "pivot": {
+            "x": 354,
+            "y": 296
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_celestial_agile_v1_detail_1",
+        "spirit_celestial_agile_v1_detail_2",
+        "spirit_celestial_agile_v1_detail_3",
+        "spirit_celestial_agile_v1_detail_4",
+        "spirit_celestial_agile_v1_detail_5",
+        "spirit_celestial_agile_v1_detail_6",
+        "spirit_celestial_agile_v1_detail_7",
+        "spirit_celestial_agile_v1_detail_8",
+        "spirit_celestial_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "spirit_adventurer_compact_v1",
+      "species": "spirit",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/spirit_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 372,
+            "y": 378
+          },
+          "pivot": {
+            "x": 372,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 159
+          },
+          "pivot": {
+            "x": 256,
+            "y": 159
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 354
+          },
+          "pivot": {
+            "x": 140,
+            "y": 354
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 372,
+            "y": 354
+          },
+          "pivot": {
+            "x": 372,
+            "y": 354
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 323
+          },
+          "pivot": {
+            "x": 140,
+            "y": 323
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 372,
+            "y": 323
+          },
+          "pivot": {
+            "x": 372,
+            "y": 323
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 183.5,
+            "y": 159
+          },
+          "pivot": {
+            "x": 183.5,
+            "y": 159
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 328.5,
+            "y": 159
+          },
+          "pivot": {
+            "x": 328.5,
+            "y": 159
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 120,
+            "y": 314
+          },
+          "pivot": {
+            "x": 120,
+            "y": 314
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 392,
+            "y": 314
+          },
+          "pivot": {
+            "x": 392,
+            "y": 314
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_adventurer_compact_v1_detail_1",
+        "spirit_adventurer_compact_v1_detail_2",
+        "spirit_adventurer_compact_v1_detail_3",
+        "spirit_adventurer_compact_v1_detail_4",
+        "spirit_adventurer_compact_v1_detail_5",
+        "spirit_adventurer_compact_v1_detail_6",
+        "spirit_adventurer_compact_v1_detail_7",
+        "spirit_adventurer_compact_v1_detail_8",
+        "spirit_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "spirit_adventurer_agile_v1",
+      "species": "spirit",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/spirit_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/spirit_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 348,
+            "y": 378
+          },
+          "pivot": {
+            "x": 348,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 164,
+            "y": 346
+          },
+          "pivot": {
+            "x": 164,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 348,
+            "y": 346
+          },
+          "pivot": {
+            "x": 348,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 164,
+            "y": 315
+          },
+          "pivot": {
+            "x": 164,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 348,
+            "y": 315
+          },
+          "pivot": {
+            "x": 348,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 198.5,
+            "y": 147
+          },
+          "pivot": {
+            "x": 198.5,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 313.5,
+            "y": 147
+          },
+          "pivot": {
+            "x": 313.5,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 144,
+            "y": 306
+          },
+          "pivot": {
+            "x": 144,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 368,
+            "y": 306
+          },
+          "pivot": {
+            "x": 368,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "spirit_adventurer_agile_v1_detail_1",
+        "spirit_adventurer_agile_v1_detail_2",
+        "spirit_adventurer_agile_v1_detail_3",
+        "spirit_adventurer_agile_v1_detail_4",
+        "spirit_adventurer_agile_v1_detail_5",
+        "spirit_adventurer_agile_v1_detail_6",
+        "spirit_adventurer_agile_v1_detail_7",
+        "spirit_adventurer_agile_v1_detail_8",
+        "spirit_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "bunny_nature_compact_v1",
+      "species": "bunny",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_nature_compact_v1.svg",
+      "portraitPath": "portraits/bunny_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 367,
+            "y": 378
+          },
+          "pivot": {
+            "x": 367,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 153
+          },
+          "pivot": {
+            "x": 256,
+            "y": 153
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 344
+          },
+          "pivot": {
+            "x": 145,
+            "y": 344
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 367,
+            "y": 344
+          },
+          "pivot": {
+            "x": 367,
+            "y": 344
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 145,
+            "y": 313
+          },
+          "pivot": {
+            "x": 145,
+            "y": 313
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 367,
+            "y": 313
+          },
+          "pivot": {
+            "x": 367,
+            "y": 313
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 186.625,
+            "y": 153
+          },
+          "pivot": {
+            "x": 186.625,
+            "y": 153
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 325.375,
+            "y": 153
+          },
+          "pivot": {
+            "x": 325.375,
+            "y": 153
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 125,
+            "y": 304
+          },
+          "pivot": {
+            "x": 125,
+            "y": 304
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 387,
+            "y": 304
+          },
+          "pivot": {
+            "x": 387,
+            "y": 304
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_nature_compact_v1_detail_1",
+        "bunny_nature_compact_v1_detail_2",
+        "bunny_nature_compact_v1_detail_3",
+        "bunny_nature_compact_v1_detail_4",
+        "bunny_nature_compact_v1_detail_5",
+        "bunny_nature_compact_v1_detail_6",
+        "bunny_nature_compact_v1_detail_7",
+        "bunny_nature_compact_v1_detail_8",
+        "bunny_nature_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "bunny_nature_agile_v1",
+      "species": "bunny",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_nature_agile_v1.svg",
+      "portraitPath": "portraits/bunny_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 343,
+            "y": 378
+          },
+          "pivot": {
+            "x": 343,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 169,
+            "y": 340
+          },
+          "pivot": {
+            "x": 169,
+            "y": 340
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 343,
+            "y": 340
+          },
+          "pivot": {
+            "x": 343,
+            "y": 340
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 169,
+            "y": 309
+          },
+          "pivot": {
+            "x": 169,
+            "y": 309
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 343,
+            "y": 309
+          },
+          "pivot": {
+            "x": 343,
+            "y": 309
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 201.625,
+            "y": 146
+          },
+          "pivot": {
+            "x": 201.625,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 310.375,
+            "y": 146
+          },
+          "pivot": {
+            "x": 310.375,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 149,
+            "y": 300
+          },
+          "pivot": {
+            "x": 149,
+            "y": 300
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 363,
+            "y": 300
+          },
+          "pivot": {
+            "x": 363,
+            "y": 300
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_nature_agile_v1_detail_1",
+        "bunny_nature_agile_v1_detail_2",
+        "bunny_nature_agile_v1_detail_3",
+        "bunny_nature_agile_v1_detail_4",
+        "bunny_nature_agile_v1_detail_5",
+        "bunny_nature_agile_v1_detail_6",
+        "bunny_nature_agile_v1_detail_7",
+        "bunny_nature_agile_v1_detail_8",
+        "bunny_nature_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "bunny_celestial_compact_v1",
+      "species": "bunny",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_celestial_compact_v1.svg",
+      "portraitPath": "portraits/bunny_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 364,
+            "y": 378
+          },
+          "pivot": {
+            "x": 364,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 149
+          },
+          "pivot": {
+            "x": 256,
+            "y": 149
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 346
+          },
+          "pivot": {
+            "x": 148,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 364,
+            "y": 346
+          },
+          "pivot": {
+            "x": 364,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 148,
+            "y": 315
+          },
+          "pivot": {
+            "x": 148,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 364,
+            "y": 315
+          },
+          "pivot": {
+            "x": 364,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 188.5,
+            "y": 149
+          },
+          "pivot": {
+            "x": 188.5,
+            "y": 149
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 323.5,
+            "y": 149
+          },
+          "pivot": {
+            "x": 323.5,
+            "y": 149
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 128,
+            "y": 306
+          },
+          "pivot": {
+            "x": 128,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 384,
+            "y": 306
+          },
+          "pivot": {
+            "x": 384,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_celestial_compact_v1_detail_1",
+        "bunny_celestial_compact_v1_detail_2",
+        "bunny_celestial_compact_v1_detail_3",
+        "bunny_celestial_compact_v1_detail_4",
+        "bunny_celestial_compact_v1_detail_5",
+        "bunny_celestial_compact_v1_detail_6",
+        "bunny_celestial_compact_v1_detail_7",
+        "bunny_celestial_compact_v1_detail_8",
+        "bunny_celestial_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "bunny_celestial_agile_v1",
+      "species": "bunny",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_celestial_agile_v1.svg",
+      "portraitPath": "portraits/bunny_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 333,
+            "y": 378
+          },
+          "pivot": {
+            "x": 333,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 140
+          },
+          "pivot": {
+            "x": 256,
+            "y": 140
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 179,
+            "y": 335
+          },
+          "pivot": {
+            "x": 179,
+            "y": 335
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 333,
+            "y": 335
+          },
+          "pivot": {
+            "x": 333,
+            "y": 335
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 179,
+            "y": 304
+          },
+          "pivot": {
+            "x": 179,
+            "y": 304
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 333,
+            "y": 304
+          },
+          "pivot": {
+            "x": 333,
+            "y": 304
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 207.875,
+            "y": 140
+          },
+          "pivot": {
+            "x": 207.875,
+            "y": 140
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 304.125,
+            "y": 140
+          },
+          "pivot": {
+            "x": 304.125,
+            "y": 140
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 159,
+            "y": 295
+          },
+          "pivot": {
+            "x": 159,
+            "y": 295
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 353,
+            "y": 295
+          },
+          "pivot": {
+            "x": 353,
+            "y": 295
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_celestial_agile_v1_detail_1",
+        "bunny_celestial_agile_v1_detail_2",
+        "bunny_celestial_agile_v1_detail_3",
+        "bunny_celestial_agile_v1_detail_4",
+        "bunny_celestial_agile_v1_detail_5",
+        "bunny_celestial_agile_v1_detail_6",
+        "bunny_celestial_agile_v1_detail_7",
+        "bunny_celestial_agile_v1_detail_8",
+        "bunny_celestial_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "bunny_adventurer_compact_v1",
+      "species": "bunny",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/bunny_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 373,
+            "y": 378
+          },
+          "pivot": {
+            "x": 373,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 156
+          },
+          "pivot": {
+            "x": 256,
+            "y": 156
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 350
+          },
+          "pivot": {
+            "x": 139,
+            "y": 350
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 373,
+            "y": 350
+          },
+          "pivot": {
+            "x": 373,
+            "y": 350
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 319
+          },
+          "pivot": {
+            "x": 139,
+            "y": 319
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 373,
+            "y": 319
+          },
+          "pivot": {
+            "x": 373,
+            "y": 319
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 182.875,
+            "y": 156
+          },
+          "pivot": {
+            "x": 182.875,
+            "y": 156
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 329.125,
+            "y": 156
+          },
+          "pivot": {
+            "x": 329.125,
+            "y": 156
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 119,
+            "y": 310
+          },
+          "pivot": {
+            "x": 119,
+            "y": 310
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 393,
+            "y": 310
+          },
+          "pivot": {
+            "x": 393,
+            "y": 310
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_adventurer_compact_v1_detail_1",
+        "bunny_adventurer_compact_v1_detail_2",
+        "bunny_adventurer_compact_v1_detail_3",
+        "bunny_adventurer_compact_v1_detail_4",
+        "bunny_adventurer_compact_v1_detail_5",
+        "bunny_adventurer_compact_v1_detail_6",
+        "bunny_adventurer_compact_v1_detail_7",
+        "bunny_adventurer_compact_v1_detail_8",
+        "bunny_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "bunny_adventurer_agile_v1",
+      "species": "bunny",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/bunny_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/bunny_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 353,
+            "y": 378
+          },
+          "pivot": {
+            "x": 353,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 148
+          },
+          "pivot": {
+            "x": 256,
+            "y": 148
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 159,
+            "y": 345
+          },
+          "pivot": {
+            "x": 159,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 353,
+            "y": 345
+          },
+          "pivot": {
+            "x": 353,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 159,
+            "y": 314
+          },
+          "pivot": {
+            "x": 159,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 353,
+            "y": 314
+          },
+          "pivot": {
+            "x": 353,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 195.375,
+            "y": 148
+          },
+          "pivot": {
+            "x": 195.375,
+            "y": 148
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 316.625,
+            "y": 148
+          },
+          "pivot": {
+            "x": 316.625,
+            "y": 148
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 139,
+            "y": 305
+          },
+          "pivot": {
+            "x": 139,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 373,
+            "y": 305
+          },
+          "pivot": {
+            "x": 373,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "bunny_adventurer_agile_v1_detail_1",
+        "bunny_adventurer_agile_v1_detail_2",
+        "bunny_adventurer_agile_v1_detail_3",
+        "bunny_adventurer_agile_v1_detail_4",
+        "bunny_adventurer_agile_v1_detail_5",
+        "bunny_adventurer_agile_v1_detail_6",
+        "bunny_adventurer_agile_v1_detail_7",
+        "bunny_adventurer_agile_v1_detail_8",
+        "bunny_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "hop"
+    },
+    {
+      "id": "fox_nature_compact_v1",
+      "species": "fox",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_nature_compact_v1.svg",
+      "portraitPath": "portraits/fox_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 370,
+            "y": 378
+          },
+          "pivot": {
+            "x": 370,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 151
+          },
+          "pivot": {
+            "x": 256,
+            "y": 151
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 345
+          },
+          "pivot": {
+            "x": 142,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 370,
+            "y": 345
+          },
+          "pivot": {
+            "x": 370,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 314
+          },
+          "pivot": {
+            "x": 142,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 370,
+            "y": 314
+          },
+          "pivot": {
+            "x": 370,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 184.75,
+            "y": 151
+          },
+          "pivot": {
+            "x": 184.75,
+            "y": 151
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 327.25,
+            "y": 151
+          },
+          "pivot": {
+            "x": 327.25,
+            "y": 151
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 122,
+            "y": 305
+          },
+          "pivot": {
+            "x": 122,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 390,
+            "y": 305
+          },
+          "pivot": {
+            "x": 390,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "fox_nature_compact_v1_detail_1",
+        "fox_nature_compact_v1_detail_2",
+        "fox_nature_compact_v1_detail_3",
+        "fox_nature_compact_v1_detail_4",
+        "fox_nature_compact_v1_detail_5",
+        "fox_nature_compact_v1_detail_6",
+        "fox_nature_compact_v1_detail_7",
+        "fox_nature_compact_v1_detail_8",
+        "fox_nature_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "fox_nature_agile_v1",
+      "species": "fox",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_nature_agile_v1.svg",
+      "portraitPath": "portraits/fox_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 345,
+            "y": 378
+          },
+          "pivot": {
+            "x": 345,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 142
+          },
+          "pivot": {
+            "x": 256,
+            "y": 142
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 340
+          },
+          "pivot": {
+            "x": 167,
+            "y": 340
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 345,
+            "y": 340
+          },
+          "pivot": {
+            "x": 345,
+            "y": 340
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 309
+          },
+          "pivot": {
+            "x": 167,
+            "y": 309
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 345,
+            "y": 309
+          },
+          "pivot": {
+            "x": 345,
+            "y": 309
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 200.375,
+            "y": 142
+          },
+          "pivot": {
+            "x": 200.375,
+            "y": 142
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 311.625,
+            "y": 142
+          },
+          "pivot": {
+            "x": 311.625,
+            "y": 142
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 300
+          },
+          "pivot": {
+            "x": 147,
+            "y": 300
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 365,
+            "y": 300
+          },
+          "pivot": {
+            "x": 365,
+            "y": 300
+          }
+        }
+      },
+      "detailIds": [
+        "fox_nature_agile_v1_detail_1",
+        "fox_nature_agile_v1_detail_2",
+        "fox_nature_agile_v1_detail_3",
+        "fox_nature_agile_v1_detail_4",
+        "fox_nature_agile_v1_detail_5",
+        "fox_nature_agile_v1_detail_6",
+        "fox_nature_agile_v1_detail_7",
+        "fox_nature_agile_v1_detail_8",
+        "fox_nature_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "fox_celestial_compact_v1",
+      "species": "fox",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_celestial_compact_v1.svg",
+      "portraitPath": "portraits/fox_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 365,
+            "y": 378
+          },
+          "pivot": {
+            "x": 365,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 145
+          },
+          "pivot": {
+            "x": 256,
+            "y": 145
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 348
+          },
+          "pivot": {
+            "x": 147,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 365,
+            "y": 348
+          },
+          "pivot": {
+            "x": 365,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 317
+          },
+          "pivot": {
+            "x": 147,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 365,
+            "y": 317
+          },
+          "pivot": {
+            "x": 365,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 187.875,
+            "y": 145
+          },
+          "pivot": {
+            "x": 187.875,
+            "y": 145
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 324.125,
+            "y": 145
+          },
+          "pivot": {
+            "x": 324.125,
+            "y": 145
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 127,
+            "y": 308
+          },
+          "pivot": {
+            "x": 127,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 385,
+            "y": 308
+          },
+          "pivot": {
+            "x": 385,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "fox_celestial_compact_v1_detail_1",
+        "fox_celestial_compact_v1_detail_2",
+        "fox_celestial_compact_v1_detail_3",
+        "fox_celestial_compact_v1_detail_4",
+        "fox_celestial_compact_v1_detail_5",
+        "fox_celestial_compact_v1_detail_6",
+        "fox_celestial_compact_v1_detail_7",
+        "fox_celestial_compact_v1_detail_8",
+        "fox_celestial_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "fox_celestial_agile_v1",
+      "species": "fox",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_celestial_agile_v1.svg",
+      "portraitPath": "portraits/fox_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 335,
+            "y": 378
+          },
+          "pivot": {
+            "x": 335,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 138
+          },
+          "pivot": {
+            "x": 256,
+            "y": 138
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 177,
+            "y": 336
+          },
+          "pivot": {
+            "x": 177,
+            "y": 336
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 335,
+            "y": 336
+          },
+          "pivot": {
+            "x": 335,
+            "y": 336
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 177,
+            "y": 305
+          },
+          "pivot": {
+            "x": 177,
+            "y": 305
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 335,
+            "y": 305
+          },
+          "pivot": {
+            "x": 335,
+            "y": 305
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 206.625,
+            "y": 138
+          },
+          "pivot": {
+            "x": 206.625,
+            "y": 138
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 305.375,
+            "y": 138
+          },
+          "pivot": {
+            "x": 305.375,
+            "y": 138
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 296
+          },
+          "pivot": {
+            "x": 157,
+            "y": 296
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 355,
+            "y": 296
+          },
+          "pivot": {
+            "x": 355,
+            "y": 296
+          }
+        }
+      },
+      "detailIds": [
+        "fox_celestial_agile_v1_detail_1",
+        "fox_celestial_agile_v1_detail_2",
+        "fox_celestial_agile_v1_detail_3",
+        "fox_celestial_agile_v1_detail_4",
+        "fox_celestial_agile_v1_detail_5",
+        "fox_celestial_agile_v1_detail_6",
+        "fox_celestial_agile_v1_detail_7",
+        "fox_celestial_agile_v1_detail_8",
+        "fox_celestial_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "fox_adventurer_compact_v1",
+      "species": "fox",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/fox_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 376,
+            "y": 378
+          },
+          "pivot": {
+            "x": 376,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 155
+          },
+          "pivot": {
+            "x": 256,
+            "y": 155
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 136,
+            "y": 352
+          },
+          "pivot": {
+            "x": 136,
+            "y": 352
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 376,
+            "y": 352
+          },
+          "pivot": {
+            "x": 376,
+            "y": 352
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 136,
+            "y": 321
+          },
+          "pivot": {
+            "x": 136,
+            "y": 321
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 376,
+            "y": 321
+          },
+          "pivot": {
+            "x": 376,
+            "y": 321
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 181,
+            "y": 155
+          },
+          "pivot": {
+            "x": 181,
+            "y": 155
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 331,
+            "y": 155
+          },
+          "pivot": {
+            "x": 331,
+            "y": 155
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 116,
+            "y": 312
+          },
+          "pivot": {
+            "x": 116,
+            "y": 312
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 396,
+            "y": 312
+          },
+          "pivot": {
+            "x": 396,
+            "y": 312
+          }
+        }
+      },
+      "detailIds": [
+        "fox_adventurer_compact_v1_detail_1",
+        "fox_adventurer_compact_v1_detail_2",
+        "fox_adventurer_compact_v1_detail_3",
+        "fox_adventurer_compact_v1_detail_4",
+        "fox_adventurer_compact_v1_detail_5",
+        "fox_adventurer_compact_v1_detail_6",
+        "fox_adventurer_compact_v1_detail_7",
+        "fox_adventurer_compact_v1_detail_8",
+        "fox_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "fox_adventurer_agile_v1",
+      "species": "fox",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/fox_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/fox_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 355,
+            "y": 378
+          },
+          "pivot": {
+            "x": 355,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 346
+          },
+          "pivot": {
+            "x": 157,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 355,
+            "y": 346
+          },
+          "pivot": {
+            "x": 355,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 315
+          },
+          "pivot": {
+            "x": 157,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 355,
+            "y": 315
+          },
+          "pivot": {
+            "x": 355,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 194.125,
+            "y": 147
+          },
+          "pivot": {
+            "x": 194.125,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 317.875,
+            "y": 147
+          },
+          "pivot": {
+            "x": 317.875,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 306
+          },
+          "pivot": {
+            "x": 137,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 375,
+            "y": 306
+          },
+          "pivot": {
+            "x": 375,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "fox_adventurer_agile_v1_detail_1",
+        "fox_adventurer_agile_v1_detail_2",
+        "fox_adventurer_agile_v1_detail_3",
+        "fox_adventurer_agile_v1_detail_4",
+        "fox_adventurer_agile_v1_detail_5",
+        "fox_adventurer_agile_v1_detail_6",
+        "fox_adventurer_agile_v1_detail_7",
+        "fox_adventurer_agile_v1_detail_8",
+        "fox_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "trot"
+    },
+    {
+      "id": "child_nature_compact_v1",
+      "species": "child",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_nature_compact_v1.svg",
+      "portraitPath": "portraits/child_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 365,
+            "y": 378
+          },
+          "pivot": {
+            "x": 365,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 150
+          },
+          "pivot": {
+            "x": 256,
+            "y": 150
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 345
+          },
+          "pivot": {
+            "x": 147,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 365,
+            "y": 345
+          },
+          "pivot": {
+            "x": 365,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 314
+          },
+          "pivot": {
+            "x": 147,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 365,
+            "y": 314
+          },
+          "pivot": {
+            "x": 365,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 187.875,
+            "y": 150
+          },
+          "pivot": {
+            "x": 187.875,
+            "y": 150
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 324.125,
+            "y": 150
+          },
+          "pivot": {
+            "x": 324.125,
+            "y": 150
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 127,
+            "y": 305
+          },
+          "pivot": {
+            "x": 127,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 385,
+            "y": 305
+          },
+          "pivot": {
+            "x": 385,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "child_nature_compact_v1_detail_1",
+        "child_nature_compact_v1_detail_2",
+        "child_nature_compact_v1_detail_3",
+        "child_nature_compact_v1_detail_4",
+        "child_nature_compact_v1_detail_5",
+        "child_nature_compact_v1_detail_6",
+        "child_nature_compact_v1_detail_7",
+        "child_nature_compact_v1_detail_8",
+        "child_nature_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "child_nature_agile_v1",
+      "species": "child",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_nature_agile_v1.svg",
+      "portraitPath": "portraits/child_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 341,
+            "y": 378
+          },
+          "pivot": {
+            "x": 341,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 145
+          },
+          "pivot": {
+            "x": 256,
+            "y": 145
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 171,
+            "y": 340
+          },
+          "pivot": {
+            "x": 171,
+            "y": 340
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 341,
+            "y": 340
+          },
+          "pivot": {
+            "x": 341,
+            "y": 340
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 171,
+            "y": 309
+          },
+          "pivot": {
+            "x": 171,
+            "y": 309
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 341,
+            "y": 309
+          },
+          "pivot": {
+            "x": 341,
+            "y": 309
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 202.875,
+            "y": 145
+          },
+          "pivot": {
+            "x": 202.875,
+            "y": 145
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 309.125,
+            "y": 145
+          },
+          "pivot": {
+            "x": 309.125,
+            "y": 145
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 151,
+            "y": 300
+          },
+          "pivot": {
+            "x": 151,
+            "y": 300
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 361,
+            "y": 300
+          },
+          "pivot": {
+            "x": 361,
+            "y": 300
+          }
+        }
+      },
+      "detailIds": [
+        "child_nature_agile_v1_detail_1",
+        "child_nature_agile_v1_detail_2",
+        "child_nature_agile_v1_detail_3",
+        "child_nature_agile_v1_detail_4",
+        "child_nature_agile_v1_detail_5",
+        "child_nature_agile_v1_detail_6",
+        "child_nature_agile_v1_detail_7",
+        "child_nature_agile_v1_detail_8",
+        "child_nature_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "child_celestial_compact_v1",
+      "species": "child",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_celestial_compact_v1.svg",
+      "portraitPath": "portraits/child_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 362,
+            "y": 378
+          },
+          "pivot": {
+            "x": 362,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 149
+          },
+          "pivot": {
+            "x": 256,
+            "y": 149
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 150,
+            "y": 347
+          },
+          "pivot": {
+            "x": 150,
+            "y": 347
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 362,
+            "y": 347
+          },
+          "pivot": {
+            "x": 362,
+            "y": 347
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 150,
+            "y": 316
+          },
+          "pivot": {
+            "x": 150,
+            "y": 316
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 362,
+            "y": 316
+          },
+          "pivot": {
+            "x": 362,
+            "y": 316
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 189.75,
+            "y": 149
+          },
+          "pivot": {
+            "x": 189.75,
+            "y": 149
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 322.25,
+            "y": 149
+          },
+          "pivot": {
+            "x": 322.25,
+            "y": 149
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 130,
+            "y": 307
+          },
+          "pivot": {
+            "x": 130,
+            "y": 307
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 382,
+            "y": 307
+          },
+          "pivot": {
+            "x": 382,
+            "y": 307
+          }
+        }
+      },
+      "detailIds": [
+        "child_celestial_compact_v1_detail_1",
+        "child_celestial_compact_v1_detail_2",
+        "child_celestial_compact_v1_detail_3",
+        "child_celestial_compact_v1_detail_4",
+        "child_celestial_compact_v1_detail_5",
+        "child_celestial_compact_v1_detail_6",
+        "child_celestial_compact_v1_detail_7",
+        "child_celestial_compact_v1_detail_8",
+        "child_celestial_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "child_celestial_agile_v1",
+      "species": "child",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_celestial_agile_v1.svg",
+      "portraitPath": "portraits/child_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 335,
+            "y": 378
+          },
+          "pivot": {
+            "x": 335,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 138
+          },
+          "pivot": {
+            "x": 256,
+            "y": 138
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 177,
+            "y": 336
+          },
+          "pivot": {
+            "x": 177,
+            "y": 336
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 335,
+            "y": 336
+          },
+          "pivot": {
+            "x": 335,
+            "y": 336
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 177,
+            "y": 305
+          },
+          "pivot": {
+            "x": 177,
+            "y": 305
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 335,
+            "y": 305
+          },
+          "pivot": {
+            "x": 335,
+            "y": 305
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 206.625,
+            "y": 138
+          },
+          "pivot": {
+            "x": 206.625,
+            "y": 138
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 305.375,
+            "y": 138
+          },
+          "pivot": {
+            "x": 305.375,
+            "y": 138
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 157,
+            "y": 296
+          },
+          "pivot": {
+            "x": 157,
+            "y": 296
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 355,
+            "y": 296
+          },
+          "pivot": {
+            "x": 355,
+            "y": 296
+          }
+        }
+      },
+      "detailIds": [
+        "child_celestial_agile_v1_detail_1",
+        "child_celestial_agile_v1_detail_2",
+        "child_celestial_agile_v1_detail_3",
+        "child_celestial_agile_v1_detail_4",
+        "child_celestial_agile_v1_detail_5",
+        "child_celestial_agile_v1_detail_6",
+        "child_celestial_agile_v1_detail_7",
+        "child_celestial_agile_v1_detail_8",
+        "child_celestial_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "child_adventurer_compact_v1",
+      "species": "child",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/child_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 372,
+            "y": 378
+          },
+          "pivot": {
+            "x": 372,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 157
+          },
+          "pivot": {
+            "x": 256,
+            "y": 157
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 351
+          },
+          "pivot": {
+            "x": 140,
+            "y": 351
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 372,
+            "y": 351
+          },
+          "pivot": {
+            "x": 372,
+            "y": 351
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 140,
+            "y": 320
+          },
+          "pivot": {
+            "x": 140,
+            "y": 320
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 372,
+            "y": 320
+          },
+          "pivot": {
+            "x": 372,
+            "y": 320
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 183.5,
+            "y": 157
+          },
+          "pivot": {
+            "x": 183.5,
+            "y": 157
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 328.5,
+            "y": 157
+          },
+          "pivot": {
+            "x": 328.5,
+            "y": 157
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 120,
+            "y": 311
+          },
+          "pivot": {
+            "x": 120,
+            "y": 311
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 392,
+            "y": 311
+          },
+          "pivot": {
+            "x": 392,
+            "y": 311
+          }
+        }
+      },
+      "detailIds": [
+        "child_adventurer_compact_v1_detail_1",
+        "child_adventurer_compact_v1_detail_2",
+        "child_adventurer_compact_v1_detail_3",
+        "child_adventurer_compact_v1_detail_4",
+        "child_adventurer_compact_v1_detail_5",
+        "child_adventurer_compact_v1_detail_6",
+        "child_adventurer_compact_v1_detail_7",
+        "child_adventurer_compact_v1_detail_8",
+        "child_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "child_adventurer_agile_v1",
+      "species": "child",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/child_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/child_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 350,
+            "y": 378
+          },
+          "pivot": {
+            "x": 350,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 147
+          },
+          "pivot": {
+            "x": 256,
+            "y": 147
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 345
+          },
+          "pivot": {
+            "x": 162,
+            "y": 345
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 350,
+            "y": 345
+          },
+          "pivot": {
+            "x": 350,
+            "y": 345
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 162,
+            "y": 314
+          },
+          "pivot": {
+            "x": 162,
+            "y": 314
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 350,
+            "y": 314
+          },
+          "pivot": {
+            "x": 350,
+            "y": 314
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 197.25,
+            "y": 147
+          },
+          "pivot": {
+            "x": 197.25,
+            "y": 147
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 314.75,
+            "y": 147
+          },
+          "pivot": {
+            "x": 314.75,
+            "y": 147
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 305
+          },
+          "pivot": {
+            "x": 142,
+            "y": 305
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 370,
+            "y": 305
+          },
+          "pivot": {
+            "x": 370,
+            "y": 305
+          }
+        }
+      },
+      "detailIds": [
+        "child_adventurer_agile_v1_detail_1",
+        "child_adventurer_agile_v1_detail_2",
+        "child_adventurer_agile_v1_detail_3",
+        "child_adventurer_agile_v1_detail_4",
+        "child_adventurer_agile_v1_detail_5",
+        "child_adventurer_agile_v1_detail_6",
+        "child_adventurer_agile_v1_detail_7",
+        "child_adventurer_agile_v1_detail_8",
+        "child_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "stroll"
+    },
+    {
+      "id": "custom_nature_compact_v1",
+      "species": "custom",
+      "style": "nature",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_nature_compact_v1.svg",
+      "portraitPath": "portraits/custom_nature_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 370,
+            "y": 378
+          },
+          "pivot": {
+            "x": 370,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 148
+          },
+          "pivot": {
+            "x": 256,
+            "y": 148
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 347
+          },
+          "pivot": {
+            "x": 142,
+            "y": 347
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 370,
+            "y": 347
+          },
+          "pivot": {
+            "x": 370,
+            "y": 347
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 142,
+            "y": 316
+          },
+          "pivot": {
+            "x": 142,
+            "y": 316
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 370,
+            "y": 316
+          },
+          "pivot": {
+            "x": 370,
+            "y": 316
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 184.75,
+            "y": 148
+          },
+          "pivot": {
+            "x": 184.75,
+            "y": 148
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 327.25,
+            "y": 148
+          },
+          "pivot": {
+            "x": 327.25,
+            "y": 148
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 122,
+            "y": 307
+          },
+          "pivot": {
+            "x": 122,
+            "y": 307
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 390,
+            "y": 307
+          },
+          "pivot": {
+            "x": 390,
+            "y": 307
+          }
+        }
+      },
+      "detailIds": [
+        "custom_nature_compact_v1_detail_1",
+        "custom_nature_compact_v1_detail_2",
+        "custom_nature_compact_v1_detail_3",
+        "custom_nature_compact_v1_detail_4",
+        "custom_nature_compact_v1_detail_5",
+        "custom_nature_compact_v1_detail_6",
+        "custom_nature_compact_v1_detail_7",
+        "custom_nature_compact_v1_detail_8",
+        "custom_nature_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "custom_nature_agile_v1",
+      "species": "custom",
+      "style": "nature",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_nature_agile_v1.svg",
+      "portraitPath": "portraits/custom_nature_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 345,
+            "y": 378
+          },
+          "pivot": {
+            "x": 345,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 342
+          },
+          "pivot": {
+            "x": 167,
+            "y": 342
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 345,
+            "y": 342
+          },
+          "pivot": {
+            "x": 345,
+            "y": 342
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 167,
+            "y": 311
+          },
+          "pivot": {
+            "x": 167,
+            "y": 311
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 345,
+            "y": 311
+          },
+          "pivot": {
+            "x": 345,
+            "y": 311
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 200.375,
+            "y": 146
+          },
+          "pivot": {
+            "x": 200.375,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 311.625,
+            "y": 146
+          },
+          "pivot": {
+            "x": 311.625,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 302
+          },
+          "pivot": {
+            "x": 147,
+            "y": 302
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 365,
+            "y": 302
+          },
+          "pivot": {
+            "x": 365,
+            "y": 302
+          }
+        }
+      },
+      "detailIds": [
+        "custom_nature_agile_v1_detail_1",
+        "custom_nature_agile_v1_detail_2",
+        "custom_nature_agile_v1_detail_3",
+        "custom_nature_agile_v1_detail_4",
+        "custom_nature_agile_v1_detail_5",
+        "custom_nature_agile_v1_detail_6",
+        "custom_nature_agile_v1_detail_7",
+        "custom_nature_agile_v1_detail_8",
+        "custom_nature_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "custom_celestial_compact_v1",
+      "species": "custom",
+      "style": "celestial",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_celestial_compact_v1.svg",
+      "portraitPath": "portraits/custom_celestial_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 365,
+            "y": 378
+          },
+          "pivot": {
+            "x": 365,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 149
+          },
+          "pivot": {
+            "x": 256,
+            "y": 149
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 348
+          },
+          "pivot": {
+            "x": 147,
+            "y": 348
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 365,
+            "y": 348
+          },
+          "pivot": {
+            "x": 365,
+            "y": 348
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 147,
+            "y": 317
+          },
+          "pivot": {
+            "x": 147,
+            "y": 317
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 365,
+            "y": 317
+          },
+          "pivot": {
+            "x": 365,
+            "y": 317
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 187.875,
+            "y": 149
+          },
+          "pivot": {
+            "x": 187.875,
+            "y": 149
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 324.125,
+            "y": 149
+          },
+          "pivot": {
+            "x": 324.125,
+            "y": 149
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 127,
+            "y": 308
+          },
+          "pivot": {
+            "x": 127,
+            "y": 308
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 385,
+            "y": 308
+          },
+          "pivot": {
+            "x": 385,
+            "y": 308
+          }
+        }
+      },
+      "detailIds": [
+        "custom_celestial_compact_v1_detail_1",
+        "custom_celestial_compact_v1_detail_2",
+        "custom_celestial_compact_v1_detail_3",
+        "custom_celestial_compact_v1_detail_4",
+        "custom_celestial_compact_v1_detail_5",
+        "custom_celestial_compact_v1_detail_6",
+        "custom_celestial_compact_v1_detail_7",
+        "custom_celestial_compact_v1_detail_8",
+        "custom_celestial_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "custom_celestial_agile_v1",
+      "species": "custom",
+      "style": "celestial",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_celestial_agile_v1.svg",
+      "portraitPath": "portraits/custom_celestial_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 337,
+            "y": 378
+          },
+          "pivot": {
+            "x": 337,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 136
+          },
+          "pivot": {
+            "x": 256,
+            "y": 136
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 175,
+            "y": 339
+          },
+          "pivot": {
+            "x": 175,
+            "y": 339
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 337,
+            "y": 339
+          },
+          "pivot": {
+            "x": 337,
+            "y": 339
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 175,
+            "y": 308
+          },
+          "pivot": {
+            "x": 175,
+            "y": 308
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 337,
+            "y": 308
+          },
+          "pivot": {
+            "x": 337,
+            "y": 308
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 205.375,
+            "y": 136
+          },
+          "pivot": {
+            "x": 205.375,
+            "y": 136
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 306.625,
+            "y": 136
+          },
+          "pivot": {
+            "x": 306.625,
+            "y": 136
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 155,
+            "y": 299
+          },
+          "pivot": {
+            "x": 155,
+            "y": 299
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 357,
+            "y": 299
+          },
+          "pivot": {
+            "x": 357,
+            "y": 299
+          }
+        }
+      },
+      "detailIds": [
+        "custom_celestial_agile_v1_detail_1",
+        "custom_celestial_agile_v1_detail_2",
+        "custom_celestial_agile_v1_detail_3",
+        "custom_celestial_agile_v1_detail_4",
+        "custom_celestial_agile_v1_detail_5",
+        "custom_celestial_agile_v1_detail_6",
+        "custom_celestial_agile_v1_detail_7",
+        "custom_celestial_agile_v1_detail_8",
+        "custom_celestial_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "custom_adventurer_compact_v1",
+      "species": "custom",
+      "style": "adventurer",
+      "body": "compact",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_adventurer_compact_v1.svg",
+      "portraitPath": "portraits/custom_adventurer_compact_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 375,
+            "y": 378
+          },
+          "pivot": {
+            "x": 375,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 153
+          },
+          "pivot": {
+            "x": 256,
+            "y": 153
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 352
+          },
+          "pivot": {
+            "x": 137,
+            "y": 352
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 375,
+            "y": 352
+          },
+          "pivot": {
+            "x": 375,
+            "y": 352
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 137,
+            "y": 321
+          },
+          "pivot": {
+            "x": 137,
+            "y": 321
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 375,
+            "y": 321
+          },
+          "pivot": {
+            "x": 375,
+            "y": 321
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 181.625,
+            "y": 153
+          },
+          "pivot": {
+            "x": 181.625,
+            "y": 153
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 330.375,
+            "y": 153
+          },
+          "pivot": {
+            "x": 330.375,
+            "y": 153
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 117,
+            "y": 312
+          },
+          "pivot": {
+            "x": 117,
+            "y": 312
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 395,
+            "y": 312
+          },
+          "pivot": {
+            "x": 395,
+            "y": 312
+          }
+        }
+      },
+      "detailIds": [
+        "custom_adventurer_compact_v1_detail_1",
+        "custom_adventurer_compact_v1_detail_2",
+        "custom_adventurer_compact_v1_detail_3",
+        "custom_adventurer_compact_v1_detail_4",
+        "custom_adventurer_compact_v1_detail_5",
+        "custom_adventurer_compact_v1_detail_6",
+        "custom_adventurer_compact_v1_detail_7",
+        "custom_adventurer_compact_v1_detail_8",
+        "custom_adventurer_compact_v1_detail_9"
+      ],
+      "gait": "float"
+    },
+    {
+      "id": "custom_adventurer_agile_v1",
+      "species": "custom",
+      "style": "adventurer",
+      "body": "agile",
+      "rendererVersion": "pet-form-v1",
+      "validated": false,
+      "rigPath": "rigs/custom_adventurer_agile_v1.svg",
+      "portraitPath": "portraits/custom_adventurer_agile_v1.svg",
+      "sockets": {
+        "tail": {
+          "anchor": {
+            "x": 354,
+            "y": 378
+          },
+          "pivot": {
+            "x": 354,
+            "y": 378
+          }
+        },
+        "crest": {
+          "anchor": {
+            "x": 256,
+            "y": 146
+          },
+          "pivot": {
+            "x": 256,
+            "y": 146
+          }
+        },
+        "pawLeft": {
+          "anchor": {
+            "x": 158,
+            "y": 346
+          },
+          "pivot": {
+            "x": 158,
+            "y": 346
+          }
+        },
+        "pawRight": {
+          "anchor": {
+            "x": 354,
+            "y": 346
+          },
+          "pivot": {
+            "x": 354,
+            "y": 346
+          }
+        },
+        "wingLeft": {
+          "anchor": {
+            "x": 158,
+            "y": 315
+          },
+          "pivot": {
+            "x": 158,
+            "y": 315
+          }
+        },
+        "wingRight": {
+          "anchor": {
+            "x": 354,
+            "y": 315
+          },
+          "pivot": {
+            "x": 354,
+            "y": 315
+          }
+        },
+        "hornLeft": {
+          "anchor": {
+            "x": 194.75,
+            "y": 146
+          },
+          "pivot": {
+            "x": 194.75,
+            "y": 146
+          }
+        },
+        "hornRight": {
+          "anchor": {
+            "x": 317.25,
+            "y": 146
+          },
+          "pivot": {
+            "x": 317.25,
+            "y": 146
+          }
+        },
+        "gillLeft": {
+          "anchor": {
+            "x": 138,
+            "y": 306
+          },
+          "pivot": {
+            "x": 138,
+            "y": 306
+          }
+        },
+        "gillRight": {
+          "anchor": {
+            "x": 374,
+            "y": 306
+          },
+          "pivot": {
+            "x": 374,
+            "y": 306
+          }
+        }
+      },
+      "detailIds": [
+        "custom_adventurer_agile_v1_detail_1",
+        "custom_adventurer_agile_v1_detail_2",
+        "custom_adventurer_agile_v1_detail_3",
+        "custom_adventurer_agile_v1_detail_4",
+        "custom_adventurer_agile_v1_detail_5",
+        "custom_adventurer_agile_v1_detail_6",
+        "custom_adventurer_agile_v1_detail_7",
+        "custom_adventurer_agile_v1_detail_8",
+        "custom_adventurer_agile_v1_detail_9"
+      ],
+      "gait": "float"
+    }
+  ]
+}

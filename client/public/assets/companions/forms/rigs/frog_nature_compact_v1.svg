@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="companion-soft-pet " style="--pet-walk-cycle:1.3s" viewBox="0 0 512 512" width="256" height="256" aria-hidden="true" data-species="frog" data-gait="hop" data-life-stage="grown" data-art-version="pet-form-v1" data-form-id="frog_nature_compact_v1" fill="#A8D9BE" stroke="#5B3D45" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><style>.companion-soft-pet { display:block; width:256px; height:256px; overflow:visible; }
+.companion-avatar:has(.companion-soft-pet)::after { display:none; }
+.companion-avatar:has(.companion-soft-pet) .companion-avatar-motion { animation:none; scale:1; }
+.pet-art-root { transform-origin:256px 448px; animation:pet-art-breathe 3.4s ease-in-out infinite; }
+.pet-art-eyes { transform-box:fill-box; transform-origin:center; animation:pet-art-blink 6s infinite; }
+.pet-art-wings { transform-origin:0 0; animation:pet-art-follow 3.4s ease-in-out infinite; }
+.activity-sleeping .pet-art-root { animation:pet-art-rest 4.5s ease-in-out infinite; }
+.activity-success .pet-art-root,.reaction-play .pet-art-root { animation:pet-art-hop 1s cubic-bezier(.23,1,.32,1) 2; }
+.reaction-feed .pet-art-paw { transform-origin:0 0; animation:pet-art-nibble 1.8s ease-in-out; }
+.activity-thinking .pet-art-root { animation:pet-art-think 2.5s ease-in-out infinite; }
+.companion-avatar.level-up:has(.companion-soft-pet) .companion-avatar-motion { animation:none; }
+.level-up .pet-art-root { animation:pet-art-reveal 1.2s cubic-bezier(.23,1,.32,1); }
+.pet-is-walking .pet-art-root { animation:pet-art-stride var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-leg { transform-box:fill-box; transform-origin:center top; animation:pet-art-step var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-leg.near { animation-delay:calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .pet-art-paw { transform-origin:0 0; animation:pet-art-arm var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking .pet-art-paw.near { animation-delay:calc(var(--pet-walk-cycle) / -2); }
+.pet-is-walking .pet-art-tail { transform-origin:0 0; animation:pet-art-follow var(--pet-walk-cycle) ease-in-out infinite; }
+.pet-is-walking[data-gait='hop'] .pet-art-root { animation-name:pet-art-travel-hop; }
+.pet-is-walking[data-gait='hop'] .pet-art-leg.near { animation-delay:0s; }
+.pet-is-walking[data-gait='waddle'] .pet-art-root { animation-name:pet-art-waddle; }
+.pet-is-walking[data-gait='float'] .pet-art-root { animation-name:pet-art-float; }
+.pet-is-walking[data-gait='float'] .pet-art-leg { animation-name:pet-art-hover-feet; }
+.pet-is-walking[data-gait='march'] .pet-art-root { animation-timing-function:linear; }
+.pet-is-walking[data-species='robot'] .pet-art-leg { animation-timing-function:steps(4,end); }
+.pet-is-walking[data-gait='trot'] .pet-art-root { animation-name:pet-art-trot; }
+.motion-paused .companion-soft-pet * { animation:none !important; }
+@keyframes pet-art-stride { 0%,50%,100% { transform:translateY(0); } 25%,75% { transform:translateY(-5px); } }
+@keyframes pet-art-step { 0%,100% { transform:translate(0,0) rotate(-12deg); } 50% { transform:translate(5px,-6px) rotate(12deg); } }
+@keyframes pet-art-arm { 0%,100% { transform:rotate(-13deg); } 50% { transform:rotate(13deg); } }
+@keyframes pet-art-travel-hop { 0%,100% { transform:scale(1.04,.96); } 40%,60% { transform:translateY(-22px) scale(.98,1.02); } }
+@keyframes pet-art-waddle { 0%,100% { transform:rotate(-4deg); } 50% { transform:rotate(4deg) translateY(-4px); } }
+@keyframes pet-art-float { 0%,100% { transform:translateY(-8px) rotate(-2deg); } 50% { transform:translateY(-22px) rotate(2deg); } }
+@keyframes pet-art-hover-feet { 0%,100% { transform:rotate(-6deg); } 50% { transform:rotate(6deg); } }
+@keyframes pet-art-trot { 0%,50%,100% { transform:translateY(0) rotate(-2deg); } 25%,75% { transform:translateY(-9px) rotate(2deg); } }
+@keyframes pet-art-breathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.015,.99); } }
+@keyframes pet-art-rest { 0%,100% { transform:translateY(3px) scale(1,.98); } 50% { transform:translateY(4px) scale(1.01,.97); } }
+@keyframes pet-art-blink { 0%,43%,47%,100% { transform:scaleY(1); } 45% { transform:scaleY(.08); } }
+@keyframes pet-art-follow { 0%,100% { transform:rotate(0deg); } 50% { transform:rotate(3deg); } }
+@keyframes pet-art-hop { 0%,100% { transform:translateY(0); } 15% { transform:scale(1.03,.97); } 42% { transform:translateY(-18px) scale(.98,1.02); } 72% { transform:scale(1.025,.975); } }
+@keyframes pet-art-nibble { 0%,100% { transform:rotate(0deg); } 35%,65% { transform:rotate(-20deg); } }
+@keyframes pet-art-think { 0%,100% { transform:rotate(0deg); } 50% { transform:rotate(-3deg); } }
+@keyframes pet-art-reveal { 0%,100% { transform:scale(1); opacity:1; } 25% { transform:scale(.98,1.02); } 55% { transform:scale(1.025,.975); opacity:.8; } }
+@media (prefers-reduced-motion:reduce) { .companion-soft-pet * { animation:none !important; } }
+</style><ellipse data-layer="groundShadow" cx="256" cy="448" rx="115" ry="15" fill="#5B3D45" opacity=".15" stroke="none"></ellipse><g><g transform="translate(0 0) scale(1)"><g data-layer="root" class="pet-art-root"><g data-layer="formNativeContour" fill="#A8D9BE" stroke-width="7"><g transform="translate(103 290) scale(1 1)"><path d="M4-8Q-21-38-35-18L-23-3Q-48 5-32 25L-11 18Q-16 39 9 30Z"></path></g><g transform="translate(409 290) scale(-1 1)"><path d="M4-8Q-21-38-35-18L-23-3Q-48 5-32 25L-11 18Q-16 39 9 30Z"></path></g></g><g data-layer="hindlimbs" fill="#A8D9BE"><g class="pet-art-leg far"><path data-layer="hindlimbFar" d="M171 407L143 437L160 445L180 435L200 445L223 440L218 410Z"></path></g><g class="pet-art-leg near"><path data-layer="hindlimbNear" d="M294 410L289 440L312 445L332 435L352 445L369 437L341 407Z"></path></g></g><path data-layer="body" d="M135 333Q104 357 113 390L136 421Q179 442 256 436Q333 442 376 421L399 390Q408 357 377 333Z"></path><ellipse data-layer="bodyPatternClip" cx="260" cy="370" rx="62" ry="51" fill="#FFF4DD" stroke="none" opacity=".65"></ellipse><g data-layer="formSignature" fill="#A8D9BE" stroke-width="6"><path d="M255 402Q211 377 217 344Q248 342 257 371Q271 341 298 351Q299 383 255 402Z"></path><path d="M256 367V405" fill="none"></path></g><g data-layer="wardrobeBody" fill="#A8D9BE" stroke-width="7"></g><path data-layer="head" d="M154 234Q124 218 112 256L102 286L114 326Q128 362 256 358Q384 362 398 326L410 286L397 256Q387 218 357 234Z"></path><g data-layer="eyeBulbs"><circle cx="177" cy="214" r="44"></circle><circle cx="335" cy="214" r="44"></circle></g><g data-layer="crest" transform="translate(256 235)" fill="#A8D9BE"><path d="M-30 0Q-55-35-35-47Q-17-58-9-25Q-8-68 13-59Q29-54 21-26Q47-51 54-29Q61-7 30 0Z"></path></g><g data-part="gills" data-step="4" data-variant="neutral" fill="#A8D9BE"><g data-layer="gillsFar" transform="translate(103 310) scale(1 1)"><g class="pet-art-gills" style="transform-origin:0px 0px"><path d="M0 0C-56-72-79-39-46-10C-96-26-105 24-55 24C-76 66-24 74-22 36C-1 52 14 21 0 0Z"></path><path d="M-5 3Q-20-2-30-15" fill="none" stroke-width="8"></path></g></g><g data-layer="gillsNear" transform="translate(409 310) scale(-1 1)"><g class="pet-art-gills" style="transform-origin:0px 0px"><path d="M0 0C-56-72-79-39-46-10C-96-26-105 24-55 24C-76 66-24 74-22 36C-1 52 14 21 0 0Z"></path><path d="M-5 3Q-20-2-30-15" fill="none" stroke-width="8"></path></g></g></g><g data-layer="forelimbs" fill="#A8D9BE"><g transform="translate(123 350) scale(1 1)" data-layer="forelimbFar"><g class="pet-art-paw far" style="transform-origin:0px 0px"><path d="M0 0L-40 27L-27 50L-13 36L0 58L14 36L29 50L40 27Z"></path><path d="M-8 29L-7 37M6 28L8 35" fill="none" stroke-width="6"></path></g></g><g transform="translate(389 350) scale(-1 1)" data-layer="forelimbNear"><g class="pet-art-paw near" style="transform-origin:0px 0px"><path d="M0 0L-40 27L-27 50L-13 36L0 58L14 36L29 50L40 27Z"></path><path d="M-8 29L-7 37M6 28L8 35" fill="none" stroke-width="6"></path></g></g></g><g data-layer="face" stroke="#41334D" fill="#41334D"><g class="pet-art-eyes"><g><ellipse cx="177" cy="218" rx="10" ry="15" stroke="none"></ellipse><circle cx="174" cy="212" r="3.5" fill="#FFF4DD" stroke="none"></circle></g><g><ellipse cx="335" cy="218" rx="10" ry="15" stroke="none"></ellipse><circle cx="332" cy="212" r="3.5" fill="#FFF4DD" stroke="none"></circle></g></g><path d="M198 287Q258 326 318 287" fill="none" stroke-width="7"></path></g><g data-layer="cheeks" fill="#F6A4B6" stroke="none" opacity=".8"><ellipse cx="164" cy="293" rx="18" ry="9"></ellipse><ellipse cx="354" cy="293" rx="18" ry="9"></ellipse></g><path data-layer="highlight" d="M138 257Q141 242 151 244" fill="none" stroke="#FFF4DD" stroke-width="12" opacity=".8"></path><g data-layer="wardrobeHead" fill="#A8D9BE" stroke-width="7"></g><g data-layer="formNativeSignature" fill="#A8D9BE" stroke-width="6"></g></g></g></g></svg>
