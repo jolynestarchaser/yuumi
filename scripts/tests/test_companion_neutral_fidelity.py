@@ -1,6 +1,7 @@
 """Asset acceptance checks: neutral fidelity and preservation of hidden anatomy."""
 import json
 import unittest
+import hashlib
 from pathlib import Path
 from PIL import Image
 
@@ -9,6 +10,21 @@ WORK = ROOT / 'outputs/companion-rigs/v2'
 SPECIES = ('fox','bunny','robot','frog','cat','dog','dragon','duck','spirit','child','custom')
 
 class NeutralFidelity(unittest.TestCase):
+  def test_review_records_match_the_enabled_assets(self):
+    for name in SPECIES:
+      review = json.loads((WORK/name/'neutral-review.json').read_text())
+      self.assertTrue(review['neutralOverlayVisuallyReviewed'])
+      self.assertTrue(review['productionReady'])
+      self.assertIn('base form',review['reviewScope'])
+      self.assertEqual(review['statesReviewed'],['idle','locomotion','happy','sleep'])
+      for relative, expected in review['reviewedAssetHashes'].items():
+        path = ROOT/relative
+        data = path.read_bytes()
+        if path.suffix in ('.css','.tsx'): data = data.replace(b'\r\n',b'\n')
+        self.assertEqual(hashlib.sha256(data).hexdigest(),expected,relative)
+      rig = json.loads((ROOT/f'client/public/assets/companions/rig-v2/{name}/base/rig.json').read_text())
+      self.assertEqual(hashlib.sha256(json.dumps(rig,sort_keys=True,separators=(',',':')).encode()).hexdigest(),review['rigDefinitionSha256'],name)
+
   def test_all_neutrals_match_reference_bounds_and_ground(self):
     for name in SPECIES:
       with self.subTest(species=name):

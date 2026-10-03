@@ -7,7 +7,7 @@
       138,
       172
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       174,
       188
     ],
@@ -21,7 +21,7 @@
       34,
       56
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       66,
       112
     ],
@@ -30,30 +30,30 @@
   "hind_leg_l": {
     "source": "generated-anatomy/hind_leg_l.png",
     "placement": [
-      323,
-      329,
-      53,
-      77
+      319,
+      311,
+      57,
+      121
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       103,
       151
     ],
-    "outsideOpaqueCoverageAt128px": 1.214
+    "outsideOpaqueCoverageAt128px": 2.144
   },
   "body": {
     "source": "generated-anatomy/body.png",
     "placement": [
-      158,
+      164,
       184,
-      122,
+      106,
       92
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       210,
       182
     ],
-    "outsideOpaqueCoverageAt128px": 4.082
+    "outsideOpaqueCoverageAt128px": 3.535
   },
   "front_leg_r": {
     "source": "generated-anatomy/front_leg_r.png",
@@ -63,7 +63,7 @@
       51,
       87
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       99,
       171
     ],
@@ -72,43 +72,43 @@
   "front_leg_l": {
     "source": "generated-anatomy/front_leg_l.png",
     "placement": [
-      176,
-      279,
-      51,
-      89
+      188,
+      275,
+      99,
+      149
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       99,
       173
     ],
-    "outsideOpaqueCoverageAt128px": 1.64
+    "outsideOpaqueCoverageAt128px": 83.007
   },
   "chest_fluff": {
     "source": "generated-anatomy/chest_fluff.png",
     "placement": [
-      110,
-      177,
+      138,
+      221,
       77,
       98
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       149,
       186
     ],
-    "outsideOpaqueCoverageAt128px": 2.477
+    "outsideOpaqueCoverageAt128px": 2.445
   },
   "head": {
     "source": "generated-anatomy/head.png",
     "placement": [
-      70,
-      83,
-      249,
-      145
+      80,
+      87,
+      205,
+      109
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       317,
       213
     ],
-    "outsideOpaqueCoverageAt128px": 11.776
+    "outsideOpaqueCoverageAt128px": 7.417
   }
 }

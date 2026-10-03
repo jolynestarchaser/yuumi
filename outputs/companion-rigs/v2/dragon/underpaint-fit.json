@@ -7,7 +7,7 @@
       203,
       214
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       211,
       238
     ],
@@ -21,7 +21,7 @@
       34,
       57
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       62,
       109
     ],
@@ -35,7 +35,7 @@
       41,
       88
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       79,
       172
     ],
@@ -45,11 +45,11 @@
     "source": "generated-anatomy/body.png",
     "placement": [
       112,
-      276,
+      284,
       112,
       69
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       220,
       133
     ],
@@ -63,7 +63,7 @@
       48,
       72
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       92,
       144
     ],
@@ -72,12 +72,12 @@
   "front_leg_l": {
     "source": "generated-anatomy/front_leg_l.png",
     "placement": [
-      150,
+      142,
       302,
       48,
       74
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       92,
       146
     ],
@@ -91,7 +91,7 @@
       77,
       58
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       149,
       114
     ],
@@ -105,7 +105,7 @@
       193,
       146
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       257,
       178
     ],

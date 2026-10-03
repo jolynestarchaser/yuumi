@@ -10,7 +10,7 @@ title = ImageFont.truetype('C:/Windows/Fonts/arialbd.ttf',34)
 board = Image.new('RGB',(1536,11*430+140),'#f4eef8')
 draw = ImageDraw.Draw(board)
 draw.text((24,18),'Neutral fidelity review — all 11 species',font=title,fill='#403348')
-draw.text((24,68),'Separate articulated layers • Ground (256,448) • Candidate; motion approval pending',font=font,fill='#655a70')
+draw.text((24,68),'Separate articulated base layers • Ground (256,448) • Original artwork retained',font=font,fill='#655a70')
 for i,species in enumerate(SPECIES):
   y = 120+i*430
   draw.text((24,y),species.upper(),font=font,fill='#403348')

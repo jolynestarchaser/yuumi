@@ -7,7 +7,7 @@
       28,
       18
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       54,
       36
     ],
@@ -21,7 +21,7 @@
       101,
       76
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       101,
       76
     ],
@@ -35,7 +35,7 @@
       48,
       70
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       96,
       78
     ],
@@ -49,7 +49,7 @@
       141,
       68
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       281,
       134
     ],
@@ -63,7 +63,7 @@
       59,
       66
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       115,
       122
     ],
@@ -72,43 +72,43 @@
   "wing_l": {
     "source": "generated-anatomy/wing_l.png",
     "placement": [
-      327,
-      275,
+      239,
+      259,
       58,
       50
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       106,
       98
     ],
-    "outsideOpaqueCoverageAt128px": 0.876
+    "outsideOpaqueCoverageAt128px": 0.771
   },
   "chest_fluff": {
     "source": "generated-anatomy/chest_fluff.png",
     "placement": [
-      205,
-      282,
+      197,
+      260,
       120,
-      112
+      72
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       236,
       140
     ],
-    "outsideOpaqueCoverageAt128px": 5.982
+    "outsideOpaqueCoverageAt128px": 3.309
   },
   "head": {
     "source": "generated-anatomy/head.png",
     "placement": [
-      153,
-      64,
-      199,
-      203
+      167,
+      80,
+      149,
+      165
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       231,
       211
     ],
-    "outsideOpaqueCoverageAt128px": 16.432
+    "outsideOpaqueCoverageAt128px": 8.0
   }
 }

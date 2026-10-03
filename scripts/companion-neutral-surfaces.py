@@ -4,7 +4,7 @@ Regions partition the source into anatomical surfaces, not a whole-character
 cover. Complete generated underpaint remains below each surface. These bind-pose
 cuts are reviewed separately from motion, where overlap may need further work.
 """
-from PIL import Image, ImageDraw, ImageChops
+from PIL import Image, ImageDraw, ImageChops, ImageFilter
 
 def rect(x1,y1,x2,y2):
   return [(x1,y1),(x2,y1),(x2,y2),(x1,y2)]
@@ -98,7 +98,19 @@ def surfaces(species, reference, layers):
   masks[torso] = ImageChops.lighter(masks.get(torso,Image.new('L',reference.size)),remaining)
   result = {}
   for part in layers:
+    # Source-colour bleed behind adjacent plates closes joints throughout the
+    # gait. Restrict it to fully opaque source pixels: duplicating translucent
+    # perimeter pixels would change the neutral silhouette and antialiasing.
+    owned = masks.get(part['id'],Image.new('L',reference.size))
+    opaque = reference.getchannel('A').point(lambda a: 255 if a >= 240 else 0)
+    bleed = ImageChops.multiply(owned.filter(ImageFilter.MaxFilter(41)),opaque)
+    if part.get('motion') == 'leg':
+      # Extend a moving limb at its socket, never into the neighbouring foot.
+      socket = Image.new('L',reference.size)
+      px,py = part['pivot']
+      ImageDraw.Draw(socket).rectangle((px-70,py-55,px+70,py+30),fill=255)
+      bleed = ImageChops.multiply(bleed,socket)
     surface = reference.copy()
-    surface.putalpha(ImageChops.multiply(reference.getchannel('A'),masks.get(part['id'],Image.new('L',reference.size))))
+    surface.putalpha(ImageChops.multiply(reference.getchannel('A'),ImageChops.lighter(owned,bleed)))
     result[part['id']] = surface
   return result

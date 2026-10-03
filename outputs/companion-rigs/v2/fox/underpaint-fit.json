@@ -7,7 +7,7 @@
       101,
       109
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       197,
       217
     ],
@@ -21,7 +21,7 @@
       41,
       60.986999999999995
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       77,
       117
     ],
@@ -30,26 +30,26 @@
   "hind_leg_l": {
     "source": "generated-anatomy/hind_leg_l.png",
     "placement": [
-      260,
-      327,
+      214,
+      291,
       42,
       68.34100000000001
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       78,
       132
     ],
-    "outsideOpaqueCoverageAt128px": 0.947
+    "outsideOpaqueCoverageAt128px": 0.839
   },
   "body": {
     "source": "generated-anatomy/body.png",
     "placement": [
-      131,
-      242,
+      103,
+      262,
       85,
       68.47900000000001
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       167,
       134
     ],
@@ -63,7 +63,7 @@
       34,
       65
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       68,
       129
     ],
@@ -72,16 +72,16 @@
   "front_leg_l": {
     "source": "generated-anatomy/front_leg_l.png",
     "placement": [
-      177,
-      301,
+      163,
+      287,
       34,
       65
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       68,
       129
     ],
-    "outsideOpaqueCoverageAt128px": 0.64
+    "outsideOpaqueCoverageAt128px": 0.628
   },
   "head": {
     "source": "generated-anatomy/head.png",
@@ -91,7 +91,7 @@
       221,
       157.406
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       257,
       221
     ],
@@ -100,12 +100,12 @@
   "chest_fluff": {
     "source": "generated-anatomy/chest_fluff.png",
     "placement": [
-      116,
-      295,
+      100,
+      279,
       72,
       53
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       144,
       105
     ],

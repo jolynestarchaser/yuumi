@@ -21,6 +21,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "ear_r",
@@ -340,6 +341,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -601,6 +603,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -1007,6 +1010,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -1355,6 +1359,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -1616,6 +1621,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -1877,6 +1883,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -2138,6 +2145,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",
@@ -2399,6 +2407,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "thigh_r",
@@ -2662,6 +2671,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "leg_r",
@@ -2922,6 +2932,7 @@ export const candidateRigs: Partial<Record<CompanionRig['species'], CompanionRig
       456
     ],
     "shadow": "runtime",
+    "sleepExpression": "eyelids",
     "parts": [
       {
         "id": "tail",

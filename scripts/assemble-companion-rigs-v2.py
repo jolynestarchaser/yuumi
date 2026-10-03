@@ -9,6 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageChops, ImageFilter
 from collections import deque
 import importlib.util
+import sys
 
 surface_loader = importlib.util.spec_from_file_location('neutral_surfaces', Path(__file__).with_name('companion-neutral-surfaces.py'))
 surface_module = importlib.util.module_from_spec(surface_loader)
@@ -59,6 +60,8 @@ def main():
     layers = []
     textures = {}
     underpaint_fits = {}
+    fit_path = config_path.parent / 'underpaint-fit.json'
+    cached_fits = json.loads(fit_path.read_text()) if '--reuse-fit' in sys.argv and fit_path.exists() else {}
     anatomy = config_path.parent / 'generated-anatomy'
     anatomy.mkdir(exist_ok=True)
     neutral = Image.new('RGBA', (512, 512))
@@ -138,7 +141,8 @@ def main():
           pixels = np.asarray(stage,dtype=np.float32)/255
           return float(np.sum(pixels*(1-allowed)))
         placement = [x,y,width,height]
-        for step in (16,8,4,2):
+        placement = cached_fits.get(name,{}).get('placement',placement)
+        for step in (() if name in cached_fits else (16,8,4,2)):
           for repeat in range(10):
             start = placement.copy(); best_cost = hidden_cost(start)
             for axis in range(4):
@@ -170,14 +174,14 @@ def main():
         stage = Image.new('RGBA', (512,512))
         x, y, width, height = part['bounds']
         texture = textures[part['id']]
-        if state == 'sleep' and 'stateSources' in part:
-          texture = Image.open(target / f'{part["id"]}_sleep.png').convert('RGBA').resize((round(width),round(height)),Image.Resampling.LANCZOS)
+        # Sleep keeps the source head; local eyelids are rendered by the SVG
+        # runtime. Archived generated sleep heads remain available for editing.
         stage.alpha_composite(texture, (round(x),round(y)))
         stage.alpha_composite(compose(part['id'], state, swing))
         angle = 0
         if state == 'locomotion':
           if part.get('motion') == 'leg':
-            angle = (12 if spec['archetype'] == 'frog' else 8) * part['multiplier'] * swing * (-1 if part['phase'] < 0 else 1)
+            angle = (6 if spec['archetype'] == 'frog' else 4) * part['multiplier'] * swing * (-1 if part['phase'] < 0 else 1)
           elif part.get('motion') in ('ear','tail','leaf','antenna'):
             angle = 4 * part['multiplier'] * swing
         elif state == 'happy' and part.get('motion') in ('ear','tail','leaf','antenna'):
@@ -187,14 +191,14 @@ def main():
       return result
     neutral = compose()
     rig = {'version': 1, 'species': species, 'formId': 'base', 'archetype': spec['archetype'],
-      'canvas': [512,512], 'anchor': [256,448], 'safeBounds': [24,24,464,456], 'shadow': 'runtime', 'parts': layers}
+      'canvas': [512,512], 'anchor': [256,448], 'safeBounds': [24,24,464,456], 'shadow': 'runtime', 'sleepExpression': 'eyelids', 'parts': layers}
     (target / 'rig.json').write_text(json.dumps(rig, indent=2) + '\n')
     rigs[species] = rig
     neutral.save(config_path.parent / 'neutral.png')
     poses = Image.new('RGBA', (2048,550), '#f4eef8')
     for index, state in enumerate(('idle','locomotion','happy','sleep')):
       poses.alpha_composite(compose(state=state), (index*512,0))
-      ImageDraw.Draw(poses).text((index*512+20,516), state, fill='#403348')
+      ImageDraw.Draw(poses).text((index*512+20,516), 'sleep body (eyelids in runtime review)' if state == 'sleep' else state, fill='#403348')
     poses.convert('RGB').save(config_path.parent / 'states.jpg')
     compose(state='locomotion', swing=-1).save(config_path.parent / 'locomotion-opposite.png')
     original = Image.open(ROOT / f'client/public/assets/companions/moodboard-v1/{species}.png').convert('RGBA')

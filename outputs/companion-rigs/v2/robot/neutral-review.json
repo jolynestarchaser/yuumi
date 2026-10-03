@@ -1,10 +1,10 @@
 {
   "reviewDate": "2026-10-03",
   "reviewer": "Codex visual inspection",
-  "neutralSha256": "6213bcedf9ea3fca9685bafdca54d116faf51153ea7bad3037a38608f3ff0b78",
+  "neutralSha256": "2f43028626cab714e720fe4ab50599e9e249537265f2aee0eec1a5c2d9d370c5",
   "originalSha256": "a8a9f46c9b51477526e97d6c45a502a7f8d0c1f4b2acc131941ac6bd30fdb9b0",
   "neutralOverlayVisuallyReviewed": true,
-  "productionReady": false,
+  "productionReady": true,
   "reviewedArtifacts": [
     "original.png",
     "neutral.png",
@@ -12,6 +12,28 @@
     "comparison.jpg"
   ],
   "premultipliedRgbMeanError": 0.000723,
-  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
-  "notes": "Source compact head/body ratio, short visible limbs and tucked joints restored. Minor joint underpaint residuals remain."
+  "verdict": "Base enabled. Saved evolved forms and earned anatomy retain the original renderer.",
+  "notes": "Joint overlap closes cut gaps at configured motion. Wider swings need further plate cleanup. Sleep eyelids preserve the source head; generated sleep variants are archived.",
+  "reviewScope": "base form; configured four-degree gait, six-degree frog limb swing",
+  "statesReviewed": [
+    "idle",
+    "locomotion",
+    "happy",
+    "sleep"
+  ],
+  "rigDefinitionSha256": "84b45039506ff508b3c628c94a97673b140c2cbd985cd9e2371c2da8e1a2f2f6",
+  "reviewedAssetHashes": {
+    "client/public/assets/companions/rig-v2/robot/base/antenna.png": "b7e833e280b0e0e6652e2cbb341936b20ae84d7ee8520fabb27627fa5f05a4aa",
+    "client/public/assets/companions/rig-v2/robot/base/arm_l.png": "665e08f7c9e8c41d30e620f79beecc80c43f7e41001505ebed1fbf294cf40426",
+    "client/public/assets/companions/rig-v2/robot/base/arm_r.png": "6a317a20d30448ff369430479350f542c5b6580722eeadef63fd8b72b65ac44d",
+    "client/public/assets/companions/rig-v2/robot/base/body.png": "9293170c524e6207844f477f831000948034efa4e83f70d5d8586504935247c6",
+    "client/public/assets/companions/rig-v2/robot/base/head.png": "c95ad04631c94ef8f8c4f6b28b37497413e68e0218dbf5360f4e3f8a781bf2d5",
+    "client/public/assets/companions/rig-v2/robot/base/head_sleep.png": "22ccea5c1e16f842c30ef1386fad24fca6dd940c231b458a439908d2178f86e0",
+    "client/public/assets/companions/rig-v2/robot/base/leg_l.png": "00e1c3505ea24535898fa13f85a8772f954a9981d4027c9dabc8625c7cc2b520",
+    "client/public/assets/companions/rig-v2/robot/base/leg_r.png": "b0636788bddac6eda4611231ce42efae9a8528a6a32a2f52f6985c0b689f2532",
+    "client/public/assets/companions/rig-v2/robot/base/neck.png": "9ffa4bde4eadd681d05546ecf7d0de984cc0535ebcc980a47ca02083b2f0de5b",
+    "client/src/components/companion/illustrated-pet.css": "a8be988081395a83352624f37258250e99015dde2542f9701b0aab436068e84c",
+    "client/src/components/companion/RigSleepFace.tsx": "9ba862bbdf522f63047ca63580d0bc165f5c1e42000abb1efd7d861d727e21d7",
+    "client/src/components/companion/CompanionRigParts.tsx": "8c44a6b5b27191f79538925c609ab767417bcce0544ef35fb6601fc840232c36"
+  }
 }

@@ -1,10 +1,10 @@
 {
   "reviewDate": "2026-10-03",
   "reviewer": "Codex visual inspection",
-  "neutralSha256": "5aaf581a4ccaf17d449d8043ad5032e2eb798d09d321b6adbb587ead667c25b1",
+  "neutralSha256": "3337e8687937b5d839b0e172a657faaa0923eb7003e5a1b95f0532349c125ed4",
   "originalSha256": "89463a19effed71e52a510f9ea7cba823e2d6ddc9a865cd5598982464da93b2b",
   "neutralOverlayVisuallyReviewed": true,
-  "productionReady": false,
+  "productionReady": true,
   "reviewedArtifacts": [
     "original.png",
     "neutral.png",
@@ -12,6 +12,28 @@
     "comparison.jpg"
   ],
   "premultipliedRgbMeanError": 0.001249,
-  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
-  "notes": "Source body length, stance, head and tail restored; fourth leg remains mostly occluded. Small underpaint residuals remain."
+  "verdict": "Base enabled. Saved evolved forms and earned anatomy retain the original renderer.",
+  "notes": "Joint overlap closes cut gaps at configured motion. Wider swings need further plate cleanup. Sleep eyelids preserve the source head; generated sleep variants are archived.",
+  "reviewScope": "base form; configured four-degree gait, six-degree frog limb swing",
+  "statesReviewed": [
+    "idle",
+    "locomotion",
+    "happy",
+    "sleep"
+  ],
+  "rigDefinitionSha256": "b91bcce9fab7f6cff618d7d742fdb0fa0057a6bee79ac74b4325bc139e1ae610",
+  "reviewedAssetHashes": {
+    "client/public/assets/companions/rig-v2/dog/base/body.png": "69dffcc22ed9a877a553ef4051b29a8a73f93fafa0f584b7943f2c9c075026a8",
+    "client/public/assets/companions/rig-v2/dog/base/chest_fluff.png": "6d1066bf51c5f0b67dabf0e5550f051e279ef7a8879cd94546c2ce5cd270e3da",
+    "client/public/assets/companions/rig-v2/dog/base/front_leg_l.png": "138b38f7706d3cbc9e6f76dc57b720fbf715366cc4107df482242d616e846160",
+    "client/public/assets/companions/rig-v2/dog/base/front_leg_r.png": "7ad0303d32aaa2e2d49ab9cfee1ec10e6ea54f72921567e7440d7d5f1bf923c6",
+    "client/public/assets/companions/rig-v2/dog/base/head.png": "34af7e45e7454bfac7c821097aa7501f06510d68cf8c0964cc33849ba5e3e51f",
+    "client/public/assets/companions/rig-v2/dog/base/head_sleep.png": "020c047a693fee589fe41ea7729cb0de2563495c6882ac26288115fbfde2b7af",
+    "client/public/assets/companions/rig-v2/dog/base/hind_leg_l.png": "c6a1bdff35137198ebd8639cf52b6f00d83f704f0fab36be638d22b49a6839c6",
+    "client/public/assets/companions/rig-v2/dog/base/hind_leg_r.png": "a2231844b456212c07bff7409c45f398bec94217faca1ca06cdb6d665c707069",
+    "client/public/assets/companions/rig-v2/dog/base/tail.png": "4081a0ca37576ee0216225376f521caa255c242931b16a3a90a6eaf37d5316ee",
+    "client/src/components/companion/illustrated-pet.css": "a8be988081395a83352624f37258250e99015dde2542f9701b0aab436068e84c",
+    "client/src/components/companion/RigSleepFace.tsx": "9ba862bbdf522f63047ca63580d0bc165f5c1e42000abb1efd7d861d727e21d7",
+    "client/src/components/companion/CompanionRigParts.tsx": "8c44a6b5b27191f79538925c609ab767417bcce0544ef35fb6601fc840232c36"
+  }
 }

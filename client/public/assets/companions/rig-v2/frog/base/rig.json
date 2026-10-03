@@ -18,6 +18,7 @@
     456
   ],
   "shadow": "runtime",
+  "sleepExpression": "eyelids",
   "parts": [
     {
       "id": "thigh_r",

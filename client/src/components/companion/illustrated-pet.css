@@ -44,11 +44,11 @@
 .companion-illustrated-pet[data-rig-archetype='frog'] .rig-motion-leg { animation: none; }
 .companion-illustrated-pet[data-rig-archetype='frog'][data-animation-state='locomotion'] .rig-motion-leg { animation: rig-frog-limb var(--pet-walk-cycle) linear infinite; }
 .companion-illustrated-pet[data-animation-state='happy'] :is(.rig-motion-tail,.rig-motion-ear,.rig-motion-antenna) { animation: rig-secondary .4s ease-in-out infinite; }
-@keyframes rig-frog-limb { 0%,100% { transform: none; } 18% { transform: rotate(calc(-5deg * var(--rig-multiplier))); } 52% { transform: rotate(calc(12deg * var(--rig-multiplier))); } 72% { transform: rotate(calc(-4deg * var(--rig-multiplier))); } }
+@keyframes rig-frog-limb { 0%,100% { transform: none; } 18% { transform: rotate(calc(-5deg * var(--rig-multiplier))); } 52% { transform: rotate(calc(6deg * var(--rig-multiplier))); } 72% { transform: rotate(calc(-4deg * var(--rig-multiplier))); } }
 .companion-illustrated-pet[data-animation-state='locomotion'] :is(.rig-motion-ear, .rig-motion-tail, .rig-motion-leaf, .rig-motion-antenna) { animation: rig-secondary var(--pet-walk-cycle) ease-in-out infinite; animation-delay: var(--rig-phase, 0s); }
 @keyframes rig-breathe { 50% { transform: scale(1.004,.997); } }
 @keyframes rig-fox-travel { 50% { transform: translateY(-2px); } }
-@keyframes rig-leg { 25% { transform: rotate(calc(8deg * var(--rig-multiplier))) translateY(-3px); } 75% { transform: rotate(calc(-8deg * var(--rig-multiplier))); } }
+@keyframes rig-leg { 25% { transform: rotate(calc(4deg * var(--rig-multiplier))) translateY(-1px); } 75% { transform: rotate(calc(-4deg * var(--rig-multiplier))); } }
 @keyframes rig-secondary { 50% { transform: rotate(calc(4deg * var(--rig-multiplier))); } }
 @keyframes rig-frog-jump {
   0%,100% { transform: none; }

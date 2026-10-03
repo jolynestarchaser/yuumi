@@ -9,6 +9,12 @@ import { foxBaseRig } from './foxRig.js';
 import { candidateRigs } from './rigCandidates.generated.js';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { register } from 'node:module';
+import { petBodyForms } from './petBodyForms.js';
+
+// SSR exercises component decisions; styles are reviewed in the browser.
+register('data:text/javascript,' + encodeURIComponent("export async function load(url, context, next) { return url.endsWith('.css') ? { format: 'module', source: '', shortCircuit: true } : next(url, context); }"), import.meta.url);
+const { default: IllustratedPet } = await import('./IllustratedPet.js');
 
 function fixture(): CompanionRig {
   return { version: 1, species: 'bunny', formId: 'base', archetype: 'upright', canvas: [512,512], anchor: [256,448], safeBounds: [32,32,448,440], shadow: 'runtime', parts: [
@@ -52,15 +58,14 @@ test('rig validation rejects duplicate, cyclic, orphaned, and nonfinite geometry
   assert.throws(() => validateRig(invalid), /geometry/);
 });
 test('renderer nests child motion, keeps explicit pivots, and selects static sleep art', () => {
-  const html = renderToStaticMarkup(createElement(CompanionRigParts, { rig: fixture(), state: 'sleep', onImageError: () => {} }));
+  const html = renderToStaticMarkup(createElement('svg', null, createElement(CompanionRigParts, { rig: fixture(), state: 'sleep', onImageError: () => {} })));
   assert.match(html, /data-rig-part="body"[\s\S]*data-rig-part="eyes"/);
   assert.match(html, /transform-origin:240px 200px/);
   assert.match(html, /href="\/closed.png"/);
   assert.doesNotMatch(html, /href="\/eyes.png"/);
 });
 test('registration preserves exact species/form identity and rejects invalid rigs', () => {
-  assert.equal(registeredRig('fox', 'base'), undefined);
-  assert.equal(registeredRig('cat', 'base'), undefined);
+  const original = companionRigs.bunny;
   companionRigs.bunny = { base: fixture() };
   try {
     assert.ok(registeredRig('bunny', 'base'));
@@ -70,7 +75,29 @@ test('registration preserves exact species/form identity and rejects invalid rig
     companionRigs.bunny.base = fixture();
     companionRigs.bunny.base.parts[0]!.parent = 'missing';
     assert.equal(registeredRig('bunny', 'base'), undefined);
-  } finally { delete companionRigs.bunny; }
+  } finally { companionRigs.bunny = original; }
+});
+
+test('production renders approved bases while preserving exact saved forms and earned parts', () => {
+  for (const rig of Object.values(companionRigs).flatMap(forms => Object.values(forms || {}))) {
+    const draw = (props: Partial<Parameters<typeof IllustratedPet>[0]> = {}) => renderToStaticMarkup(createElement(IllustratedPet, { species: rig.species, ...props }));
+    const base = draw();
+    assert.match(base, /data-art-version="pet-rig-v1"/);
+    assert.match(base, /data-rig-part="head"/);
+    const form = petBodyForms.find(entry => entry.species === rig.species)!;
+    const saved = { species: rig.species, level: 18, parts: { wings: { step: 2, variant: 'neutral' } }, bodyForm: { chapter: 1, id: form.id, style: form.style, body: form.body, rendererVersion: form.rendererVersion } };
+    const before = JSON.stringify(saved);
+    const evolved = draw({ render: saved });
+    assert.match(evolved, /data-art-version="pet-layered-v1"/);
+    assert.ok(evolved.includes(`data-form-id="${form.id}"`));
+    assert.equal(JSON.stringify(saved), before);
+    assert.match(draw({ render: { species: rig.species, level: 4, parts: { wings: { step: 1, variant: 'neutral' } } } }), /data-art-version="pet-layered-v1"/);
+    const sleep = draw({ activity: 'sleeping' });
+    assert.match(sleep, /data-rig-expression="sleep"/);
+    assert.doesNotMatch(sleep, /head_sleep\.png/);
+    assert.match(draw({ appearance: { animated: false, visualStyle: 'soft', usePortrait: false }, walking: true }), /data-animated="false"/);
+  }
+  assert.ok(Object.keys(companionRigs).length > 0, 'production registry must not remain empty');
 });
 test('fox candidate has four separate legs and an anatomical head with sleep art', () => {
   const legs = foxBaseRig.parts.filter((part) => part.motion === 'leg').map((part) => part.id).sort();
@@ -85,7 +112,7 @@ test('all 11 candidates have valid graphs and real separate files in every requi
     validateRig(rig!);
     assert.ok(rig!.parts.length >= 8);
     for (const state of ['idle','locomotion','happy','sleep'] as const) {
-      const html = renderToStaticMarkup(createElement(CompanionRigParts, { rig: rig!, state, onImageError: () => {} }));
+      const html = renderToStaticMarkup(createElement('svg', null, createElement(CompanionRigParts, { rig: rig!, state, onImageError: () => {} })));
       assert.doesNotMatch(html, /blank\.png|moodboard-v1|illustrated-v1/);
       for (const part of rig!.parts) {
         const source = part.stateSources?.[state] || part.source;

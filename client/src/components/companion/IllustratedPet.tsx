@@ -43,7 +43,10 @@ export default function IllustratedPet({ species, activity = 'idle', face = 'gen
   const layeredSource = `/assets/companions/layered-v1/${species}.png`;
   const layered = Boolean(layeredPetAtlases[species]) && !failedSources.has(layeredSource);
   const rigKey = 'rig:' + species + ':' + (form?.id || 'base');
-  const rig = failedSources.has(rigKey) ? undefined : registeredRig(species, form?.id || 'base');
+  const saved = render?.species === species ? render : undefined;
+  // A base rig must not hide earned anatomy or an unrecognised saved form.
+  const hasSavedGrowth = Boolean(saved?.bodyForm || saved?.detailIds?.length || saved?.precursorProgress || Object.values(saved?.parts || {}).some(part => part && part.step > 0));
+  const rig = failedSources.has(rigKey) || (!form && hasSavedGrowth) ? undefined : registeredRig(species, form?.id || 'base');
   const [x, y, width, height] = illustratedFrames[species][cell]!;
   const scale = Math.min(432 / width, 392 / height);
   const drawnWidth = width * scale;

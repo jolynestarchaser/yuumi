@@ -7,7 +7,7 @@
       64,
       100
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       92,
       110
     ],
@@ -21,7 +21,7 @@
       43,
       58
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       83,
       116
     ],
@@ -35,7 +35,7 @@
       85,
       88
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       107,
       120
     ],
@@ -49,7 +49,7 @@
       85,
       84
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       95,
       126
     ],
@@ -63,7 +63,7 @@
       66,
       56
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       122,
       112
     ],
@@ -72,12 +72,12 @@
   "neck": {
     "source": "generated-anatomy/neck.png",
     "placement": [
-      210,
-      256,
+      226,
+      272,
       24,
       5
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       44,
       7
     ],
@@ -91,7 +91,7 @@
       36,
       78
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       48,
       78
     ],
@@ -105,7 +105,7 @@
       189,
       77
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       263,
       149
     ],

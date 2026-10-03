@@ -13,14 +13,14 @@ def font(size, bold=False):
 board = Image.new('RGB', (2200, 2020), '#f4eef8')
 draw = ImageDraw.Draw(board)
 draw.text((64, 46), 'Companion rigs — all species', fill='#403348', font=font(58, True))
-draw.text((67, 122), 'Actual neutral assemblies from separate layers • Candidate artwork / not production-ready', fill='#6e6278', font=font(25))
+draw.text((67, 122), 'Separate animated base rigs • Saved evolved forms retain their original artwork', fill='#6e6278', font=font(25))
 
 for index, species in enumerate(SPECIES):
   x = 64 + (index % 4) * 522
   y = 196 + (index // 4) * 576
   draw.rounded_rectangle((x, y, x + 504, y + 554), radius=12, fill='white', outline='#d7cede', width=2)
   draw.text((x + 22, y + 18), species.upper(), fill='#403348', font=font(25, True))
-  draw.text((x + 22, y + 51), 'LAYERED CANDIDATE', fill='#8c6b3e', font=font(14, True))
+  draw.text((x + 22, y + 51), 'LAYERED BASE RIG', fill='#8c6b3e', font=font(14, True))
   tile = Image.new('RGBA', (464, 464), '#f9f6fb')
   tile_draw = ImageDraw.Draw(tile)
   for row in range(0, 464, 24):

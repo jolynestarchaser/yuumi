@@ -1,5 +1,7 @@
 # Neutral fidelity pass — 2026-10-03
 
+Current status: the subsequent production integration enables all eleven **base** rigs with joint overlap and silhouette-preserving sleep expressions. Saved evolved forms and earned anatomy retain the legacy renderer. See [production rig integration](companion-rig-production-report.md) for the configured motion scope, validation, and remaining risks. The following describes the earlier neutral-only pass.
+
 All eleven neutral candidates were visually compared against the Species Mood Board at canvas 512×512, root scale 1 and ground anchor (256,448). Original, Composite and 50% Overlay were reviewed for every species. The existing rig renderer, animation states, hierarchy and production registry were retained. **No species was promoted to production.**
 
 ## What changed

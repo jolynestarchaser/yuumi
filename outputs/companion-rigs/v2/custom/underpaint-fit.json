@@ -7,7 +7,7 @@
       29,
       37
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       57,
       71
     ],
@@ -21,7 +21,7 @@
       125,
       125
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       173,
       155
     ],
@@ -35,7 +35,7 @@
       68,
       87
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       134,
       171
     ],
@@ -49,7 +49,7 @@
       32,
       34
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       64,
       68
     ],
@@ -63,7 +63,7 @@
       32,
       34
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       64,
       68
     ],
@@ -77,7 +77,7 @@
       90,
       74
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       174,
       146
     ],
@@ -91,7 +91,7 @@
       58,
       25
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       110,
       45
     ],
@@ -100,12 +100,12 @@
   "arm_l": {
     "source": "generated-anatomy/arm_l.png",
     "placement": [
-      290,
-      358,
+      274,
+      326,
       20,
       33
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       40,
       65
     ],
@@ -114,12 +114,12 @@
   "arm_r": {
     "source": "generated-anatomy/arm_r.png",
     "placement": [
-      199,
-      358,
+      215,
+      326,
       20,
       33
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       40,
       65
     ],
@@ -138,7 +138,7 @@
       116,
       114
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       232,
       222
     ],

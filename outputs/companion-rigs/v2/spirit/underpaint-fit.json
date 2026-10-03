@@ -7,7 +7,7 @@
       42,
       32
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       74,
       64
     ],
@@ -21,7 +21,7 @@
       152,
       144
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       168,
       164
     ],
@@ -35,7 +35,7 @@
       92,
       88
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       182,
       172
     ],
@@ -49,7 +49,7 @@
       25,
       35
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       47,
       67
     ],
@@ -63,7 +63,7 @@
       33,
       67
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       65,
       131
     ],
@@ -72,12 +72,12 @@
   "body": {
     "source": "generated-anatomy/body.png",
     "placement": [
-      224,
-      246,
+      216,
+      262,
       74,
       90
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       148,
       170
     ],
@@ -91,7 +91,7 @@
       32,
       41
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       64,
       79
     ],
@@ -105,7 +105,7 @@
       32,
       36
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       64,
       72
     ],
@@ -124,7 +124,7 @@
       76,
       34
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       152,
       68
     ],
@@ -138,7 +138,7 @@
       93,
       72
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       183,
       140
     ],
@@ -152,10 +152,10 @@
       59,
       44
     ],
-    "completeSourceSize": [
+    "resampledCompleteSourceSize": [
       115,
       88
     ],
-    "outsideOpaqueCoverageAt128px": 9.777
+    "outsideOpaqueCoverageAt128px": 8.13
   }
 }

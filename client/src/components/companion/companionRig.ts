@@ -1,5 +1,6 @@
 import type { CompanionSpecies, LifecycleCareAction } from '../../../../shared/contracts.js';
 import type { CompanionActivity } from './types.js';
+import { candidateRigs } from './rigCandidates.generated.js';
 
 export type AnimationState = 'idle' | 'blink' | 'locomotion' | 'happy' | 'play' | 'eat' | 'sleep' | 'surprised' | 'growth';
 export type RigArchetype = 'upright' | 'quadruped' | 'frog';
@@ -27,6 +28,7 @@ export interface CompanionRig {
   anchor: Point;
   safeBounds: readonly [number, number, number, number];
   shadow: 'runtime';
+  sleepExpression?: 'eyelids';
   parts: readonly RigPart[];
 }
 
@@ -68,10 +70,12 @@ export function validateRig(rig: CompanionRig): void {
   }
 }
 
-/** Register only reviewed transparent layers, keyed by exact saved form ID.
- * An empty registry intentionally keeps all existing artwork working. */
-export const companionRigs: Partial<Record<CompanionSpecies, Record<string, CompanionRig>>> = {
-};
+/** Explicitly reviewed base poses and configured motion. This list is maintained
+ * separately from candidate generation; saved evolved forms match exact IDs. */
+export const reviewedBaseSpecies: readonly CompanionSpecies[] = ['fox','bunny','robot','frog','cat','dog','dragon','duck','spirit','child','custom'];
+export const companionRigs: Partial<Record<CompanionSpecies, Record<string, CompanionRig>>> = Object.fromEntries(
+  reviewedBaseSpecies.map(species => [species, { base: candidateRigs[species]! }])
+);
 
 export function registeredRig(species: CompanionSpecies, formId: string): CompanionRig | undefined {
   const rig = companionRigs[species]?.[formId];

@@ -1,10 +1,10 @@
 {
   "reviewDate": "2026-10-03",
   "reviewer": "Codex visual inspection",
-  "neutralSha256": "50414954f3753d7fefb7840597b0b21ac82743c81d13dd7427aa8a8808e5c7bf",
+  "neutralSha256": "a6763637c1f73e451fb060ee918ee32749a661cd310155b75618483fc7cbd6e0",
   "originalSha256": "2052e4fee35f08f41bc7cdbfbee60028477a854f86d263d0b4a18586db298103",
   "neutralOverlayVisuallyReviewed": true,
-  "productionReady": false,
+  "productionReady": true,
   "reviewedArtifacts": [
     "original.png",
     "neutral.png",
@@ -12,6 +12,33 @@
     "comparison.jpg"
   ],
   "premultipliedRgbMeanError": 0.000681,
-  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
-  "notes": "Source head/body ratio, shoulders and collar restored; neck separation removed. Complete upper limb anatomy remains beneath foreground foliage/body."
+  "verdict": "Base enabled. Saved evolved forms and earned anatomy retain the original renderer.",
+  "notes": "Joint overlap closes cut gaps at configured motion. Wider swings need further plate cleanup. Sleep eyelids preserve the source head; generated sleep variants are archived.",
+  "reviewScope": "base form; configured four-degree gait, six-degree frog limb swing",
+  "statesReviewed": [
+    "idle",
+    "locomotion",
+    "happy",
+    "sleep"
+  ],
+  "rigDefinitionSha256": "54db8c787e23e93afddb6a2ad6cfd3111ce22a6e075b85fdaf9526d37183cc96",
+  "reviewedAssetHashes": {
+    "client/public/assets/companions/rig-v2/child/base/arm_l.png": "477eb0275be83272ac731c04ae7c891d99dc5fe51d6fcfee8ddb496abdf7e1ce",
+    "client/public/assets/companions/rig-v2/child/base/arm_r.png": "10f30f1e2220621c861b5be36651d1d736797940cfb12716887c8281d3eb9461",
+    "client/public/assets/companions/rig-v2/child/base/body.png": "e04088b6e4f17ed13071197ebea2fc95d32902750e02ec65cf78a578ef9c5c9c",
+    "client/public/assets/companions/rig-v2/child/base/body_front.png": "912b5bf882d8ee324e2b486ec017db91577362aa40ab7f77fe9f1506dbc6c836",
+    "client/public/assets/companions/rig-v2/child/base/collar_front.png": "cf18935bc024286a9c186ba4da1d0d5dbdcd06e61f06ee82f1a5d9f722fa3c4e",
+    "client/public/assets/companions/rig-v2/child/base/ear_l.png": "452316e3714385f0e1cc01011e1725d26f1bea500aa4dacf3d97c1eb4845ed98",
+    "client/public/assets/companions/rig-v2/child/base/ear_r.png": "bad7b38734336b066949f5a8c3bccb01dc3df88c284601a47d61608b0af44b27",
+    "client/public/assets/companions/rig-v2/child/base/head.png": "8a4573a371281d276ad24d3118c8b00e93aa5dcc43051757934443ed0fcd2d13",
+    "client/public/assets/companions/rig-v2/child/base/head_sleep.png": "a4a4f49760cd30c223ae095aff151df407d97a822f83b915cdf3b5647435c142",
+    "client/public/assets/companions/rig-v2/child/base/leg_l.png": "0a36ee2215354dfdca90ff00b41a48ee5de2060f31d9258f494e2d68493e9e7e",
+    "client/public/assets/companions/rig-v2/child/base/leg_r.png": "79e24e83523566ec7b6c90411d472e739442ec175c4933aed3d764a080b67c20",
+    "client/public/assets/companions/rig-v2/child/base/side_leaf_l.png": "55f52f791fc4a693188d6aaefd16512c029af82bc6804b621a3b746e9553c4d1",
+    "client/public/assets/companions/rig-v2/child/base/side_leaf_r.png": "b0fb0b3c450d9dea5edc4bbd8369006d5d6e1aa64a832442f09bf038588fccb3",
+    "client/public/assets/companions/rig-v2/child/base/tail.png": "ae418996cb2e7a8e64bb8503183dcf6798ac1089e7095d6bcc3b9a873a5a1996",
+    "client/src/components/companion/illustrated-pet.css": "a8be988081395a83352624f37258250e99015dde2542f9701b0aab436068e84c",
+    "client/src/components/companion/RigSleepFace.tsx": "9ba862bbdf522f63047ca63580d0bc165f5c1e42000abb1efd7d861d727e21d7",
+    "client/src/components/companion/CompanionRigParts.tsx": "8c44a6b5b27191f79538925c609ab767417bcce0544ef35fb6601fc840232c36"
+  }
 }

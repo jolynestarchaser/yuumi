@@ -1,6 +1,6 @@
 {
   "status": "candidate",
-  "silhouetteIoU": 1.0,
+  "silhouetteIoU": 0.9998,
   "neutralAlphaBounds": [
     40,
     134,
