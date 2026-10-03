@@ -1,0 +1,295 @@
+{
+  "version": 1,
+  "species": "fox",
+  "formId": "base",
+  "archetype": "quadruped",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/tail.png",
+      "bounds": [
+        272,
+        218,
+        176,
+        174.994
+      ],
+      "pivot": [
+        294,
+        374
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "tail",
+      "multiplier": 1.05,
+      "phase": -0.15,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "hind_leg_r",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/hind_leg_r.png",
+      "bounds": [
+        204,
+        333,
+        55,
+        87.306
+      ],
+      "pivot": [
+        229,
+        347
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "leg",
+      "multiplier": 0.8,
+      "phase": -0.325,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "front_leg_r",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/front_leg_r.png",
+      "bounds": [
+        133,
+        333,
+        44,
+        82.272
+      ],
+      "pivot": [
+        153,
+        351
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "leg",
+      "multiplier": 1,
+      "phase": 0,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "body",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/body.png",
+      "bounds": [
+        119,
+        295,
+        177,
+        153.064
+      ],
+      "pivot": [
+        206,
+        367
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": null,
+      "multiplier": 1,
+      "phase": 0,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "hind_leg_l",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/hind_leg_l.png",
+      "bounds": [
+        266,
+        333,
+        61,
+        96.882
+      ],
+      "pivot": [
+        290,
+        355
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "leg",
+      "multiplier": 0.8,
+      "phase": 0,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "front_leg_l",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/front_leg_l.png",
+      "bounds": [
+        166,
+        335,
+        47,
+        87.205
+      ],
+      "pivot": [
+        188,
+        352
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "leg",
+      "multiplier": 1,
+      "phase": -0.325,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "chest_fluff",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/chest_fluff.png",
+      "bounds": [
+        111,
+        287,
+        122,
+        103.092
+      ],
+      "pivot": [
+        171,
+        304
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": null,
+      "multiplier": 1,
+      "phase": 0,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "outputs/companion-rigs/fox/parts-source.png"
+      }
+    },
+    {
+      "id": "head",
+      "parent": null,
+      "source": "/assets/companions/rig-v1/fox/base/head.png",
+      "bounds": [
+        49,
+        56,
+        414,
+        391.653
+      ],
+      "pivot": [
+        256,
+        448
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "motion": "body",
+      "multiplier": 1,
+      "phase": 0,
+      "provenance": {
+        "kind": "reconstructed",
+        "master": "client/public/assets/companions/illustrated-v1/fox.png"
+      }
+    }
+  ]
+}

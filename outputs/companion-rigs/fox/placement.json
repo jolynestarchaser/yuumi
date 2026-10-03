@@ -1,0 +1,12 @@
+{
+  "parts": [
+    {"id":"tail","master":"outputs/companion-rigs/fox/parts-source.png","crop":[665,0,1024,435],"placement":[272,218,176],"pivot":[294,374],"order":0,"motion":"tail","multiplier":1.05,"phase":-0.15},
+    {"id":"hind_leg_r","master":"outputs/companion-rigs/fox/parts-source.png","crop":[340,790,670,1150],"placement":[204,333,55],"pivot":[229,347],"order":1,"motion":"leg","multiplier":0.8,"phase":-0.325},
+    {"id":"front_leg_r","master":"outputs/companion-rigs/fox/parts-source.png","crop":[340,435,670,790],"placement":[133,333,44],"pivot":[153,351],"order":2,"motion":"leg","phase":0},
+    {"id":"body","master":"outputs/companion-rigs/fox/parts-source.png","crop":[365,0,665,435],"placement":[119,295,177],"pivot":[206,367],"order":3},
+    {"id":"hind_leg_l","master":"outputs/companion-rigs/fox/parts-source.png","crop":[0,790,340,1150],"placement":[266,333,61],"pivot":[290,355],"order":4,"motion":"leg","multiplier":0.8,"phase":0},
+    {"id":"front_leg_l","master":"outputs/companion-rigs/fox/parts-source.png","crop":[0,435,340,790],"placement":[166,335,47],"pivot":[188,352],"order":5,"motion":"leg","phase":-0.325},
+    {"id":"chest_fluff","master":"outputs/companion-rigs/fox/parts-source.png","crop":[670,435,1024,790],"placement":[111,287,122],"pivot":[171,304],"order":6},
+    {"id":"head","master":"client/public/assets/companions/illustrated-v1/fox.png","crop":[154,26,506,359],"placement":[49,56,414],"pivot":[256,448],"order":7,"motion":"body","preserveCanvas":true}
+  ]
+}

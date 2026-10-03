@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "species": "robot",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "leg_r",
+      "source": "/assets/companions/rig-v2/robot/base/leg_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        208.58,
+        343.45
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.5,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "source": "/assets/companions/rig-v2/robot/base/leg_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        296.57,
+        337.74
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.5,
+      "phase": -0.45,
+      "motion": "leg"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/robot/base/arm_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        201.33,
+        290.0
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": -0.45,
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/robot/base/arm_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        318.51,
+        288.6
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/robot/base/body.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        255.49,
+        321.47
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "neck",
+      "source": "/assets/companions/rig-v2/robot/base/neck.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        231.55,
+        271.0
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "antenna",
+      "source": "/assets/companions/rig-v2/robot/base/antenna.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        259.0,
+        132.87
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "antenna"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/robot/base/head.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        257.5,
+        258.65
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/robot/base/head_sleep.png"
+      }
+    }
+  ]
+}

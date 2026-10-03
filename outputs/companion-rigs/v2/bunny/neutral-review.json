@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "b8443cc06c6330ea1eeeebc74086b89790ecf1a3c8f692d8bd2676134a608b40",
+  "originalSha256": "b9583ca60040043990fc181df5627d7d8eb97d00648ef6708b3937e61ec7887d",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.000805,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source ears, face, folded arms and feet reconstruct the reference. Intact generated ear and arm artwork is retained beneath the surfaces."
+}

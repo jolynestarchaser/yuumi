@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "species": "duck",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/duck/base/tail.png",
+      "bounds": [
+        316,
+        318,
+        60,
+        69
+      ],
+      "pivot": [
+        346,
+        328
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "leg_r",
+      "source": "/assets/companions/rig-v2/duck/base/leg_r.png",
+      "bounds": [
+        128,
+        381,
+        108,
+        67
+      ],
+      "pivot": [
+        182,
+        391
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "source": "/assets/companions/rig-v2/duck/base/leg_l.png",
+      "bounds": [
+        276,
+        381,
+        108,
+        67
+      ],
+      "pivot": [
+        330,
+        391
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.375,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/duck/base/body.png",
+      "bounds": [
+        129,
+        268,
+        254,
+        143
+      ],
+      "pivot": [
+        256,
+        278
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "wing_r",
+      "source": "/assets/companions/rig-v2/duck/base/wing_r.png",
+      "bounds": [
+        106,
+        269,
+        103,
+        116
+      ],
+      "pivot": [
+        157.5,
+        279
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "wing_l",
+      "source": "/assets/companions/rig-v2/duck/base/wing_l.png",
+      "bounds": [
+        303,
+        269,
+        103,
+        116
+      ],
+      "pivot": [
+        354.5,
+        279
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "chest_fluff",
+      "source": "/assets/companions/rig-v2/duck/base/chest_fluff.png",
+      "bounds": [
+        163,
+        288,
+        185,
+        96
+      ],
+      "pivot": [
+        255.5,
+        298
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/duck/base/head.png",
+      "bounds": [
+        124,
+        56,
+        264,
+        223
+      ],
+      "pivot": [
+        256,
+        66
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/duck/base/head_sleep.png"
+      }
+    }
+  ]
+}

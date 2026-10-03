@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-03",
+  "tool": "built-in image_gen.imagegen",
+  "reference": "client/public/assets/companions/moodboard-v1/robot.png",
+  "master": "master.png",
+  "prompt": "Reconstruct the authoritative robot into isolated transparent anatomical layers, preserve silhouette/palette/front-facing neutral identity, complete hidden roots and a clean torso, open and closed-eye heads. See the generation tool call in this conversation for the complete priority-species prompt.",
+  "status": "candidate",
+  "ready": false,
+  "originalAtlasUntouched": true,
+  "generatedOutputHint": "Generated images are saved to C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9 as C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9\\exec-9d230887-e5c9-442f-9dba-82ee9890836a.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "preparation": "Deterministic alpha-island extraction, placement, hierarchy assembly. Fox visible surfaces are extracted from the original; reconstructed pixels are used only under occlusion.",
+  "knownIssues": "Head, core, claw and torso proportions differ; limbs remain single-segment assemblies, not independent shoulder/elbow chains. Foot-contact and neck overlap need motion review."
+}

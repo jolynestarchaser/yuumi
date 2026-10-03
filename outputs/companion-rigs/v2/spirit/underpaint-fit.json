@@ -1,0 +1,161 @@
+{
+  "tail": {
+    "source": "generated-anatomy/tail.png",
+    "placement": [
+      272,
+      360,
+      42,
+      32
+    ],
+    "completeSourceSize": [
+      74,
+      64
+    ],
+    "outsideOpaqueCoverageAt128px": 0.434
+  },
+  "ear_r": {
+    "source": "generated-anatomy/ear_r.png",
+    "placement": [
+      56,
+      145,
+      152,
+      144
+    ],
+    "completeSourceSize": [
+      168,
+      164
+    ],
+    "outsideOpaqueCoverageAt128px": 11.71
+  },
+  "ear_l": {
+    "source": "generated-anatomy/ear_l.png",
+    "placement": [
+      279,
+      147,
+      92,
+      88
+    ],
+    "completeSourceSize": [
+      182,
+      172
+    ],
+    "outsideOpaqueCoverageAt128px": 2.085
+  },
+  "leg_r": {
+    "source": "generated-anatomy/leg_r.png",
+    "placement": [
+      207,
+      365,
+      25,
+      35
+    ],
+    "completeSourceSize": [
+      47,
+      67
+    ],
+    "outsideOpaqueCoverageAt128px": 0.27
+  },
+  "leg_l": {
+    "source": "generated-anatomy/leg_l.png",
+    "placement": [
+      283,
+      317,
+      33,
+      67
+    ],
+    "completeSourceSize": [
+      65,
+      131
+    ],
+    "outsideOpaqueCoverageAt128px": 0.629
+  },
+  "body": {
+    "source": "generated-anatomy/body.png",
+    "placement": [
+      224,
+      246,
+      74,
+      90
+    ],
+    "completeSourceSize": [
+      148,
+      170
+    ],
+    "outsideOpaqueCoverageAt128px": 2.311
+  },
+  "arm_l": {
+    "source": "generated-anatomy/arm_l.png",
+    "placement": [
+      276,
+      286,
+      32,
+      41
+    ],
+    "completeSourceSize": [
+      64,
+      79
+    ],
+    "outsideOpaqueCoverageAt128px": 0.395
+  },
+  "arm_r": {
+    "source": "generated-anatomy/arm_r.png",
+    "placement": [
+      190,
+      303,
+      32,
+      36
+    ],
+    "completeSourceSize": [
+      64,
+      72
+    ],
+    "outsideOpaqueCoverageAt128px": 0.352
+  },
+  "body_front": {
+    "source": "generated-anatomy/body.png",
+    "anatomyOwner": "body",
+    "foregroundOnly": true
+  },
+  "collar_front": {
+    "source": "generated-anatomy/collar_front.png",
+    "placement": [
+      209,
+      219,
+      76,
+      34
+    ],
+    "completeSourceSize": [
+      152,
+      68
+    ],
+    "outsideOpaqueCoverageAt128px": 0.73
+  },
+  "head": {
+    "source": "generated-anatomy/head.png",
+    "placement": [
+      218,
+      132,
+      93,
+      72
+    ],
+    "completeSourceSize": [
+      183,
+      140
+    ],
+    "outsideOpaqueCoverageAt128px": 2.508
+  },
+  "sprout": {
+    "source": "generated-anatomy/sprout.png",
+    "placement": [
+      217,
+      70,
+      59,
+      44
+    ],
+    "completeSourceSize": [
+      115,
+      88
+    ],
+    "outsideOpaqueCoverageAt128px": 9.777
+  }
+}

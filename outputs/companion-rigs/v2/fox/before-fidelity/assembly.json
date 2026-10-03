@@ -1,0 +1,13 @@
+{
+  "species": "fox", "archetype": "quadruped",
+  "parts": [
+    {"id":"tail","crop":[880,0,1288,455],"placement":[266,193,197],"height":217,"pivot":[286,373],"order":0,"motion":"tail","phase":-0.15},
+    {"id":"hind_leg_r","crop":[0,785,450,1221],"placement":[210,315,77],"pivot":[245,326],"order":1,"motion":"leg","phase":-0.325},
+    {"id":"hind_leg_l","crop":[450,785,790,1221],"placement":[258,315,78],"pivot":[283,326],"order":2,"motion":"leg"},
+    {"id":"body","crop":[465,0,880,450],"placement":[135,278,167],"pivot":[215,345],"order":3,"motion":"body"},
+    {"id":"front_leg_r","crop":[0,450,450,785],"placement":[107,319,68],"height":129,"pivot":[141,330],"order":4,"parent":"body","motion":"leg"},
+    {"id":"front_leg_l","crop":[450,450,790,785],"placement":[163,319,68],"height":129,"pivot":[197,330],"order":5,"parent":"body","motion":"leg","phase":-0.325},
+    {"id":"chest_fluff","crop":[880,460,1288,780],"placement":[84,263,144],"height":105,"pivot":[156,280],"order":6,"parent":"body"},
+    {"id":"head","crop":[0,0,460,450],"sleepCrop":[795,780,1288,1221],"placement":[49,56,257],"pivot":[183,264],"order":7,"parent":"body","motion":"body"}
+  ]
+}

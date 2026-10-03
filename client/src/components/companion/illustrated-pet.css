@@ -22,3 +22,40 @@
 @keyframes illustrated-shadow { 50% { transform: scaleX(.86); opacity: .65; } }
 @keyframes illustrated-sleep { 50% { transform: translateY(-10px); opacity: .45; } }
 @media (prefers-reduced-motion: reduce) { .companion-illustrated-pet * { animation: none !important; } }
+
+/* State ownership outranks the legacy shared SVG styles. The ground is a
+ * sibling of the age/facing/character transforms and never travels vertically. */
+.companion-illustrated-pet[data-animation-state='idle'] .pet-art-root { animation: rig-breathe 5s ease-in-out infinite; }
+.companion-illustrated-pet[data-animation-state='sleep'] .pet-art-root { animation: rig-breathe 6s ease-in-out infinite; }
+.companion-illustrated-pet[data-animation-state='sleep'] .layered-attachment { animation: none; }
+.companion-illustrated-pet:is([data-animation-state='happy'],[data-animation-state='play']) .pet-art-root { animation: pet-art-hop 1s ease-out 2; }
+.companion-illustrated-pet[data-animation-state='eat'] .pet-art-root { animation: illustrated-nibble .45s ease-out 2; }
+.companion-illustrated-pet[data-animation-state='surprised'] .pet-art-root { animation: illustrated-shake .7s ease-out 1; }
+.companion-illustrated-pet[data-animation-state='growth'] .pet-art-root { animation: pet-art-reveal 1.2s ease-out 1; }
+.companion-illustrated-pet[data-animation-state='locomotion'][data-rig-archetype='frog'] .pet-art-root { animation: rig-frog-jump var(--pet-walk-cycle) linear infinite; }
+.companion-illustrated-pet[data-animation-state='locomotion'][data-rig-archetype='frog'] .illustrated-ground { animation: rig-frog-shadow var(--pet-walk-cycle) linear infinite; }
+/* Until four anatomical limbs are authored, keep the fox silhouette stable. */
+.companion-illustrated-pet[data-species='fox'] .layered-leg { animation: none; }
+.companion-illustrated-pet[data-species='fox'][data-animation-state='locomotion'] .pet-art-root { animation: rig-fox-travel var(--pet-walk-cycle) ease-in-out infinite; }
+.companion-illustrated-pet[data-species='robot'] .layered-tail { animation: none; }
+.rig-part-motion { transform-box: view-box; animation-delay: var(--rig-phase, 0s); }
+.companion-illustrated-pet[data-animation-state='idle'] .rig-motion-eyes { animation: layered-blink 6.3s linear infinite; }
+.companion-illustrated-pet[data-animation-state='locomotion'] .rig-motion-leg { animation: rig-leg var(--pet-walk-cycle) ease-in-out infinite; animation-delay: var(--rig-phase, 0s); }
+.companion-illustrated-pet[data-rig-archetype='frog'] .rig-motion-leg { animation: none; }
+.companion-illustrated-pet[data-rig-archetype='frog'][data-animation-state='locomotion'] .rig-motion-leg { animation: rig-frog-limb var(--pet-walk-cycle) linear infinite; }
+.companion-illustrated-pet[data-animation-state='happy'] :is(.rig-motion-tail,.rig-motion-ear,.rig-motion-antenna) { animation: rig-secondary .4s ease-in-out infinite; }
+@keyframes rig-frog-limb { 0%,100% { transform: none; } 18% { transform: rotate(calc(-5deg * var(--rig-multiplier))); } 52% { transform: rotate(calc(12deg * var(--rig-multiplier))); } 72% { transform: rotate(calc(-4deg * var(--rig-multiplier))); } }
+.companion-illustrated-pet[data-animation-state='locomotion'] :is(.rig-motion-ear, .rig-motion-tail, .rig-motion-leaf, .rig-motion-antenna) { animation: rig-secondary var(--pet-walk-cycle) ease-in-out infinite; animation-delay: var(--rig-phase, 0s); }
+@keyframes rig-breathe { 50% { transform: scale(1.004,.997); } }
+@keyframes rig-fox-travel { 50% { transform: translateY(-2px); } }
+@keyframes rig-leg { 25% { transform: rotate(calc(8deg * var(--rig-multiplier))) translateY(-3px); } 75% { transform: rotate(calc(-8deg * var(--rig-multiplier))); } }
+@keyframes rig-secondary { 50% { transform: rotate(calc(4deg * var(--rig-multiplier))); } }
+@keyframes rig-frog-jump {
+  0%,100% { transform: none; }
+  18% { transform: scale(1.02,.98); }
+  30% { transform: translateY(-3px) scale(.99,1.01); }
+  52% { transform: translateY(-18px); }
+  72% { transform: translateY(0) scale(1.015,.985); }
+  85% { transform: none; }
+}
+@keyframes rig-frog-shadow { 0%,18%,72%,100% { transform: scaleX(1); opacity: 1; } 52% { transform: scaleX(.8); opacity: .6; } }

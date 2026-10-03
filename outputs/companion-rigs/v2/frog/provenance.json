@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-03",
+  "tool": "built-in image_gen.imagegen",
+  "reference": "client/public/assets/companions/moodboard-v1/frog.png",
+  "master": "master.png",
+  "prompt": "Reconstruct the authoritative frog into isolated transparent anatomical layers, preserve silhouette/palette/front-facing neutral identity, complete hidden roots and a clean torso, open and closed-eye heads. See the generation tool call in this conversation for the complete priority-species prompt.",
+  "status": "candidate",
+  "ready": false,
+  "originalAtlasUntouched": true,
+  "generatedOutputHint": "Generated images are saved to C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9 as C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9\\exec-3b8f0694-6aa2-458b-9f7d-a4d0edc8b4f3.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "preparation": "Deterministic alpha-island extraction, placement, hierarchy assembly. Fox visible surfaces are extracted from the original; reconstructed pixels are used only under occlusion.",
+  "knownIssues": "Head/body join reads as a separate cap; thigh/front-arm contours differ. Dedicated thigh-foot hierarchy exists, but squat/launch/landing overlap requires revision."
+}

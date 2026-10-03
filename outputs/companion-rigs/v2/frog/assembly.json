@@ -1,0 +1,193 @@
+{
+  "species": "frog",
+  "archetype": "frog",
+  "parts": [
+    {
+      "id": "thigh_r",
+      "crop": [
+        530,
+        400,
+        1010,
+        720
+      ],
+      "placement": [
+        40,
+        246,
+        100
+      ],
+      "height": 179,
+      "pivot": [
+        115.42,
+        279.28
+      ],
+      "order": 0,
+      "motion": "leg",
+      "multiplier": 0.8
+    },
+    {
+      "id": "foot_r",
+      "crop": [
+        90,
+        750,
+        420,
+        995
+      ],
+      "placement": [
+        50,
+        394,
+        90
+      ],
+      "height": 39,
+      "pivot": [
+        115.7,
+        399.13
+      ],
+      "order": 1,
+      "parent": "thigh_r",
+      "motion": "leg",
+      "multiplier": -0.5
+    },
+    {
+      "id": "thigh_l",
+      "crop": [
+        1070,
+        400,
+        1480,
+        720
+      ],
+      "placement": [
+        354,
+        237,
+        118
+      ],
+      "height": 192,
+      "pivot": [
+        383.0,
+        272.69
+      ],
+      "order": 2,
+      "motion": "leg",
+      "multiplier": -0.8
+    },
+    {
+      "id": "foot_l",
+      "crop": [
+        590,
+        750,
+        950,
+        995
+      ],
+      "placement": [
+        374,
+        394,
+        90
+      ],
+      "height": 39,
+      "pivot": [
+        398.3,
+        399.13
+      ],
+      "order": 3,
+      "parent": "thigh_l",
+      "motion": "leg",
+      "multiplier": 0.5
+    },
+    {
+      "id": "body",
+      "crop": [
+        540,
+        25,
+        1100,
+        395
+      ],
+      "placement": [
+        111,
+        252,
+        314
+      ],
+      "height": 173,
+      "pivot": [
+        268.0,
+        350.19
+      ],
+      "order": 4,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "crop": [
+        1140,
+        45,
+        1490,
+        395
+      ],
+      "placement": [
+        85,
+        257,
+        122
+      ],
+      "height": 191,
+      "pivot": [
+        140.45,
+        266.55
+      ],
+      "order": 5,
+      "parent": "body",
+      "motion": "leg",
+      "multiplier": 0.25
+    },
+    {
+      "id": "arm_l",
+      "crop": [
+        100,
+        400,
+        480,
+        720
+      ],
+      "placement": [
+        307,
+        257,
+        122
+      ],
+      "height": 191,
+      "pivot": [
+        372.44,
+        266.55
+      ],
+      "order": 6,
+      "parent": "body",
+      "motion": "leg",
+      "multiplier": -0.25
+    },
+    {
+      "id": "head",
+      "crop": [
+        15,
+        30,
+        535,
+        370
+      ],
+      "sleepCrop": [
+        995,
+        725,
+        1536,
+        1010
+      ],
+      "placement": [
+        94,
+        134,
+        333
+      ],
+      "height": 167,
+      "pivot": [
+        260.5,
+        269.14
+      ],
+      "order": 7,
+      "parent": "body",
+      "motion": "body"
+    }
+  ],
+  "neutralFidelityPass": "visually-refined-placement-v1",
+  "authoritativeSurfaces": true
+}

@@ -1,0 +1,147 @@
+{
+  "tail": {
+    "source": "generated-anatomy/tail.png",
+    "placement": [
+      263,
+      361,
+      29,
+      37
+    ],
+    "completeSourceSize": [
+      57,
+      71
+    ],
+    "outsideOpaqueCoverageAt128px": 0.36
+  },
+  "ear_r": {
+    "source": "generated-anatomy/ear_r.png",
+    "placement": [
+      72,
+      195,
+      125,
+      125
+    ],
+    "completeSourceSize": [
+      173,
+      155
+    ],
+    "outsideOpaqueCoverageAt128px": 5.02
+  },
+  "ear_l": {
+    "source": "generated-anatomy/ear_l.png",
+    "placement": [
+      322,
+      191,
+      68,
+      87
+    ],
+    "completeSourceSize": [
+      134,
+      171
+    ],
+    "outsideOpaqueCoverageAt128px": 1.73
+  },
+  "leg_r": {
+    "source": "generated-anatomy/leg_r.png",
+    "placement": [
+      197,
+      398,
+      32,
+      34
+    ],
+    "completeSourceSize": [
+      64,
+      68
+    ],
+    "outsideOpaqueCoverageAt128px": 0.368
+  },
+  "leg_l": {
+    "source": "generated-anatomy/leg_l.png",
+    "placement": [
+      269,
+      364,
+      32,
+      34
+    ],
+    "completeSourceSize": [
+      64,
+      68
+    ],
+    "outsideOpaqueCoverageAt128px": 0.393
+  },
+  "body": {
+    "source": "generated-anatomy/body.png",
+    "placement": [
+      204,
+      302,
+      90,
+      74
+    ],
+    "completeSourceSize": [
+      174,
+      146
+    ],
+    "outsideOpaqueCoverageAt128px": 2.493
+  },
+  "collar_front": {
+    "source": "generated-anatomy/collar_front.png",
+    "placement": [
+      216,
+      308,
+      58,
+      25
+    ],
+    "completeSourceSize": [
+      110,
+      45
+    ],
+    "outsideOpaqueCoverageAt128px": 0.479
+  },
+  "arm_l": {
+    "source": "generated-anatomy/arm_l.png",
+    "placement": [
+      290,
+      358,
+      20,
+      33
+    ],
+    "completeSourceSize": [
+      40,
+      65
+    ],
+    "outsideOpaqueCoverageAt128px": 0.242
+  },
+  "arm_r": {
+    "source": "generated-anatomy/arm_r.png",
+    "placement": [
+      199,
+      358,
+      20,
+      33
+    ],
+    "completeSourceSize": [
+      40,
+      65
+    ],
+    "outsideOpaqueCoverageAt128px": 0.242
+  },
+  "body_front": {
+    "source": "generated-anatomy/body.png",
+    "anatomyOwner": "body",
+    "foregroundOnly": true
+  },
+  "head": {
+    "source": "generated-anatomy/head.png",
+    "placement": [
+      187,
+      144,
+      116,
+      114
+    ],
+    "completeSourceSize": [
+      232,
+      222
+    ],
+    "outsideOpaqueCoverageAt128px": 4.721
+  }
+}

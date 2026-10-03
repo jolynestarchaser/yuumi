@@ -1,0 +1,254 @@
+{
+  "species": "spirit",
+  "archetype": "upright",
+  "parts": [
+    {
+      "id": "tail",
+      "crop": [
+        0,
+        755,
+        350,
+        1086
+      ],
+      "placement": [
+        304,
+        332,
+        75
+      ],
+      "height": 76,
+      "pivot": [
+        341.5,
+        342
+      ],
+      "order": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "ear_r",
+      "crop": [
+        540,
+        0,
+        1000,
+        460
+      ],
+      "placement": [
+        40,
+        152,
+        186
+      ],
+      "height": 147,
+      "pivot": [
+        133,
+        162
+      ],
+      "order": 1,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "crop": [
+        1000,
+        0,
+        1448,
+        460
+      ],
+      "placement": [
+        286,
+        152,
+        186
+      ],
+      "height": 147,
+      "pivot": [
+        379,
+        162
+      ],
+      "order": 2,
+      "motion": "ear",
+      "multiplier": -1
+    },
+    {
+      "id": "leg_r",
+      "crop": [
+        662,
+        0,
+        1324,
+        594
+      ],
+      "placement": [
+        183,
+        364,
+        69
+      ],
+      "height": 84,
+      "pivot": [
+        217.5,
+        374
+      ],
+      "order": 3,
+      "motion": "leg",
+      "master": "repair.png"
+    },
+    {
+      "id": "leg_l",
+      "crop": [
+        0,
+        594,
+        662,
+        1188
+      ],
+      "placement": [
+        260,
+        364,
+        69
+      ],
+      "height": 84,
+      "pivot": [
+        294.5,
+        374
+      ],
+      "order": 4,
+      "motion": "leg",
+      "master": "repair.png",
+      "phase": -0.325
+    },
+    {
+      "id": "body",
+      "crop": [
+        0,
+        0,
+        662,
+        594
+      ],
+      "placement": [
+        184,
+        250,
+        145
+      ],
+      "height": 143,
+      "pivot": [
+        256.5,
+        260
+      ],
+      "order": 5,
+      "motion": "body",
+      "master": "repair.png"
+    },
+    {
+      "id": "arm_r",
+      "crop": [
+        0,
+        455,
+        365,
+        755
+      ],
+      "placement": [
+        143,
+        284,
+        81
+      ],
+      "height": 88,
+      "pivot": [
+        183.5,
+        294
+      ],
+      "order": 6,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": 0.3
+    },
+    {
+      "id": "arm_l",
+      "crop": [
+        365,
+        455,
+        745,
+        755
+      ],
+      "placement": [
+        288,
+        284,
+        81
+      ],
+      "height": 88,
+      "pivot": [
+        328.5,
+        294
+      ],
+      "order": 7,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": -0.3
+    },
+    {
+      "id": "collar_front",
+      "crop": [
+        350,
+        755,
+        715,
+        1086
+      ],
+      "placement": [
+        165,
+        251,
+        182
+      ],
+      "height": 59,
+      "pivot": [
+        256,
+        261
+      ],
+      "order": 8,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        540,
+        460
+      ],
+      "placement": [
+        150,
+        125,
+        212
+      ],
+      "height": 135,
+      "pivot": [
+        256,
+        135
+      ],
+      "order": 9,
+      "motion": "body",
+      "parent": "body",
+      "sleepCrop": [
+        715,
+        755,
+        1120,
+        1086
+      ]
+    },
+    {
+      "id": "sprout",
+      "crop": [
+        1120,
+        755,
+        1448,
+        1086
+      ],
+      "placement": [
+        218,
+        61,
+        83
+      ],
+      "height": 66,
+      "pivot": [
+        259.5,
+        71
+      ],
+      "order": 10,
+      "motion": "leaf",
+      "parent": "head"
+    }
+  ]
+}

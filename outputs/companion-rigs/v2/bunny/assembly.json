@@ -1,0 +1,233 @@
+{
+  "species": "bunny",
+  "archetype": "upright",
+  "parts": [
+    {
+      "id": "ear_r",
+      "crop": [
+        785,
+        0,
+        1120,
+        460
+      ],
+      "placement": [
+        40,
+        165,
+        162
+      ],
+      "height": 240,
+      "pivot": [
+        188.35,
+        174.11
+      ],
+      "order": 0,
+      "motion": "ear",
+      "phase": -0.12
+    },
+    {
+      "id": "ear_l",
+      "crop": [
+        1120,
+        0,
+        1448,
+        460
+      ],
+      "placement": [
+        297,
+        165,
+        175
+      ],
+      "height": 237,
+      "pivot": [
+        311.75,
+        174.0
+      ],
+      "order": 1,
+      "motion": "ear",
+      "multiplier": -1,
+      "phase": -0.18
+    },
+    {
+      "id": "tail",
+      "crop": [
+        0,
+        755,
+        370,
+        1086
+      ],
+      "placement": [
+        124,
+        372,
+        56
+      ],
+      "pivot": [
+        172.77,
+        404.0
+      ],
+      "order": 2,
+      "motion": "tail",
+      "height": 59.45641025641026
+    },
+    {
+      "id": "foot_r",
+      "crop": [
+        730,
+        460,
+        1110,
+        750
+      ],
+      "placement": [
+        167,
+        384,
+        74
+      ],
+      "height": 64,
+      "pivot": [
+        204.52,
+        390.4
+      ],
+      "order": 3,
+      "motion": "leg"
+    },
+    {
+      "id": "foot_l",
+      "crop": [
+        1110,
+        460,
+        1448,
+        750
+      ],
+      "placement": [
+        273,
+        396,
+        67
+      ],
+      "height": 52,
+      "pivot": [
+        306.03,
+        401.2
+      ],
+      "order": 4,
+      "motion": "leg",
+      "phase": -0.225
+    },
+    {
+      "id": "body",
+      "crop": [
+        390,
+        0,
+        775,
+        460
+      ],
+      "placement": [
+        151,
+        262,
+        205
+      ],
+      "height": 167,
+      "pivot": [
+        253.01,
+        368.0
+      ],
+      "order": 5,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "crop": [
+        0,
+        460,
+        375,
+        750
+      ],
+      "placement": [
+        174,
+        299,
+        73
+      ],
+      "height": 86,
+      "pivot": [
+        193.0,
+        301.99
+      ],
+      "order": 6,
+      "parent": "body",
+      "motion": "leg",
+      "multiplier": 0.35
+    },
+    {
+      "id": "arm_l",
+      "crop": [
+        380,
+        460,
+        730,
+        750
+      ],
+      "placement": [
+        274,
+        299,
+        73
+      ],
+      "height": 86,
+      "pivot": [
+        327.0,
+        302.0
+      ],
+      "order": 7,
+      "parent": "body",
+      "motion": "leg",
+      "multiplier": -0.35
+    },
+    {
+      "id": "chest_fluff",
+      "crop": [
+        370,
+        755,
+        735,
+        1086
+      ],
+      "placement": [
+        166,
+        271,
+        183
+      ],
+      "height": 79,
+      "pivot": [
+        257.97,
+        278.35
+      ],
+      "order": 8,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        385,
+        460
+      ],
+      "sleepCrop": [
+        735,
+        755,
+        1110,
+        1086
+      ],
+      "placement": [
+        148,
+        89,
+        218
+      ],
+      "height": 197,
+      "pivot": [
+        257.0,
+        275.0
+      ],
+      "order": 9,
+      "parent": "body",
+      "motion": "body"
+    }
+  ],
+  "neutralFidelityPass": "visually-refined-placement-v1",
+  "authoritativeSurfaces": true
+}

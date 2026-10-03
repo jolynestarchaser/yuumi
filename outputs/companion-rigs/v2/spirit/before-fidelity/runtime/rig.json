@@ -1,0 +1,349 @@
+{
+  "version": 1,
+  "species": "spirit",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/spirit/base/tail.png",
+      "bounds": [
+        304,
+        332,
+        75,
+        76
+      ],
+      "pivot": [
+        341.5,
+        342
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "ear_r",
+      "source": "/assets/companions/rig-v2/spirit/base/ear_r.png",
+      "bounds": [
+        40,
+        152,
+        186,
+        147
+      ],
+      "pivot": [
+        133,
+        162
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "source": "/assets/companions/rig-v2/spirit/base/ear_l.png",
+      "bounds": [
+        286,
+        152,
+        186,
+        147
+      ],
+      "pivot": [
+        379,
+        162
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "leg_r",
+      "source": "/assets/companions/rig-v2/spirit/base/leg_r.png",
+      "bounds": [
+        183,
+        364,
+        69,
+        84
+      ],
+      "pivot": [
+        217.5,
+        374
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "source": "/assets/companions/rig-v2/spirit/base/leg_l.png",
+      "bounds": [
+        260,
+        364,
+        69,
+        84
+      ],
+      "pivot": [
+        294.5,
+        374
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/spirit/base/body.png",
+      "bounds": [
+        184,
+        250,
+        145,
+        143
+      ],
+      "pivot": [
+        256.5,
+        260
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/spirit/base/arm_r.png",
+      "bounds": [
+        143,
+        284,
+        81,
+        88
+      ],
+      "pivot": [
+        183.5,
+        294
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/spirit/base/arm_l.png",
+      "bounds": [
+        288,
+        284,
+        81,
+        88
+      ],
+      "pivot": [
+        328.5,
+        294
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "collar_front",
+      "source": "/assets/companions/rig-v2/spirit/base/collar_front.png",
+      "bounds": [
+        165,
+        251,
+        182,
+        59
+      ],
+      "pivot": [
+        256,
+        261
+      ],
+      "order": 8,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/spirit/base/head.png",
+      "bounds": [
+        150,
+        125,
+        212,
+        135
+      ],
+      "pivot": [
+        256,
+        135
+      ],
+      "order": 9,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/spirit/base/head_sleep.png"
+      }
+    },
+    {
+      "id": "sprout",
+      "source": "/assets/companions/rig-v2/spirit/base/sprout.png",
+      "bounds": [
+        218,
+        61,
+        83,
+        66
+      ],
+      "pivot": [
+        259.5,
+        71
+      ],
+      "order": 10,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "head",
+      "motion": "leaf"
+    }
+  ]
+}

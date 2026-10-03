@@ -1,0 +1,191 @@
+{
+  "species": "robot",
+  "archetype": "upright",
+  "parts": [
+    {
+      "id": "leg_r",
+      "crop": [
+        1080,
+        380,
+        1440,
+        685
+      ],
+      "placement": [
+        160,
+        338,
+        92
+      ],
+      "height": 110,
+      "pivot": [
+        208.58,
+        343.45
+      ],
+      "order": 0,
+      "motion": "leg",
+      "multiplier": 0.5
+    },
+    {
+      "id": "leg_l",
+      "crop": [
+        130,
+        680,
+        420,
+        990
+      ],
+      "placement": [
+        263,
+        332,
+        83
+      ],
+      "height": 116,
+      "pivot": [
+        296.57,
+        337.74
+      ],
+      "order": 1,
+      "motion": "leg",
+      "multiplier": 0.5,
+      "phase": -0.45
+    },
+    {
+      "id": "arm_r",
+      "crop": [
+        100,
+        380,
+        460,
+        680
+      ],
+      "placement": [
+        115,
+        278,
+        107
+      ],
+      "height": 120,
+      "pivot": [
+        201.33,
+        290.0
+      ],
+      "order": 2,
+      "motion": "leg",
+      "multiplier": 0.3,
+      "phase": -0.45
+    },
+    {
+      "id": "arm_l",
+      "crop": [
+        680,
+        380,
+        1000,
+        680
+      ],
+      "placement": [
+        298,
+        276,
+        95
+      ],
+      "height": 126,
+      "pivot": [
+        318.51,
+        288.6
+      ],
+      "order": 3,
+      "motion": "leg",
+      "multiplier": 0.3
+    },
+    {
+      "id": "body",
+      "crop": [
+        590,
+        40,
+        1000,
+        380
+      ],
+      "placement": [
+        195,
+        258,
+        122
+      ],
+      "height": 112,
+      "pivot": [
+        255.49,
+        321.47
+      ],
+      "order": 4,
+      "motion": "body"
+    },
+    {
+      "id": "neck",
+      "crop": [
+        1120,
+        750,
+        1410,
+        960
+      ],
+      "placement": [
+        210,
+        272,
+        44
+      ],
+      "height": 7,
+      "pivot": [
+        231.55,
+        271.0
+      ],
+      "order": 5,
+      "parent": "body"
+    },
+    {
+      "id": "antenna",
+      "crop": [
+        1150,
+        50,
+        1400,
+        350
+      ],
+      "placement": [
+        235,
+        56,
+        48
+      ],
+      "height": 78,
+      "pivot": [
+        259.0,
+        132.87
+      ],
+      "order": 6,
+      "parent": "body",
+      "motion": "antenna",
+      "multiplier": 0.3
+    },
+    {
+      "id": "head",
+      "crop": [
+        20,
+        30,
+        570,
+        370
+      ],
+      "sleepCrop": [
+        515,
+        680,
+        1060,
+        990
+      ],
+      "placement": [
+        126,
+        127,
+        263
+      ],
+      "height": 149,
+      "pivot": [
+        257.5,
+        258.65
+      ],
+      "order": 7,
+      "parent": "body",
+      "motion": "body"
+    }
+  ],
+  "neutralFidelityPass": "intact-layer-placement-v1",
+  "authoritativeSurfaces": true
+}

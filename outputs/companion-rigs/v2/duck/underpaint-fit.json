@@ -1,0 +1,114 @@
+{
+  "tail": {
+    "source": "generated-anatomy/tail.png",
+    "placement": [
+      322,
+      294,
+      28,
+      18
+    ],
+    "completeSourceSize": [
+      54,
+      36
+    ],
+    "outsideOpaqueCoverageAt128px": 0.153
+  },
+  "leg_r": {
+    "source": "generated-anatomy/leg_r.png",
+    "placement": [
+      140,
+      372,
+      101,
+      76
+    ],
+    "completeSourceSize": [
+      101,
+      76
+    ],
+    "outsideOpaqueCoverageAt128px": 15.53
+  },
+  "leg_l": {
+    "source": "generated-anatomy/leg_l.png",
+    "placement": [
+      295,
+      370,
+      48,
+      70
+    ],
+    "completeSourceSize": [
+      96,
+      78
+    ],
+    "outsideOpaqueCoverageAt128px": 1.62
+  },
+  "body": {
+    "source": "generated-anatomy/body.png",
+    "placement": [
+      190,
+      263,
+      141,
+      68
+    ],
+    "completeSourceSize": [
+      281,
+      134
+    ],
+    "outsideOpaqueCoverageAt128px": 3.39
+  },
+  "wing_r": {
+    "source": "generated-anatomy/wing_r.png",
+    "placement": [
+      154,
+      274,
+      59,
+      66
+    ],
+    "completeSourceSize": [
+      115,
+      122
+    ],
+    "outsideOpaqueCoverageAt128px": 1.256
+  },
+  "wing_l": {
+    "source": "generated-anatomy/wing_l.png",
+    "placement": [
+      327,
+      275,
+      58,
+      50
+    ],
+    "completeSourceSize": [
+      106,
+      98
+    ],
+    "outsideOpaqueCoverageAt128px": 0.876
+  },
+  "chest_fluff": {
+    "source": "generated-anatomy/chest_fluff.png",
+    "placement": [
+      205,
+      282,
+      120,
+      112
+    ],
+    "completeSourceSize": [
+      236,
+      140
+    ],
+    "outsideOpaqueCoverageAt128px": 5.982
+  },
+  "head": {
+    "source": "generated-anatomy/head.png",
+    "placement": [
+      153,
+      64,
+      199,
+      203
+    ],
+    "completeSourceSize": [
+      231,
+      211
+    ],
+    "outsideOpaqueCoverageAt128px": 16.432
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "species": "dragon",
+  "archetype": "quadruped",
+  "parts": [
+    {
+      "id": "tail",
+      "crop": [
+        950,
+        0,
+        1376,
+        470
+      ],
+      "placement": [
+        264,
+        172,
+        208
+      ],
+      "height": 222,
+      "pivot": [
+        368,
+        184
+      ],
+      "order": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "hind_leg_r",
+      "crop": [
+        0,
+        780,
+        440,
+        1143
+      ],
+      "placement": [
+        214,
+        333,
+        68
+      ],
+      "height": 115,
+      "pivot": [
+        248,
+        345
+      ],
+      "order": 1,
+      "motion": "leg",
+      "phase": -0.325
+    },
+    {
+      "id": "hind_leg_l",
+      "crop": [
+        470,
+        780,
+        830,
+        1143
+      ],
+      "placement": [
+        275,
+        333,
+        68
+      ],
+      "height": 115,
+      "pivot": [
+        309,
+        345
+      ],
+      "order": 2,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "crop": [
+        510,
+        0,
+        940,
+        460
+      ],
+      "placement": [
+        96,
+        267,
+        214
+      ],
+      "height": 118,
+      "pivot": [
+        203,
+        279
+      ],
+      "order": 3,
+      "motion": "body"
+    },
+    {
+      "id": "front_leg_r",
+      "crop": [
+        0,
+        470,
+        460,
+        780
+      ],
+      "placement": [
+        77,
+        325,
+        68
+      ],
+      "height": 123,
+      "pivot": [
+        111,
+        337
+      ],
+      "order": 4,
+      "motion": "leg",
+      "parent": "body"
+    },
+    {
+      "id": "front_leg_l",
+      "crop": [
+        480,
+        470,
+        900,
+        780
+      ],
+      "placement": [
+        145,
+        325,
+        68
+      ],
+      "height": 123,
+      "pivot": [
+        179,
+        337
+      ],
+      "order": 5,
+      "motion": "leg",
+      "parent": "body",
+      "phase": -0.325
+    },
+    {
+      "id": "chest_fluff",
+      "crop": [
+        935,
+        470,
+        1376,
+        775
+      ],
+      "placement": [
+        80,
+        265,
+        137
+      ],
+      "height": 93,
+      "pivot": [
+        148.5,
+        277
+      ],
+      "order": 6,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        510,
+        455
+      ],
+      "placement": [
+        40,
+        89,
+        245
+      ],
+      "height": 178,
+      "pivot": [
+        162.5,
+        101
+      ],
+      "order": 7,
+      "motion": "body",
+      "parent": "body",
+      "sleepCrop": [
+        835,
+        775,
+        1376,
+        1143
+      ]
+    }
+  ]
+}

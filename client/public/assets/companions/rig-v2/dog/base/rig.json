@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "species": "dog",
+  "formId": "base",
+  "archetype": "quadruped",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/dog/base/tail.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        387.0,
+        187.68
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "hind_leg_r",
+      "source": "/assets/companions/rig-v2/dog/base/hind_leg_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        237.0,
+        346.84
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "hind_leg_l",
+      "source": "/assets/companions/rig-v2/dog/base/hind_leg_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        350.5,
+        311.61
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/dog/base/body.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        265.0,
+        206.17
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "front_leg_r",
+      "source": "/assets/companions/rig-v2/dog/base/front_leg_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        169.5,
+        292.91
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "front_leg_l",
+      "source": "/assets/companions/rig-v2/dog/base/front_leg_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        233.5,
+        291.09
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "chest_fluff",
+      "source": "/assets/companions/rig-v2/dog/base/chest_fluff.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        180.5,
+        234.78
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/dog/base/head.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        198.5,
+        73.53
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/dog/base/head_sleep.png"
+      }
+    }
+  ]
+}

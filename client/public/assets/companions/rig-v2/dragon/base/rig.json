@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "species": "dragon",
+  "formId": "base",
+  "archetype": "quadruped",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/dragon/base/tail.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        369.5,
+        193.86
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "hind_leg_r",
+      "source": "/assets/companions/rig-v2/dragon/base/hind_leg_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        196.0,
+        350.37
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "hind_leg_l",
+      "source": "/assets/companions/rig-v2/dragon/base/hind_leg_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        304.5,
+        293.95
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/dragon/base/body.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        230.0,
+        265.53
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "front_leg_r",
+      "source": "/assets/companions/rig-v2/dragon/base/front_leg_r.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        123.0,
+        318.05
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "front_leg_l",
+      "source": "/assets/companions/rig-v2/dragon/base/front_leg_l.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        188.0,
+        316.24
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "chest_fluff",
+      "source": "/assets/companions/rig-v2/dragon/base/chest_fluff.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        154.5,
+        273.71
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/dragon/base/head.png",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "pivot": [
+        168.5,
+        101.0
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/dragon/base/head_sleep.png"
+      }
+    }
+  ]
+}

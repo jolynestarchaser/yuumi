@@ -6,3 +6,5 @@ coverage/
 .railway/
 .tools/
 .vscode/
+__pycache__/
+*.py[cod]

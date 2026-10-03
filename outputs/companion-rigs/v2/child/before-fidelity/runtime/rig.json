@@ -1,0 +1,377 @@
+{
+  "version": 1,
+  "species": "child",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/child/base/tail.png",
+      "bounds": [
+        194,
+        285,
+        41,
+        38
+      ],
+      "pivot": [
+        214.5,
+        295
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "ear_r",
+      "source": "/assets/companions/rig-v2/child/base/ear_r.png",
+      "bounds": [
+        91,
+        214,
+        110,
+        59
+      ],
+      "pivot": [
+        146,
+        224
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "source": "/assets/companions/rig-v2/child/base/ear_l.png",
+      "bounds": [
+        311,
+        214,
+        110,
+        59
+      ],
+      "pivot": [
+        366,
+        224
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "leg_r",
+      "source": "/assets/companions/rig-v2/child/base/leg_r.png",
+      "bounds": [
+        185,
+        375,
+        72,
+        73
+      ],
+      "pivot": [
+        221,
+        385
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "source": "/assets/companions/rig-v2/child/base/leg_l.png",
+      "bounds": [
+        263,
+        375,
+        72,
+        73
+      ],
+      "pivot": [
+        299,
+        385
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/child/base/body.png",
+      "bounds": [
+        184,
+        277,
+        144,
+        136
+      ],
+      "pivot": [
+        256,
+        287
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/child/base/arm_r.png",
+      "bounds": [
+        164,
+        298,
+        58,
+        107
+      ],
+      "pivot": [
+        193,
+        308
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/child/base/arm_l.png",
+      "bounds": [
+        290,
+        298,
+        58,
+        107
+      ],
+      "pivot": [
+        319,
+        308
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "collar_front",
+      "source": "/assets/companions/rig-v2/child/base/collar_front.png",
+      "bounds": [
+        171,
+        278,
+        170,
+        52
+      ],
+      "pivot": [
+        256,
+        288
+      ],
+      "order": 8,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/child/base/head.png",
+      "bounds": [
+        124,
+        56,
+        264,
+        218
+      ],
+      "pivot": [
+        256,
+        66
+      ],
+      "order": 9,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/child/base/head_sleep.png"
+      }
+    },
+    {
+      "id": "side_leaf_r",
+      "source": "/assets/companions/rig-v2/child/base/side_leaf_r.png",
+      "bounds": [
+        143,
+        309,
+        63,
+        66
+      ],
+      "pivot": [
+        174.5,
+        319
+      ],
+      "order": -1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leaf"
+    },
+    {
+      "id": "side_leaf_l",
+      "source": "/assets/companions/rig-v2/child/base/side_leaf_l.png",
+      "bounds": [
+        306,
+        309,
+        63,
+        66
+      ],
+      "pivot": [
+        337.5,
+        319
+      ],
+      "order": -1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leaf"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type CSSProperties } from 'react';
 import type { ComponentProps } from 'react';
 import type SoftPet from './SoftPet.js';
-import { layeredBodyCell, layeredGrowth, layeredPetAtlases, layeredSockets } from './layeredPetCatalog.js';
+import { layeredBodyCell, layeredBodyPlacement, layeredGrowth, layeredPetAtlases, layeredSockets } from './layeredPetCatalog.js';
 import { useCreaturePlayback } from './voice/voicePlayback.js';
 import './layered-pet.css';
 
@@ -20,6 +20,12 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
   const playback = useCreaturePlayback();
   const [mouth, setMouth] = useState<'smile' | 'open' | 'round'>('smile');
   const [reducedMotion, setReducedMotion] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [hidden, setHidden] = useState(() => typeof document !== 'undefined' && document.hidden);
+  useEffect(() => {
+    const update = () => setHidden(document.hidden);
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setReducedMotion(media.matches);
@@ -31,7 +37,7 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
     : !voiceTargetId && playback.species === species) ? playback : null;
   useEffect(() => {
     setMouth('smile');
-    if (!active || appearance?.animated === false || reducedMotion) return;
+    if (!active || appearance?.animated === false || reducedMotion || hidden) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     const elapsed = performance.now() - active.startedAt;
     for (const syllable of active.syllables) {
@@ -43,13 +49,11 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
       timers.push(setTimeout(() => setMouth('smile'), end));
     }
     return () => timers.forEach(clearTimeout);
-  }, [active, appearance?.animated, reducedMotion]);
+  }, [active, appearance?.animated, reducedMotion, hidden]);
   if (!atlas) return null;
   const cell = layeredBodyCell(species, render);
   const frame = atlas.frames[cell]!;
-  const scale = Math.min(300 / frame[2], 330 / frame[3]);
-  const width = frame[2] * scale, height = frame[3] * scale;
-  const bodyX = (512 - width) / 2, bodyY = 408 - height;
+  const { scale, width, height, x: bodyX, y: bodyY } = layeredBodyPlacement(species, cell);
   const [faceX, faceY] = atlas.faces[cell]!;
   const noseX = bodyX + (faceX - frame[0]) * scale, noseY = bodyY + (faceY - frame[1]) * scale;
   const layout = species in faceLayouts ? faceLayouts[species as keyof typeof faceLayouts][cell] : undefined;
@@ -99,7 +103,7 @@ export default function LayeredPetParts({ species, render, activity = 'idle', fa
     {attachment(9,'tail','tail')}
     {attachment(16,'wings','wingLeft',true)}{attachment(16,'wings','wingRight')}
     {quadruped && <>{leg(169,true,true)}{leg(343,true,false)}</>}
-    {leg(207,false,true)}{leg(305,false,false)}
+    {species !== 'frog' && <>{leg(207,false,true)}{leg(305,false,false)}</>}
     {sprite(cell,bodyX,bodyY,width,height)}
     {attachment(19,'gills','gillLeft',true)}{attachment(19,'gills','gillRight')}
     {attachment(17,'horns','hornLeft',true)}{attachment(17,'horns','hornRight')}

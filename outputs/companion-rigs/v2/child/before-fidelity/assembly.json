@@ -1,0 +1,274 @@
+{
+  "species": "child",
+  "archetype": "upright",
+  "parts": [
+    {
+      "id": "tail",
+      "crop": [
+        0,
+        755,
+        350,
+        1086
+      ],
+      "placement": [
+        194,
+        285,
+        41
+      ],
+      "height": 38,
+      "pivot": [
+        214.5,
+        295
+      ],
+      "order": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "ear_r",
+      "crop": [
+        775,
+        0,
+        1090,
+        455
+      ],
+      "placement": [
+        91,
+        214,
+        110
+      ],
+      "height": 59,
+      "pivot": [
+        146,
+        224
+      ],
+      "order": 1,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "crop": [
+        1130,
+        0,
+        1448,
+        455
+      ],
+      "placement": [
+        311,
+        214,
+        110
+      ],
+      "height": 59,
+      "pivot": [
+        366,
+        224
+      ],
+      "order": 2,
+      "motion": "ear",
+      "multiplier": -1
+    },
+    {
+      "id": "leg_r",
+      "crop": [
+        639,
+        0,
+        1278,
+        615
+      ],
+      "placement": [
+        185,
+        375,
+        72
+      ],
+      "height": 73,
+      "pivot": [
+        221,
+        385
+      ],
+      "order": 3,
+      "motion": "leg",
+      "master": "repair.png"
+    },
+    {
+      "id": "leg_l",
+      "crop": [
+        0,
+        615,
+        639,
+        1230
+      ],
+      "placement": [
+        263,
+        375,
+        72
+      ],
+      "height": 73,
+      "pivot": [
+        299,
+        385
+      ],
+      "order": 4,
+      "motion": "leg",
+      "master": "repair.png",
+      "phase": -0.325
+    },
+    {
+      "id": "body",
+      "crop": [
+        0,
+        0,
+        639,
+        615
+      ],
+      "placement": [
+        184,
+        277,
+        144
+      ],
+      "height": 136,
+      "pivot": [
+        256,
+        287
+      ],
+      "order": 5,
+      "motion": "body",
+      "master": "repair.png"
+    },
+    {
+      "id": "arm_r",
+      "crop": [
+        0,
+        455,
+        365,
+        755
+      ],
+      "placement": [
+        164,
+        298,
+        58
+      ],
+      "height": 107,
+      "pivot": [
+        193,
+        308
+      ],
+      "order": 6,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": 0.3
+    },
+    {
+      "id": "arm_l",
+      "crop": [
+        365,
+        455,
+        745,
+        755
+      ],
+      "placement": [
+        290,
+        298,
+        58
+      ],
+      "height": 107,
+      "pivot": [
+        319,
+        308
+      ],
+      "order": 7,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": -0.3
+    },
+    {
+      "id": "collar_front",
+      "crop": [
+        350,
+        755,
+        715,
+        1086
+      ],
+      "placement": [
+        171,
+        278,
+        170
+      ],
+      "height": 52,
+      "pivot": [
+        256,
+        288
+      ],
+      "order": 8,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        435,
+        455
+      ],
+      "placement": [
+        124,
+        56,
+        264
+      ],
+      "height": 218,
+      "pivot": [
+        256,
+        66
+      ],
+      "order": 9,
+      "motion": "body",
+      "parent": "body",
+      "sleepCrop": [
+        715,
+        755,
+        1120,
+        1086
+      ]
+    },
+    {
+      "id": "side_leaf_r",
+      "crop": [
+        765,
+        455,
+        1110,
+        755
+      ],
+      "placement": [
+        143,
+        309,
+        63
+      ],
+      "height": 66,
+      "pivot": [
+        174.5,
+        319
+      ],
+      "order": -1,
+      "motion": "leaf"
+    },
+    {
+      "id": "side_leaf_l",
+      "crop": [
+        1120,
+        455,
+        1448,
+        755
+      ],
+      "placement": [
+        306,
+        309,
+        63
+      ],
+      "height": 66,
+      "pivot": [
+        337.5,
+        319
+      ],
+      "order": -1,
+      "motion": "leaf"
+    }
+  ]
+}

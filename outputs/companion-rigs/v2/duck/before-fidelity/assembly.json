@@ -1,0 +1,186 @@
+{
+  "species": "duck",
+  "archetype": "upright",
+  "parts": [
+    {
+      "id": "tail",
+      "crop": [
+        1120,
+        450,
+        1448,
+        755
+      ],
+      "placement": [
+        316,
+        318,
+        60
+      ],
+      "height": 69,
+      "pivot": [
+        346,
+        328
+      ],
+      "order": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "leg_r",
+      "crop": [
+        0,
+        450,
+        360,
+        755
+      ],
+      "placement": [
+        128,
+        381,
+        108
+      ],
+      "height": 67,
+      "pivot": [
+        182,
+        391
+      ],
+      "order": 1,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "crop": [
+        365,
+        450,
+        740,
+        755
+      ],
+      "placement": [
+        276,
+        381,
+        108
+      ],
+      "height": 67,
+      "pivot": [
+        330,
+        391
+      ],
+      "order": 2,
+      "motion": "leg",
+      "phase": -0.375
+    },
+    {
+      "id": "body",
+      "crop": [
+        435,
+        0,
+        830,
+        445
+      ],
+      "placement": [
+        129,
+        268,
+        254
+      ],
+      "height": 143,
+      "pivot": [
+        256,
+        278
+      ],
+      "order": 3,
+      "motion": "body"
+    },
+    {
+      "id": "wing_r",
+      "crop": [
+        845,
+        0,
+        1135,
+        440
+      ],
+      "placement": [
+        106,
+        269,
+        103
+      ],
+      "height": 116,
+      "pivot": [
+        157.5,
+        279
+      ],
+      "order": 4,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": 0.3
+    },
+    {
+      "id": "wing_l",
+      "crop": [
+        1140,
+        0,
+        1448,
+        440
+      ],
+      "placement": [
+        303,
+        269,
+        103
+      ],
+      "height": 116,
+      "pivot": [
+        354.5,
+        279
+      ],
+      "order": 5,
+      "motion": "leg",
+      "parent": "body",
+      "multiplier": -0.3
+    },
+    {
+      "id": "chest_fluff",
+      "crop": [
+        740,
+        450,
+        1110,
+        755
+      ],
+      "placement": [
+        163,
+        288,
+        185
+      ],
+      "height": 96,
+      "pivot": [
+        255.5,
+        298
+      ],
+      "order": 6,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        435,
+        445
+      ],
+      "placement": [
+        124,
+        56,
+        264
+      ],
+      "height": 223,
+      "pivot": [
+        256,
+        66
+      ],
+      "order": 7,
+      "motion": "body",
+      "parent": "body",
+      "sleepCrop": [
+        715,
+        755,
+        1130,
+        1086
+      ]
+    }
+  ]
+}

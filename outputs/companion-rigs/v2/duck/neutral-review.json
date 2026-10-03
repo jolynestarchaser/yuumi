@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "2b5e8b9e87d6d90ef72b9f35d6462e2a39d254218490292710180bb78bb22993",
+  "originalSha256": "b20bfda1f8eb989bc1275b96952480af10db8d8eee06b7be0a02ce0a6167d08f",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.001277,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source beak, chest, wings and compact stance reconstructed. Small underpaint residuals remain."
+}

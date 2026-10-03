@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "50414954f3753d7fefb7840597b0b21ac82743c81d13dd7427aa8a8808e5c7bf",
+  "originalSha256": "2052e4fee35f08f41bc7cdbfbee60028477a854f86d263d0b4a18586db298103",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.000681,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source head/body ratio, shoulders and collar restored; neck separation removed. Complete upper limb anatomy remains beneath foreground foliage/body."
+}

@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "73195c015b8a34a083ef3ae73b67337b7bcbc18877d09dc65e3f53700ba5aa50",
+  "originalSha256": "820767a9eb26192f74be9ad21cc8865f3d200a8f91407c88943240168f5a3c65",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.0009,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source continuous body and squatting silhouette reconstructed; separate thighs, feet and arms retained."
+}

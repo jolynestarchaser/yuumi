@@ -1,0 +1,187 @@
+{
+  "species": "dragon",
+  "archetype": "quadruped",
+  "parts": [
+    {
+      "id": "tail",
+      "crop": [
+        950,
+        0,
+        1376,
+        470
+      ],
+      "placement": [
+        264,
+        181,
+        211
+      ],
+      "height": 238,
+      "pivot": [
+        369.5,
+        193.86
+      ],
+      "order": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "hind_leg_r",
+      "crop": [
+        0,
+        780,
+        440,
+        1143
+      ],
+      "placement": [
+        165,
+        339,
+        62
+      ],
+      "height": 109,
+      "pivot": [
+        196.0,
+        350.37
+      ],
+      "order": 1,
+      "motion": "leg",
+      "phase": -0.325
+    },
+    {
+      "id": "hind_leg_l",
+      "crop": [
+        470,
+        780,
+        830,
+        1143
+      ],
+      "placement": [
+        265,
+        276,
+        79
+      ],
+      "height": 172,
+      "pivot": [
+        304.5,
+        293.95
+      ],
+      "order": 2,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "crop": [
+        510,
+        0,
+        940,
+        460
+      ],
+      "placement": [
+        120,
+        252,
+        220
+      ],
+      "height": 133,
+      "pivot": [
+        230.0,
+        265.53
+      ],
+      "order": 3,
+      "motion": "body"
+    },
+    {
+      "id": "front_leg_r",
+      "crop": [
+        0,
+        470,
+        460,
+        780
+      ],
+      "placement": [
+        77,
+        304,
+        92
+      ],
+      "height": 144,
+      "pivot": [
+        123.0,
+        318.05
+      ],
+      "order": 4,
+      "motion": "leg",
+      "parent": "body"
+    },
+    {
+      "id": "front_leg_l",
+      "crop": [
+        480,
+        470,
+        900,
+        780
+      ],
+      "placement": [
+        142,
+        302,
+        92
+      ],
+      "height": 146,
+      "pivot": [
+        188.0,
+        316.24
+      ],
+      "order": 5,
+      "motion": "leg",
+      "parent": "body",
+      "phase": -0.325
+    },
+    {
+      "id": "chest_fluff",
+      "crop": [
+        935,
+        470,
+        1376,
+        775
+      ],
+      "placement": [
+        80,
+        259,
+        149
+      ],
+      "height": 114,
+      "pivot": [
+        154.5,
+        273.71
+      ],
+      "order": 6,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "crop": [
+        0,
+        0,
+        510,
+        455
+      ],
+      "placement": [
+        40,
+        89,
+        257
+      ],
+      "height": 178,
+      "pivot": [
+        168.5,
+        101.0
+      ],
+      "order": 7,
+      "motion": "body",
+      "parent": "body",
+      "sleepCrop": [
+        835,
+        775,
+        1376,
+        1143
+      ]
+    }
+  ],
+  "neutralFidelityPass": "visually-refined-placement-v1",
+  "authoritativeSurfaces": true
+}

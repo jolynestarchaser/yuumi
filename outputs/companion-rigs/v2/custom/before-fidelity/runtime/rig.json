@@ -1,0 +1,319 @@
+{
+  "version": 1,
+  "species": "custom",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/custom/base/tail.png",
+      "bounds": [
+        332,
+        338,
+        53,
+        59
+      ],
+      "pivot": [
+        358.5,
+        348
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "ear_r",
+      "source": "/assets/companions/rig-v2/custom/base/ear_r.png",
+      "bounds": [
+        40,
+        198,
+        137,
+        147
+      ],
+      "pivot": [
+        108.5,
+        208
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "source": "/assets/companions/rig-v2/custom/base/ear_l.png",
+      "bounds": [
+        335,
+        198,
+        137,
+        147
+      ],
+      "pivot": [
+        403.5,
+        208
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -1,
+      "phase": 0,
+      "motion": "ear"
+    },
+    {
+      "id": "leg_r",
+      "source": "/assets/companions/rig-v2/custom/base/leg_r.png",
+      "bounds": [
+        163,
+        379,
+        93,
+        69
+      ],
+      "pivot": [
+        209.5,
+        389
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "leg_l",
+      "source": "/assets/companions/rig-v2/custom/base/leg_l.png",
+      "bounds": [
+        262,
+        379,
+        93,
+        69
+      ],
+      "pivot": [
+        308.5,
+        389
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/custom/base/body.png",
+      "bounds": [
+        162,
+        294,
+        188,
+        121
+      ],
+      "pivot": [
+        256,
+        304
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/custom/base/arm_r.png",
+      "bounds": [
+        128,
+        312,
+        69,
+        79
+      ],
+      "pivot": [
+        162.5,
+        322
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/custom/base/arm_l.png",
+      "bounds": [
+        315,
+        312,
+        69,
+        79
+      ],
+      "pivot": [
+        349.5,
+        322
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.3,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "collar_front",
+      "source": "/assets/companions/rig-v2/custom/base/collar_front.png",
+      "bounds": [
+        171,
+        292,
+        170,
+        65
+      ],
+      "pivot": [
+        256,
+        302
+      ],
+      "order": 8,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/custom/base/head.png",
+      "bounds": [
+        132,
+        112,
+        245,
+        186
+      ],
+      "pivot": [
+        254.5,
+        122
+      ],
+      "order": 9,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/custom/base/head_sleep.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "f30167405bb7d8389474277bbe8f62d6a3260008a324868c47974490a2d8e36c",
+  "originalSha256": "a2fd75deb09ce344c29403e1be94a0081e9390fcf947934ca229e3199b21c5e0",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.000866,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Compact source torso and tail restored; all four legs remain. Minor subpixel underpaint residuals. Motion cut edges remain a separate gate."
+}

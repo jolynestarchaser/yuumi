@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "91e6d49a3d564251ed9b6f1d9edc7d1fca22f2355090487156e155f3aa9c2c80",
+  "originalSha256": "a0c9a8d1cf94e2d3cee644a25909269448439135bc5b01a6dc9b1b883b1313dd",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.001195,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source body length, stance and tail restored; fourth leg remains occluded. Small underpaint residuals remain."
+}

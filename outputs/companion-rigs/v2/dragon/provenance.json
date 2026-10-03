@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-03",
+  "tool": "built-in image_gen.imagegen",
+  "reference": "client/public/assets/companions/moodboard-v1/dragon.png",
+  "master": "master.png",
+  "prompt": "Use case precise-object-edit. Separate this EXACT cream spotted quadruped dragon with original antler horns, pink ears, leaf frills and long leaf-tip curled tail into anatomical animation layers. Authoritative image, keep original painted watercolor brown ink, original visible contours, palette, face, front-facing neutral identity and proportions. Do NOT redesign or add accessories. Transparent PNG, 3 columns x 3 rows equal cells: row1 head including ORIGINAL ears and horns with face; clean torso NO limbs/tail; complete original tail with hidden root. Row2 front-right leg full hidden shoulder; front-left leg full hidden shoulder; chest fluff/front frill joint cover. Row3 hind-right leg full hidden hip; hind-left leg full hidden hip; same head eyes closed sleep. All parts isolated, centered with wide empty gaps between cells. Reconstruct ONLY hidden roots and clean body beneath removed limbs. Head is just head not whole character. No full assembled character, ground shadow, background, checkerboard, text, labels or borders.",
+  "status": "candidate",
+  "ready": false,
+  "originalAtlasUntouched": true,
+  "generatedOutputHint": "Generated images are saved to C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9 as C:\\Users\\Jstarc\\.codex\\generated_images\\01a0fd89-ccfe-7ec3-97b4-95e92675afa9\\exec-b5e897b6-143e-43ea-97b6-fb70f7a82866.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "preparation": "Deterministic alpha-island extraction, placement, hierarchy assembly. Fox visible surfaces are extracted from the original; reconstructed pixels are used only under occlusion.",
+  "knownIssues": "Leg and torso proportions differ; horns and head frills remain fused with head, and dorsal frills with torso. Joint sockets remain visible."
+}

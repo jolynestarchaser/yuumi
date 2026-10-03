@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "367811de02446da27f1d133550fcc06dde2b0a5d45d834c05d0db250fdc16bc7",
+  "originalSha256": "ed4168cd2aec5cd2891b1fd5ccfca4a37dad246364c40efab886793390e76a4c",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.000789,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source cloud silhouette reconstructed through foreground overlap. Complete arms and legs remain mostly occluded; visible segmentation removed."
+}

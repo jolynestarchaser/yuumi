@@ -117,14 +117,21 @@ export function layeredGrowth(species: CompanionSpecies, render?: PetArtRender) 
   return { ...result, accepted };
 }
 
+export function layeredBodyPlacement(species: CompanionSpecies, bodyCell: number) {
+  const frame = layeredPetAtlases[species]!.frames[bodyCell]!;
+  const scale = Math.min(300 / frame[2], 330 / frame[3]);
+  const width = frame[2] * scale, height = frame[3] * scale;
+  // Frog body cells include the feet. Other species have separate overlay feet.
+  return { scale, width, height, x: (512 - width) / 2, y: (species === 'frog' ? 448 : 408) - height };
+}
+
 export function layeredSockets(species: CompanionSpecies, bodyCell: number) {
   const atlas = layeredPetAtlases[species]!;
   const frame = atlas.frames[bodyCell]!;
-  const scale = Math.min(300 / frame[2], 330 / frame[3]);
-  const width = frame[2] * scale, height = frame[3] * scale;
+  const { scale, width, x: bodyX, y: bodyY } = layeredBodyPlacement(species, bodyCell);
   const [faceX, faceY] = atlas.faces[bodyCell]!;
-  const x = (512 - width) / 2 + (faceX - frame[0]) * scale;
-  const y = 408 - height + (faceY - frame[1]) * scale;
+  const x = bodyX + (faceX - frame[0]) * scale;
+  const y = bodyY + (faceY - frame[1]) * scale;
   // Face landmarks are authored separately for every species/body cell.
   // This texture compositor is not an eligible server SVG rig manifest.
   const sockets = formSockets(width * .34, Math.min(365, y + 94), Math.max(105, y - 62));

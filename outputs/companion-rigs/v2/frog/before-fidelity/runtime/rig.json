@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "species": "frog",
+  "formId": "base",
+  "archetype": "frog",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "thigh_r",
+      "source": "/assets/companions/rig-v2/frog/base/thigh_r.png",
+      "bounds": [
+        40,
+        259,
+        118,
+        156
+      ],
+      "pivot": [
+        129,
+        288
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.8,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "foot_r",
+      "source": "/assets/companions/rig-v2/frog/base/foot_r.png",
+      "bounds": [
+        51,
+        410,
+        100,
+        38
+      ],
+      "pivot": [
+        124,
+        415
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.5,
+      "phase": 0,
+      "parent": "thigh_r",
+      "motion": "leg"
+    },
+    {
+      "id": "thigh_l",
+      "source": "/assets/companions/rig-v2/frog/base/thigh_l.png",
+      "bounds": [
+        354,
+        259,
+        118,
+        156
+      ],
+      "pivot": [
+        383,
+        288
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.8,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "foot_l",
+      "source": "/assets/companions/rig-v2/frog/base/foot_l.png",
+      "bounds": [
+        361,
+        410,
+        100,
+        38
+      ],
+      "pivot": [
+        388,
+        415
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.5,
+      "phase": 0,
+      "parent": "thigh_l",
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/frog/base/body.png",
+      "bounds": [
+        93,
+        246,
+        326,
+        185
+      ],
+      "pivot": [
+        256,
+        351
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/frog/base/arm_r.png",
+      "bounds": [
+        93,
+        268,
+        110,
+        180
+      ],
+      "pivot": [
+        143,
+        277
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.25,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/frog/base/arm_l.png",
+      "bounds": [
+        309,
+        268,
+        110,
+        180
+      ],
+      "pivot": [
+        368,
+        277
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.25,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/frog/base/head.png",
+      "bounds": [
+        88,
+        135,
+        336,
+        173
+      ],
+      "pivot": [
+        256,
+        275
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/frog/base/head_sleep.png"
+      }
+    }
+  ]
+}

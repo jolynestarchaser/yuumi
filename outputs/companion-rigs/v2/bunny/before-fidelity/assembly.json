@@ -1,0 +1,15 @@
+{
+  "species":"bunny", "archetype":"upright",
+  "parts":[
+    {"id":"ear_r","crop":[785,0,1120,460],"placement":[40,177,178],"height":237,"pivot":[203,186],"order":0,"motion":"ear","phase":-0.12},
+    {"id":"ear_l","crop":[1120,0,1448,460],"placement":[294,177,178],"height":237,"pivot":[309,186],"order":1,"motion":"ear","multiplier":-1,"phase":-0.18},
+    {"id":"tail","crop":[0,755,370,1086],"placement":[124,372,62],"pivot":[178,404],"order":2,"motion":"tail"},
+    {"id":"foot_r","crop":[730,460,1110,750],"placement":[155,408,71],"height":40,"pivot":[191,412],"order":3,"motion":"leg"},
+    {"id":"foot_l","crop":[1110,460,1448,750],"placement":[277,408,71],"height":40,"pivot":[312,412],"order":4,"motion":"leg","phase":-0.225},
+    {"id":"body","crop":[390,0,775,460],"placement":[151,269,211],"height":167,"pivot":[256,375],"order":5,"motion":"body"},
+    {"id":"arm_r","crop":[0,460,375,750],"placement":[161,299,73],"height":86,"pivot":[180,302],"order":6,"parent":"body","motion":"leg","multiplier":0.35},
+    {"id":"arm_l","crop":[380,460,730,750],"placement":[276,299,73],"height":86,"pivot":[329,302],"order":7,"parent":"body","motion":"leg","multiplier":-0.35},
+    {"id":"chest_fluff","crop":[370,755,735,1086],"placement":[158,271,195],"height":86,"pivot":[256,279],"order":8,"parent":"body"},
+    {"id":"head","crop":[0,0,385,460],"sleepCrop":[735,755,1110,1086],"placement":[126,89,260],"height":197,"pivot":[256,275],"order":9,"parent":"body","motion":"body"}
+  ]
+}

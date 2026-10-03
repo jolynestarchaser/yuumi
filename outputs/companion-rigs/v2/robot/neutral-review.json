@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-03",
+  "reviewer": "Codex visual inspection",
+  "neutralSha256": "6213bcedf9ea3fca9685bafdca54d116faf51153ea7bad3037a38608f3ff0b78",
+  "originalSha256": "a8a9f46c9b51477526e97d6c45a502a7f8d0c1f4b2acc131941ac6bd30fdb9b0",
+  "neutralOverlayVisuallyReviewed": true,
+  "productionReady": false,
+  "reviewedArtifacts": [
+    "original.png",
+    "neutral.png",
+    "overlay.png",
+    "comparison.jpg"
+  ],
+  "premultipliedRgbMeanError": 0.000723,
+  "verdict": "Neutral closely reconstructs the mood-board reference; motion approval pending.",
+  "notes": "Source compact head/body ratio, short visible limbs and tucked joints restored. Minor joint underpaint residuals remain."
+}

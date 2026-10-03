@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "species": "cat",
+  "formId": "base",
+  "archetype": "quadruped",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/cat/base/tail.png",
+      "bounds": [
+        281,
+        162,
+        191,
+        224
+      ],
+      "pivot": [
+        376.5,
+        174
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "hind_leg_r",
+      "source": "/assets/companions/rig-v2/cat/base/hind_leg_r.png",
+      "bounds": [
+        211,
+        339,
+        65,
+        109
+      ],
+      "pivot": [
+        243.5,
+        351
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "motion": "leg"
+    },
+    {
+      "id": "hind_leg_l",
+      "source": "/assets/companions/rig-v2/cat/base/hind_leg_l.png",
+      "bounds": [
+        259,
+        339,
+        65,
+        109
+      ],
+      "pivot": [
+        291.5,
+        351
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/cat/base/body.png",
+      "bounds": [
+        115,
+        280,
+        177,
+        119
+      ],
+      "pivot": [
+        203.5,
+        292
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "front_leg_r",
+      "source": "/assets/companions/rig-v2/cat/base/front_leg_r.png",
+      "bounds": [
+        99,
+        332,
+        68,
+        116
+      ],
+      "pivot": [
+        133,
+        344
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "front_leg_l",
+      "source": "/assets/companions/rig-v2/cat/base/front_leg_l.png",
+      "bounds": [
+        165,
+        332,
+        68,
+        116
+      ],
+      "pivot": [
+        199,
+        344
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.325,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "chest_fluff",
+      "source": "/assets/companions/rig-v2/cat/base/chest_fluff.png",
+      "bounds": [
+        78,
+        280,
+        149,
+        80
+      ],
+      "pivot": [
+        152.5,
+        292
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/cat/base/head.png",
+      "bounds": [
+        40,
+        98,
+        265,
+        191
+      ],
+      "pivot": [
+        172.5,
+        110
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/cat/base/head_sleep.png"
+      }
+    }
+  ]
+}

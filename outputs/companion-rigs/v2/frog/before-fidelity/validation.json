@@ -1,0 +1,28 @@
+{
+  "status": "candidate",
+  "silhouetteIoU": 0.925,
+  "neutralAlphaBounds": [
+    40,
+    135,
+    472,
+    448
+  ],
+  "referenceAlphaBounds": [
+    40,
+    134,
+    472,
+    448
+  ],
+  "groundErrorPx": 0,
+  "parts": [
+    "thigh_r",
+    "foot_r",
+    "thigh_l",
+    "foot_l",
+    "body",
+    "arm_r",
+    "arm_l",
+    "head"
+  ],
+  "notes": "Silhouette metric is diagnostic, never sufficient for art approval."
+}

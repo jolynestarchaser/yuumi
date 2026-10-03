@@ -1,0 +1,18 @@
+{
+  "assetId": "companion_fox_base_rig_v1",
+  "status": "reviewed-vertical-slice",
+  "sourceReference": "/assets/companions/illustrated-v1/fox.png",
+  "generator": "built-in image generation tool",
+  "generationDate": "2026-10-03",
+  "generatedMasters": [
+    "outputs/companion-rigs/fox/parts-source.png",
+    "outputs/companion-rigs/fox/body-source.png"
+  ],
+  "reconstructedParts": [
+    "body", "chest_fluff", "front_leg_l", "front_leg_r", "hind_leg_l", "hind_leg_r",
+    "head", "ear_l", "ear_r", "eyes", "eyes_sleep", "tail"
+  ],
+  "extractedParts": ["mouth"],
+  "namingConvention": "Character anatomical left/right; character-left appears viewer-right in the neutral front pose.",
+  "notes": "Generated masters are retained outside runtime assets. Runtime layers are deterministic crops with transparent alpha. Original illustrated and layered atlas files are unchanged."
+}

@@ -1,0 +1,319 @@
+{
+  "version": 1,
+  "species": "bunny",
+  "formId": "base",
+  "archetype": "upright",
+  "canvas": [
+    512,
+    512
+  ],
+  "anchor": [
+    256,
+    448
+  ],
+  "safeBounds": [
+    24,
+    24,
+    464,
+    456
+  ],
+  "shadow": "runtime",
+  "parts": [
+    {
+      "id": "ear_r",
+      "source": "/assets/companions/rig-v2/bunny/base/ear_r.png",
+      "bounds": [
+        40,
+        177,
+        178,
+        237
+      ],
+      "pivot": [
+        203,
+        186
+      ],
+      "order": 0,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.12,
+      "motion": "ear"
+    },
+    {
+      "id": "ear_l",
+      "source": "/assets/companions/rig-v2/bunny/base/ear_l.png",
+      "bounds": [
+        294,
+        177,
+        178,
+        237
+      ],
+      "pivot": [
+        309,
+        186
+      ],
+      "order": 1,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -1,
+      "phase": -0.18,
+      "motion": "ear"
+    },
+    {
+      "id": "tail",
+      "source": "/assets/companions/rig-v2/bunny/base/tail.png",
+      "bounds": [
+        124,
+        372,
+        62,
+        59.456
+      ],
+      "pivot": [
+        178,
+        404
+      ],
+      "order": 2,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "tail"
+    },
+    {
+      "id": "foot_r",
+      "source": "/assets/companions/rig-v2/bunny/base/foot_r.png",
+      "bounds": [
+        155,
+        408,
+        71,
+        40
+      ],
+      "pivot": [
+        191,
+        412
+      ],
+      "order": 3,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "leg"
+    },
+    {
+      "id": "foot_l",
+      "source": "/assets/companions/rig-v2/bunny/base/foot_l.png",
+      "bounds": [
+        277,
+        408,
+        71,
+        40
+      ],
+      "pivot": [
+        312,
+        412
+      ],
+      "order": 4,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": -0.225,
+      "motion": "leg"
+    },
+    {
+      "id": "body",
+      "source": "/assets/companions/rig-v2/bunny/base/body.png",
+      "bounds": [
+        151,
+        269,
+        211,
+        167
+      ],
+      "pivot": [
+        256,
+        375
+      ],
+      "order": 5,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "motion": "body"
+    },
+    {
+      "id": "arm_r",
+      "source": "/assets/companions/rig-v2/bunny/base/arm_r.png",
+      "bounds": [
+        161,
+        299,
+        73,
+        86
+      ],
+      "pivot": [
+        180,
+        302
+      ],
+      "order": 6,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 0.35,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "arm_l",
+      "source": "/assets/companions/rig-v2/bunny/base/arm_l.png",
+      "bounds": [
+        276,
+        299,
+        73,
+        86
+      ],
+      "pivot": [
+        329,
+        302
+      ],
+      "order": 7,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": -0.35,
+      "phase": 0,
+      "parent": "body",
+      "motion": "leg"
+    },
+    {
+      "id": "chest_fluff",
+      "source": "/assets/companions/rig-v2/bunny/base/chest_fluff.png",
+      "bounds": [
+        158,
+        271,
+        195,
+        86
+      ],
+      "pivot": [
+        256,
+        279
+      ],
+      "order": 8,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body"
+    },
+    {
+      "id": "head",
+      "source": "/assets/companions/rig-v2/bunny/base/head.png",
+      "bounds": [
+        126,
+        89,
+        260,
+        197
+      ],
+      "pivot": [
+        256,
+        275
+      ],
+      "order": 9,
+      "rest": {
+        "translate": [
+          0,
+          0
+        ],
+        "rotate": 0,
+        "scale": [
+          1,
+          1
+        ]
+      },
+      "multiplier": 1,
+      "phase": 0,
+      "parent": "body",
+      "motion": "body",
+      "stateSources": {
+        "sleep": "/assets/companions/rig-v2/bunny/base/head_sleep.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+ "species":"robot","archetype":"upright",
+ "parts":[
+  {"id":"leg_r","crop":[1080,380,1440,685],"placement":[160,347,89],"height":101,"pivot":[207,352],"order":0,"motion":"leg","multiplier":0.5},
+  {"id":"leg_l","crop":[130,680,420,990],"placement":[264,347,89],"height":101,"pivot":[300,352],"order":1,"motion":"leg","multiplier":0.5,"phase":-0.45},
+  {"id":"arm_r","crop":[100,380,460,680],"placement":[117,274,88],"height":130,"pivot":[188,287],"order":2,"motion":"leg","multiplier":0.3,"phase":-0.45},
+  {"id":"arm_l","crop":[680,380,1000,680],"placement":[307,274,88],"height":130,"pivot":[326,287],"order":3,"motion":"leg","multiplier":0.3},
+  {"id":"body","crop":[590,40,1000,380],"placement":[197,279,119],"height":90,"pivot":[256,330],"order":4,"motion":"body"},
+  {"id":"neck","crop":[1120,750,1410,960],"placement":[232,268,49],"height":14,"pivot":[256,266],"order":5,"parent":"body"},
+  {"id":"antenna","crop":[1150,50,1400,350],"placement":[235,56,42],"height":69,"pivot":[256,124],"order":6,"parent":"body","motion":"antenna","multiplier":0.3},
+  {"id":"head","crop":[20,30,570,370],"sleepCrop":[515,680,1060,990],"placement":[126,127,260],"height":146,"pivot":[256,256],"order":7,"parent":"body","motion":"body"}
+ ]
+}
